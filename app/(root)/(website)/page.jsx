@@ -14,6 +14,8 @@ import { FaShippingFast } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { TbRosetteDiscountFilled } from "react-icons/tb";
 
+export const dynamic = 'force-dynamic'
+
 const MainSlider = dynamic(() => import('@/components/Application/Website/MainSlider'), { ssr: false })
 const Testimonial = dynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
 
