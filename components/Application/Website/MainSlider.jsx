@@ -79,13 +79,14 @@ const MainSlider = () => {
                     <div key={index} className='relative w-full'>
                         <div className='relative aspect-[16/7] sm:aspect-[16/6] lg:aspect-[16/5] w-full overflow-hidden'>
                             <Image 
-                                src={slide.src.src} 
-                                width={slide.src.width} 
-                                height={slide.src.height} 
+                                src={slide.src}
                                 alt={slide.alt}
                                 className='w-full h-full object-cover object-center'
                                 priority={index === 0}
+                                quality={100}
                                 sizes='100vw'
+                                fill
+                                unoptimized={false}
                             />
                         </div>
                     </div>

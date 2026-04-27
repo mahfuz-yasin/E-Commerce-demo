@@ -34,24 +34,24 @@ const Home = () => {
                     <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
                         <Link href={WEBSITE_SHOP} className='block'>
                             <Image
-                                src={banner1.src}
-                                width={banner1.width}
-                                height={banner1.height}
+                                src={banner1}
                                 alt='Premium Panjabi Collection'
                                 className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
                                 priority
+                                quality={100}
+                                sizes='(max-width: 640px) 100vw, 50vw'
                             />
                         </Link>
                     </div>
                     <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
                         <Link href={WEBSITE_SHOP} className='block'>
                             <Image
-                                src={banner2.src}
-                                width={banner2.width}
-                                height={banner2.height}
+                                src={banner2}
                                 alt='New Arrivals Collection'
                                 className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
                                 priority
+                                quality={100}
+                                sizes='(max-width: 640px) 100vw, 50vw'
                             />
                         </Link>
                     </div>
@@ -65,12 +65,12 @@ const Home = () => {
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
                 <div className='w-full overflow-hidden rounded-lg shadow-sm'>
                     <Image
-                        src={advertisingBanner.src}
-                        height={advertisingBanner.height}
-                        width={advertisingBanner.width}
+                        src={advertisingBanner}
                         alt='Special Offers - Al Hilal Panjabi'
                         className='w-full h-auto object-cover'
                         priority
+                        quality={100}
+                        sizes='100vw'
                     />
                 </div>
             </section>

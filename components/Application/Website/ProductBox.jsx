@@ -7,14 +7,15 @@ const ProductBox = ({ product }) => {
 
     return (
         <div className='rounded-lg hover:shadow-lg border overflow-hidden'>
-            <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
+            <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block relative w-full lg:h-[300px] sm:h-[250px] h-[150px]'>
                 <Image
-                    src={product?.media[0]?.secure_url || imgPlaceholder.src}
-                    width={400}
-                    height={400}
+                    src={product?.media[0]?.secure_url || imgPlaceholder}
                     alt={product?.media[0]?.alt || product?.name}
                     title={product?.media[0]?.title || product?.name}
-                    className='w-full lg:h-[300px] sm:h-[250px] h-[150px] object-cover object-top'
+                    className='object-cover object-top'
+                    quality={90}
+                    sizes='(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw'
+                    fill
                 />
                 <div className="p-3 border-t">
                     <h4>{product?.name}</h4>
