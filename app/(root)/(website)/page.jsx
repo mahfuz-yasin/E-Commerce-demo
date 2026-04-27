@@ -1,17 +1,20 @@
-import MainSlider from '@/components/Application/Website/MainSlider'
+'use client'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import banner1 from '@/public/assets/images/banner1.png'
-import banner2 from '@/public/assets/images/banner2.png'
+import banner1 from '@/public/assets/images/banner1.avif'
+import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
-import advertisingBanner from '@/public/assets/images/advertising-banner.png'
-import Testimonial from '@/components/Application/Website/Testimonial'
+import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 
 import { GiReturnArrow } from "react-icons/gi";
 import { FaShippingFast } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { TbRosetteDiscountFilled } from "react-icons/tb";
+
+const MainSlider = dynamic(() => import('@/components/Application/Website/MainSlider'), { ssr: false })
+const Testimonial = dynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
 
 const Home = () => {
     return (

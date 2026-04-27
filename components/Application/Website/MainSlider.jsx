@@ -4,10 +4,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 
-import slider1 from '@/public/assets/images/slider-1.png'
-import slider2 from '@/public/assets/images/slider-2.png'
-import slider3 from '@/public/assets/images/slider-3.png'
-import slider4 from '@/public/assets/images/slider-4.png'
+import slider1 from '@/public/assets/images/slider-1.avif'
+import slider2 from '@/public/assets/images/slider-2.avif'
+import slider3 from '@/public/assets/images/slider-3.avif'
+import slider4 from '@/public/assets/images/slider-4.avif'
 import Image from 'next/image';
 import { LuChevronRight } from "react-icons/lu";
 import { LuChevronLeft } from "react-icons/lu";

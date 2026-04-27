@@ -39,7 +39,10 @@ const ProductReveiw = ({ productId }) => {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setCurrentUrl(window.location.href)
+            const handleSetCurrentUrl = () => {
+                setCurrentUrl(window.location.href)
+            }
+            handleSetCurrentUrl()
         }
     }, [])
 

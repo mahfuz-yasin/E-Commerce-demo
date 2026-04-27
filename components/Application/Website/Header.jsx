@@ -23,15 +23,17 @@ const Header = () => {
     return (
         <div className='bg-white border-b lg:px-32 px-4'>
             <div className='flex justify-between items-center lg:py-5 py-3'>
-                <Link href={WEBSITE_HOME}>
-                    <Image
-                        src={logo}
-                        width={383}
-                        height={146}
-                        alt='logo'
-                        className='lg:w-32 w-24'
-                    />
-                </Link>
+               <Link 
+  href={WEBSITE_HOME} 
+  className="group inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-sm transition-all duration-300"
+  aria-label="Al-Hilal Panjabi Home"
+>
+  <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors duration-300 group-hover:text-amber-600">
+    Al-Hilal <span className="text-amber-600 group-hover:text-slate-900 dark:group-hover:text-amber-400">Panjabi</span>
+  </h2>
+  {/* Optional: Animated underline effect */}
+  <span className="block h-0.5 max-w-0 group-hover:max-w-full transition-all duration-500 bg-amber-600"></span>
+</Link>
 
                 <div className='flex justify-between gap-20'>
                     <nav className={`lg:relative lg:w-auto lg:h-auto lg:top-0 lg:left-0 lg:p-0 bg-white fixed z-50 top-0 w-full h-screen transition-all ${isMobileMenu ? 'left-0' : '-left-full'}`}>

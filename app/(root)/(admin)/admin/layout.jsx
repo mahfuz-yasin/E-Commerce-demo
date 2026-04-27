@@ -1,8 +1,13 @@
+'use client'
+import dynamic from 'next/dynamic'
 import AppSidebar from '@/components/Application/Admin/AppSidebar'
-import ThemeProvider from '@/components/Application/Admin/ThemeProvider'
 import Topbar from '@/components/Application/Admin/Topbar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import React from 'react'
+
+const ThemeProvider = dynamic(() => import('@/components/Application/Admin/ThemeProvider'), {
+    ssr: false
+})
 
 const layout = ({ children }) => {
     return (
@@ -21,7 +26,7 @@ const layout = ({ children }) => {
                     </div>
 
                     <div className='border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm'>
-                        © 2025 Developer Goswami™. All Rights Reserved.
+                        2025 Developer Goswami. All Rights Reserved.
                     </div>
                 </main>
             </SidebarProvider>

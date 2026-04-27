@@ -24,8 +24,12 @@ const Media = ({ media, handleDelete, deleteType, selectedMedia, setSelectedMedi
     }
 
     const handleCopyLink = async (url) => {
-        await navigator.clipboard.writeText(url)
-        showToast('success', 'Link copied.')
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+            await navigator.clipboard.writeText(url)
+            showToast('success', 'Link copied.')
+        } else {
+            showToast('error', 'Clipboard not available')
+        }
     }
 
     return (
