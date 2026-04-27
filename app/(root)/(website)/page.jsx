@@ -1,5 +1,5 @@
 'use client'
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -16,8 +16,8 @@ import { TbRosetteDiscountFilled } from "react-icons/tb";
 
 export const dynamic = 'force-dynamic'
 
-const MainSlider = dynamic(() => import('@/components/Application/Website/MainSlider'), { ssr: false })
-const Testimonial = dynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
+const MainSlider = nextDynamic(() => import('@/components/Application/Website/MainSlider'), { ssr: false })
+const Testimonial = nextDynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
 
 const Home = () => {
     return (
