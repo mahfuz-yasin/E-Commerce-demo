@@ -190,8 +190,8 @@ export const otpEmail = (otp) => {
 																	<p style="margin: 0;">If you did not request this,
 																		please ignore this message.</p>
 																	<p style="margin: 0;">Thank you,<br />
-                                                                     <a href="https://www.youtube.com/@developergoswami" target="_blank">Developer
-																		Goswami</a>
+                                                                     <a href="https://www.youtube.com/@developermahfuzyasin" target="_blank">Developer
+																		MahfuzYasin</a>
                                                                     </p>
 																</div>
 															</td>

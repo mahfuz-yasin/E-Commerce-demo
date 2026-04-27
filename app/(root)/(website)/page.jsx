@@ -8,6 +8,7 @@ import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 
+
 import { GiReturnArrow } from "react-icons/gi";
 import { FaShippingFast } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
@@ -50,7 +51,8 @@ const Home = () => {
 
                 </div>
             </section>
-
+            
+           
             <FeaturedProduct />
 
             <section className='sm:pt-20 pt-5 pb-10'>

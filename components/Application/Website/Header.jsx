@@ -62,29 +62,30 @@ const Header = () => {
                                     Home
                                 </Link>
                             </li>
-                            <li className='text-gray-600 hover:text-primary hover:font-semibold'>
-                                <Link href="/about-us" className='block py-2'>
-                                    About
-                                </Link>
-                            </li>
+                            
                             <li className='text-gray-600 hover:text-primary hover:font-semibold'>
                                 <Link href={WEBSITE_SHOP} className='block py-2'>
-                                    Shop
+                                   All
                                 </Link>
                             </li>
                             <li className='text-gray-600 hover:text-primary hover:font-semibold'>
-                                <Link href={`${WEBSITE_SHOP}?category=t-shirts`} className='block py-2'>
-                                    T-shirt
+                                <Link href={`${WEBSITE_SHOP}?category=t-premium`} className='block py-2'>
+                                    Premium
                                 </Link>
                             </li>
                             <li className='text-gray-600 hover:text-primary hover:font-semibold'>
-                                <Link href={`${WEBSITE_SHOP}?category=hoodies`} className='block py-2'>
-                                    Hoodies
+                                <Link href={`${WEBSITE_SHOP}?category=crash`} className='block py-2'>
+                                    Crash
                                 </Link>
                             </li>
                             <li className='text-gray-600 hover:text-primary hover:font-semibold'>
                                 <Link href={`${WEBSITE_SHOP}?category=overshized`} className='block py-2'>
                                     Oversized
+                                </Link>
+                            </li>
+                            <li className='text-gray-600 hover:text-primary hover:font-semibold'>
+                                <Link href="/about-us" className='block py-2'>
+                                    About
                                 </Link>
                             </li>
                         </ul>

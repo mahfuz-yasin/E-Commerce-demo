@@ -1,147 +1,128 @@
-import Image from 'next/image'
+'use client'
 import React from 'react'
-import logo from '@/public/assets/images/logo-black.png'
 import Link from 'next/link'
-import { IoLocationOutline } from "react-icons/io5";
-import { MdOutlinePhone } from "react-icons/md";
-import { MdOutlineMail } from "react-icons/md";
-import { AiOutlineYoutube } from "react-icons/ai";
-import { FaInstagram } from "react-icons/fa";
-import { FaWhatsapp } from "react-icons/fa";
-import { TiSocialFacebookCircular } from "react-icons/ti";
-import { FiTwitter } from "react-icons/fi";
+import { IoLocationOutline, IoCallOutline, IoMailOutline } from "react-icons/io5"
+import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from "react-icons/fa"
+import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
+import logo from '@/public/assets/images/logo-black.png'
+import Image from 'next/image'
 
-import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
 const Footer = () => {
+    // পিক্সেল-পারফেক্ট ট্রেলো শ্যাডো (#93)
+    const trelloShadow = "shadow-[rgba(9,30,66,0.25)_0px_4px_8px_-2px,rgba(9,30,66,0.08)_0px_0px_0px_1px]";
+
     return (
-        <footer className='bg-gray-50 border-t'>
-            <div className='grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-10 py-10 lg:px-32 px-4'>
+        <footer className='bg-white border-t border-slate-100 mt-20 font-sans'>
+            {/* ১. মেইন ফুটার কন্টেন্ট */}
+            <div className='grid lg:grid-cols-12 md:grid-cols-2 grid-cols-2 gap-y-12 gap-x-4 py-16 lg:px-32 px-6'>
 
-                <div className='lg:col-span-1 md:col-span-2 col-span-1'>
-                    <Image
-                        src={logo}
-                        width={383}
-                        height={146}
-                        alt='logo'
-                        className='w-36 mb-2'
-                    />
-                    <p className='text-gray-500 text-sm'>
-                        E-store is your trusted destination for quality and convenience. From fashion to essentials, we bring everything you need right to your doorstep. Shop smart, live better — only at E-store.
+                {/* ব্র্যান্ড ভিশন সেকশন - মোবাইলে পুরো উইডথ নেবে */}
+                <div className='col-span-2 lg:col-span-4 md:col-span-2'>
+                    <Link href={WEBSITE_HOME} className="inline-block mb-6 group">
+                        <div className="flex flex-col">
+                            <Image src={logo} alt="Al-Hilal Panjabi" width={100} height={100} className="w-24 h-24" />
+                            <span className="text-3xl sm:text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-amber-700 via-amber-500 to-amber-800 bg-clip-text text-transparent drop-shadow-sm transition-all duration-500 group-hover:tracking-normal">
+                                AL-HILAL
+                            </span>
+                            
+                            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-400 -mt-1 ml-1">
+                                Premium Panjabi
+                            </span>
+                        </div>
+                    </Link>
+                    <p className='text-slate-500 text-sm leading-relaxed max-w-sm'>
+                        আল-হিলাল পাঞ্জাবি মানেই আভিজাত্য। আমরা পাইকারি ও খুচরা বিক্রয়কারী হিসেবে দেশের সেরা প্রিমিয়াম পাঞ্জাবি ও পায়জামা সরবরাহ করছি।
                     </p>
-                </div>
-
-
-                <div>
-                    <h4 className='text-xl font-bold uppercase mb-5'>Categories</h4>
-                    <ul>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={`${WEBSITE_SHOP}?category=t-shirts`}>T-shirt</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={`${WEBSITE_SHOP}?category=hoodies`}>Hoodies</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={`${WEBSITE_SHOP}?category=oversized`}>Oversized</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={`${WEBSITE_SHOP}?category=full-sleeves`}>Full Sleeves</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={`${WEBSITE_SHOP}?category=polo`}>Polo</Link>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 className='text-xl font-bold uppercase mb-5'>Userfull Links</h4>
-                    <ul>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_HOME}>Home</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_SHOP}>Shop</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href="/about-us">About</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_REGISTER}>Register</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_LOGIN}>Login</Link>
-                        </li>
-
-                    </ul>
-                </div>
-                <div>
-                    <h4 className='text-xl font-bold uppercase mb-5'>Help Center</h4>
-                    <ul>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_REGISTER}>Register</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={WEBSITE_LOGIN}>Login</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href={USER_DASHBOARD}>My Account</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href="/privacy-policy">Privacy Policy</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500'>
-                            <Link href="/terms-and-conditions">Terms & Conditions</Link>
-                        </li>
-
-
-                    </ul>
-                </div>
-                <div>
-                    <h4 className='text-xl font-bold uppercase mb-5'>Contact Us </h4>
-                    <ul>
-                        <li className='mb-2 text-gray-500 flex gap-2'>
-                            <IoLocationOutline size={20} />
-                            <span className='text-sm'>E-store market Lucknow, India 256320</span>
-                        </li>
-                        <li className='mb-2 text-gray-500 flex gap-2'>
-                            <MdOutlinePhone size={20} />
-                            <Link href="tel:+91-8569874589" className='hover:text-primary text-sm'>+91-8569874589</Link>
-                        </li>
-                        <li className='mb-2 text-gray-500 flex gap-2'>
-                            <MdOutlineMail size={20} />
-                            <Link href="mailto:support@estore.com" className='hover:text-primary text-sm'>support@estore.com</Link>
-                        </li>
-
-                    </ul>
-
-
-                    <div className='flex gap-5 mt-5'>
-
-                        <Link href="">
-                            <AiOutlineYoutube className='text-primary' size={25} />
-                        </Link>
-                        <Link href="">
-                            <FaInstagram className='text-primary' size={25} />
-                        </Link>
-                        <Link href="">
-                            <FaWhatsapp className='text-primary' size={25} />
-                        </Link>
-                        <Link href="">
-                            <TiSocialFacebookCircular className='text-primary' size={25} />
-                        </Link>
-                        <Link href="">
-                            <FiTwitter className='text-primary' size={25} />
-                        </Link>
-
+                    
+                    {/* সোশ্যাল আইকনস */}
+                    <div className='flex gap-3 mt-8'>
+                        {[
+                            { Icon: FaFacebookF, color: "hover:bg-blue-600", link: "#" },
+                            { Icon: FaWhatsapp, color: "hover:bg-green-600", link: "https://wa.me/8801810841539" },
+                            { Icon: FaInstagram, color: "hover:bg-pink-600", link: "#" },
+                            { Icon: FaYoutube, color: "hover:bg-red-600", link: "#" }
+                        ].map((social, i) => (
+                            <Link key={i} href={social.link} className={`p-2.5 rounded-xl bg-slate-50 text-slate-600 hover:text-white ${social.color} transition-all duration-300 ${trelloShadow}`}>
+                                <social.Icon size={18} />
+                            </Link>
+                        ))}
                     </div>
-
                 </div>
 
+                {/* Shop সেকশন - মোবাইলে পাশাপাশি বসবে */}
+                <div className='col-span-1 lg:col-span-2'>
+                    <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Shop</h4>
+                    <ul className='space-y-3'>
+                        {['Premium Punjabi', 'Pyjama', 'T-shirt', 'Polo Shirt'].map(link => (
+                            <li key={link}>
+                                <Link href={WEBSITE_SHOP} className='text-slate-500 hover:text-amber-600 transition-all text-sm flex items-center gap-2 group'>
+                                    <span className='w-1 h-1 rounded-full bg-amber-600 opacity-0 group-hover:opacity-100 transition-all'></span>
+                                    {link}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Support সেকশন - মোবাইলে পাশাপাশি বসবে */}
+                <div className='col-span-1 lg:col-span-2'>
+                    <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Support</h4>
+                    <ul className='space-y-3 text-sm'>
+                        <li><Link href={USER_DASHBOARD} className='text-slate-500 hover:text-amber-600'>My Account</Link></li>
+                        <li><Link href="/about-us" className='text-slate-500 hover:text-amber-600'>Our Story</Link></li>
+                        <li><Link href="/privacy-policy" className='text-slate-500 hover:text-amber-600'>Privacy</Link></li>
+                        <li><Link href={WEBSITE_LOGIN} className='text-slate-500 hover:text-amber-600'>Login</Link></li>
+                    </ul>
+                </div>
+
+                {/* কন্টাক্ট সেকশন - মোবাইলে পুরো উইডথ নেবে */}
+                <div className='col-span-2 lg:col-span-4'>
+                    <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-amber-600'>Showroom</h4>
+                    <div className='space-y-5'>
+                        <div className='flex gap-4'>
+                            <div className={`p-2.5 rounded-xl bg-amber-50 text-amber-600 h-fit ${trelloShadow}`}>
+                                <IoLocationOutline size={20} />
+                            </div>
+                            <p className='text-sm text-slate-600 leading-snug'>
+                                <span className='font-bold block text-slate-900'>Shop No.: 22</span>
+                                S. R. Shopping Mall (Under Ground), East Aganagor, South Keranigonj, Dhaka.
+                            </p>
+                        </div>
+                        <div className='flex gap-4 items-center'>
+                            <div className={`p-2.5 rounded-xl bg-amber-50 text-amber-600 ${trelloShadow}`}>
+                                <IoCallOutline size={20} />
+                            </div>
+                            <Link href="tel:+8801810841539" className='text-sm font-bold text-slate-700 hover:text-amber-600'>+880 1810 841 539</Link>
+                        </div>
+                        <div className='flex gap-4 items-center'>
+                            <div className={`p-2.5 rounded-xl bg-amber-50 text-amber-600 ${trelloShadow}`}>
+                                <IoMailOutline size={20} />
+                            </div>
+                            <Link href="mailto:labibhelal3662@gmail.com" className='text-sm text-slate-600 hover:text-amber-600'>labibhelal3662@gmail.com</Link>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-
-            <div className='py-5 bg-gray-100' >
-                <p className='text-center'>© 2024 Estore. All Rights Reserved.</p>
+            {/* ২. কপিরাইট ও ডেভেলপার সিগনেচার */}
+            <div className="bg-slate-50/50 py-8 border-t border-slate-100">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+                    <p className="text-sm text-slate-500">
+                        © {new Date().getFullYear()} <span className="font-bold text-slate-900">Al-Hilal Panjabi</span>. All Rights Reserved.
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Mastered by</span>
+                        <a 
+                            href="https://github.com/mahfuz-yasin" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-white px-4 py-1.5 rounded-lg text-sm font-bold text-slate-700 hover:text-amber-600 transition-all border border-slate-100 shadow-sm"
+                        >
+                            Mahfuz Yasin
+                        </a>
+                    </div>
+                </div>
             </div>
-
         </footer>
     )
 }
