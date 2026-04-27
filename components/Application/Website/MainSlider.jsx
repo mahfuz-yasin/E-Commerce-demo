@@ -16,16 +16,26 @@ import { LuChevronLeft } from "react-icons/lu";
 const ArrowNext = (props) => {
     const { onClick } = props
     return (
-        <button onClick={onClick} type='button' className='w-14 h-14 flex justify-center items-center rounded-full absolute z-10 top-1/2 -translate-y-1/2 bg-white right-10' >
-            <LuChevronRight size={25} className='text-gray-600' />
+        <button 
+            onClick={onClick} 
+            type='button' 
+            className='hidden sm:flex w-10 h-10 sm:w-14 sm:h-14 justify-center items-center rounded-full absolute z-10 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg right-4 sm:right-8 lg:right-10 transition-all duration-300 hover:scale-110'
+            aria-label='Next slide'
+        >
+            <LuChevronRight size={22} className='text-gray-700' />
         </button>
     )
 }
 const ArrowPrev = (props) => {
     const { onClick } = props
     return (
-        <button onClick={onClick} type='button' className='w-14 h-14 flex justify-center items-center rounded-full absolute z-10 top-1/2 -translate-y-1/2 bg-white left-10' >
-            <LuChevronLeft size={25} className='text-gray-600' />
+        <button 
+            onClick={onClick} 
+            type='button' 
+            className='hidden sm:flex w-10 h-10 sm:w-14 sm:h-14 justify-center items-center rounded-full absolute z-10 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg left-4 sm:left-8 lg:left-10 transition-all duration-300 hover:scale-110'
+            aria-label='Previous slide'
+        >
+            <LuChevronLeft size={22} className='text-gray-700' />
         </button>
     )
 }
@@ -34,39 +44,68 @@ const MainSlider = () => {
     const settings = {
         dots: true,
         infinite: true,
-        speed: 500,
+        speed: 600,
         autoplay: true,
+        autoplaySpeed: 4000,
+        pauseOnHover: true,
         nextArrow: <ArrowNext />,
         prevArrow: <ArrowPrev />,
-
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        fade: true,
+        cssEase: 'ease-in-out',
         responsive: [
             {
-                breakpoint: 480,
+                breakpoint: 640,
                 settings: {
-                    dots: false,
-                    arrow: false,
-                    nextArrow: '',
-                    prevArrow: ''
+                    dots: true,
+                    arrows: false,
+                    fade: false
                 }
             }
         ]
     }
+    const slides = [
+        { src: slider1, alt: 'Premium Panjabi Collection - Al Hilal' },
+        { src: slider2, alt: 'Eid Special Collection - Al Hilal' },
+        { src: slider3, alt: 'Wedding Collection Panjabi' },
+        { src: slider4, alt: 'Festive Wear Collection' }
+    ]
+
     return (
-        <div>
-            <Slider {...settings}>
-                <div>
-                    <Image src={slider1.src} width={slider1.width} height={slider1.height} alt='slider 1' />
-                </div>
-                <div>
-                    <Image src={slider2.src} width={slider2.width} height={slider2.height} alt='slider 2' />
-                </div>
-                <div>
-                    <Image src={slider3.src} width={slider3.width} height={slider3.height} alt='slider 3' />
-                </div>
-                <div>
-                    <Image src={slider4.src} width={slider4.width} height={slider4.height} alt='slider 4' />
-                </div>
+        <div className='relative w-full'>
+            <Slider {...settings} className='main-slider'>
+                {slides.map((slide, index) => (
+                    <div key={index} className='relative w-full'>
+                        <div className='relative aspect-[16/7] sm:aspect-[16/6] lg:aspect-[16/5] w-full overflow-hidden'>
+                            <Image 
+                                src={slide.src.src} 
+                                width={slide.src.width} 
+                                height={slide.src.height} 
+                                alt={slide.alt}
+                                className='w-full h-full object-cover object-center'
+                                priority={index === 0}
+                                sizes='100vw'
+                            />
+                        </div>
+                    </div>
+                ))}
             </Slider>
+            
+            <style jsx global>{`
+                .main-slider .slick-dots {
+                    bottom: 16px;
+                }
+                .main-slider .slick-dots li button:before {
+                    color: white;
+                    font-size: 10px;
+                    opacity: 0.6;
+                }
+                .main-slider .slick-dots li.slick-active button:before {
+                    color: #f59e0b;
+                    opacity: 1;
+                }
+            `}</style>
         </div>
     )
 }

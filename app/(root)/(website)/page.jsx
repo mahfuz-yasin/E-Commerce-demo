@@ -7,6 +7,7 @@ import banner1 from '@/public/assets/images/banner1.avif'
 import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
+import { WEBSITE_SHOP } from '@/routes/WebsiteRoute'
 
 
 import { GiReturnArrow } from "react-icons/gi";
@@ -22,54 +23,63 @@ const Testimonial = nextDynamic(() => import('@/components/Application/Website/T
 const Home = () => {
     return (
         <>
-            <section>
+            {/* Main Slider Section */}
+            <section className='w-full'>
                 <MainSlider />
             </section>
-            <section className='lg:px-32 px-4 sm:pt-20 pt-5 pb-10'>
-                <div className='grid grid-cols-2 sm:gap-10 gap-2'>
 
-                    <div className='border rounded-lg overflow-hidden'>
-                        <Link href="" >
+            {/* Promo Banners Section */}
+            <section className='lg:px-32 px-4 sm:py-16 py-8'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-10'>
+                    <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
+                        <Link href={WEBSITE_SHOP} className='block'>
                             <Image
                                 src={banner1.src}
                                 width={banner1.width}
                                 height={banner1.height}
-                                alt='banner 1'
-                                className='transition-all hover:scale-110'
+                                alt='Premium Panjabi Collection'
+                                className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
+                                priority
                             />
                         </Link>
                     </div>
-                    <div className='border rounded-lg overflow-hidden'>
-                        <Link href="" >
+                    <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
+                        <Link href={WEBSITE_SHOP} className='block'>
                             <Image
                                 src={banner2.src}
                                 width={banner2.width}
                                 height={banner2.height}
-                                alt='banner 2'
-                                className='transition-all hover:scale-110'
+                                alt='New Arrivals Collection'
+                                className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
+                                priority
                             />
                         </Link>
                     </div>
-
                 </div>
             </section>
-            
-           
+
+            {/* Featured Products Section */}
             <FeaturedProduct />
 
-            <section className='sm:pt-20 pt-5 pb-10'>
-                <Image
-                    src={advertisingBanner.src}
-                    height={advertisingBanner.height}
-                    width={advertisingBanner.width}
-                    alt='Advertisement'
-
-                />
+            {/* Advertising Banner Section */}
+            <section className='lg:px-32 px-4 sm:py-16 py-8'>
+                <div className='w-full overflow-hidden rounded-lg shadow-sm'>
+                    <Image
+                        src={advertisingBanner.src}
+                        height={advertisingBanner.height}
+                        width={advertisingBanner.width}
+                        alt='Special Offers - Al Hilal Panjabi'
+                        className='w-full h-auto object-cover'
+                        priority
+                    />
+                </div>
             </section>
 
+            {/* Testimonials Section */}
             <Testimonial />
 
-            <section className='lg:px-32 px-4  border-t py-10'>
+            {/* Features/Trust Badges Section */}
+            <section className='lg:px-32 px-4 border-t py-10 sm:py-16 bg-gray-50/50'>
                 <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-10'>
                     <div className='text-center'>
                         <p className='flex justify-center items-center mb-3'>
