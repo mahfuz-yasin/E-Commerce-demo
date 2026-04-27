@@ -28,9 +28,24 @@ const Header = () => {
   className="group inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-sm transition-all duration-300"
   aria-label="Al-Hilal Panjabi Home"
 >
-  <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors duration-300 group-hover:text-amber-600">
-    Al-Hilal <span className="text-amber-600 group-hover:text-slate-900 dark:group-hover:text-amber-400">Panjabi</span>
-  </h2>
+  <h2 className="flex items-center gap-3 text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors duration-300 group">
+  {/* লোগো কন্টেইনার - লোগোর সাইজ টেক্সটের সাথে সামঞ্জস্যপূর্ণ করা হয়েছে */}
+  <Image 
+    src={logo} 
+    alt="Al-Hilal Panjabi" 
+    width={100} 
+    height={100} 
+    className="w-10 h-10 md:w-12 md:h-12 object-contain" 
+  />
+  
+  {/* টেক্সট অংশ */}
+  <span className="group-hover:text-amber-600 transition-colors duration-300">
+    Al-Hilal 
+    <span className="ml-2 text-amber-600 group-hover:text-slate-900 dark:group-hover:text-amber-400">
+      Panjabi
+    </span>
+  </span>
+</h2>
   {/* Optional: Animated underline effect */}
   <span className="block h-0.5 max-w-0 group-hover:max-w-full transition-all duration-500 bg-amber-600"></span>
 </Link>
