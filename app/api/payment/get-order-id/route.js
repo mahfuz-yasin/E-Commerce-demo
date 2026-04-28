@@ -27,7 +27,7 @@ export async function POST(request) {
 
         const razOption = {
             amount: Number(amount) * 100,
-            currency: 'INR'
+            currency: 'BDT'
         }
 
         const orderDetail = await razInstance.orders.create(razOption)

@@ -85,7 +85,7 @@ const CartPage = () => {
                                         <td className='md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center'>
                                             <span className='md:hidden font-medium'>Price</span>
                                             <span>
-                                                {product.sellingPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                                                {product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </span>
                                         </td>
                                         <td className='md:table-cell flex justify-between md:p-3 px-3 pb-2'>
@@ -110,7 +110,7 @@ const CartPage = () => {
                                         <td className='md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center'>
                                             <span className='md:hidden font-medium'>Total</span>
                                             <span>
-                                                {(product.sellingPrice * product.qty).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                                                {(product.sellingPrice * product.qty).toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </span>
                                         </td>
 
@@ -135,19 +135,19 @@ const CartPage = () => {
                                         <tr>
                                             <td className='font-medium py-2'>Subtotal</td>
                                             <td className='text-end py-2'>
-                                                {subtotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                                                {subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Discount</td>
                                             <td className='text-end py-2'>
-                                                -{discount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                                                -{discount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Total</td>
                                             <td className='text-end py-2'>
-                                                {subtotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                                                {subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                     </tbody>

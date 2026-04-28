@@ -20,8 +20,8 @@ const ProductBox = ({ product }) => {
                 <div className="p-3 border-t">
                     <h4>{product?.name}</h4>
                     <p className='flex gap-2 text-sm mt-2'>
-                        <span className='line-through text-gray-400'>{product?.mrp.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                        <span className='font-semibold'>{product?.sellingPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
+                        <span className='line-through text-gray-400'>{product?.mrp.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className='font-semibold'>{product?.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
                     </p>
                 </div>
             </Link>
