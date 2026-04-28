@@ -27,7 +27,7 @@ export const metadata = {
     description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
     images: [
       {
-        url: "/og-image.jpg", // Ensure you have an OG image in your public folder
+        url: "./logo.webp", // Ensure you have an OG image in your public folder
         width: 1200,
         height: 630,
         alt: "Al-Hilal Panjabi Collection",
@@ -38,7 +38,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Al-Hilal Panjabi",
     description: "Premium Panjabis for the modern man.",
-    images: ["/og-image.jpg"],
+    images: ["./logo.webp"],
   },
   robots: {
     index: true,
