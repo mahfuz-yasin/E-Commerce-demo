@@ -75,7 +75,24 @@ export async function GET(request) {
                             as: 'variant',
                             cond: {
                                 $and: [
-                                    size ? { $in: ["$$variant.size", size.split(',')] } : { $literal: true },
+                                    size ? {
+                                        $or: [
+                                            // New format: array of sizes
+                                            { 
+                                                $and: [
+                                                    { $isArray: "$$variant.size" },
+                                                    { $gt: [{ $size: { $setIntersection: ["$$variant.size", size.split(',')] } }, 0] }
+                                                ]
+                                            },
+                                            // Old format: string like "SMLXL" - use regex
+                                            {
+                                                $and: [
+                                                    { $not: { $isArray: "$$variant.size" } },
+                                                    { $regexMatch: { input: "$$variant.size", regex: size.split(',').join('|') } }
+                                                ]
+                                            }
+                                        ]
+                                    } : { $literal: true },
                                     color ? { $in: ["$$variant.color", color.split(',')] } : { $literal: true },
                                     { $gte: ["$$variant.sellingPrice", minPrice] },
                                     { $lte: ["$$variant.sellingPrice", maxPrice] },

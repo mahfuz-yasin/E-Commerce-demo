@@ -2,7 +2,7 @@
 
 import { ThemeProvider } from "@mui/material"
 import Datatable from "./Datatable"
-import { useTheme } from "next-themes"
+import { useTheme } from "./ThemeProvider"
 import { useEffect, useState } from "react"
 import { darkTheme, lightTheme } from "@/lib/materialTheme"
 

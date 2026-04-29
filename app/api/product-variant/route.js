@@ -37,7 +37,16 @@ export async function GET(request) {
         if (globalFilter) {
             matchQuery["$or"] = [
                 { color: { $regex: globalFilter, $options: 'i' } },
-                { size: { $regex: globalFilter, $options: 'i' } },
+                // Handle both old string format and new array format for size
+                {
+                    $expr: {
+                        $cond: {
+                            if: { $isArray: "$size" },
+                            then: { $in: [globalFilter, "$size"] },
+                            else: { $regexMatch: { input: "$size", regex: globalFilter, options: 'i' } }
+                        }
+                    }
+                },
                 { sku: { $regex: globalFilter, $options: 'i' } },
                 { "productData.name": { $regex: globalFilter, $options: 'i' } },
                 {
@@ -77,6 +86,15 @@ export async function GET(request) {
                 matchQuery[filter.id] = Number(filter.value)
             } else if (filter.id === 'product') {
                 matchQuery["productData.name"] = { $regex: filter.value, $options: 'i' }
+            } else if (filter.id === 'size') {
+                // Handle both old string format and new array format for size filter
+                matchQuery["$expr"] = {
+                    $cond: {
+                        if: { $isArray: "$size" },
+                        then: { $in: [filter.value, "$size"] },
+                        else: { $regexMatch: { input: "$size", regex: filter.value, options: 'i' } }
+                    }
+                }
             }
             else {
                 matchQuery[filter.id] = { $regex: filter.value, $options: 'i' }

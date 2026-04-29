@@ -12,9 +12,8 @@ const ProductVariantSchema = new mongoose.Schema({
         trim: true,
     },
     size: {
-        type: String,
+        type: [String],
         required: true,
-        trim: true
     },
 
     mrp: {

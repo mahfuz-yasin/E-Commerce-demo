@@ -28,8 +28,10 @@ export async function middleware(request) {
         }
 
 
-        // protect admin route  
-        if (pathname.startsWith('/admin') && role !== 'admin') {
+        // protect admin routes (dashboard, product, product-variant, category, coupon, media, customers, review, admin-orders, trash)
+        const adminRoutes = ['/dashboard', '/product', '/product-variant', '/category', '/coupon', '/media', '/customers', '/review', '/admin-orders', '/trash']
+        const isAdminRoute = adminRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`))
+        if (isAdminRoute && role !== 'admin') {
             return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
         }
 
@@ -50,5 +52,20 @@ export async function middleware(request) {
 
 
 export const config = {
-    matcher: ['/admin/:path*', '/my-account/:path*', '/auth/:path*']
+    matcher: [
+        // Admin routes - specific paths to avoid conflicts with website
+        '/dashboard', '/dashboard/:path*',
+        '/product', '/product/add', '/product/edit/:path*',
+        '/product-variant', '/product-variant/:path*',
+        '/category', '/category/:path*',
+        '/coupon', '/coupon/:path*',
+        '/media', '/media/:path*',
+        '/customers', '/customers/:path*',
+        '/review', '/review/:path*',
+        '/admin-orders', '/admin-orders/:path*',
+        '/trash', '/trash/:path*',
+        // User routes
+        '/my-account/:path*',
+        '/auth/:path*'
+    ]
 }
