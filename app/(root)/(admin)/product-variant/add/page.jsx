@@ -57,7 +57,7 @@ const AddProduct = () => {
       product: "",
       sku: "",
       color: "",
-      size: "",
+      size: [],
       mrp: "",
       sellingPrice: "",
       discountPercentage: "",
@@ -182,7 +182,7 @@ const AddProduct = () => {
                             options={sizes}
                             selected={field.value}
                             setSelected={field.onChange}
-                            isMulti={false}
+                            isMulti={true}
                           />
                         </FormControl>
                         <FormMessage />

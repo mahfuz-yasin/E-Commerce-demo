@@ -8,23 +8,36 @@ export async function GET() {
 
         await connectDB()
 
-        const getSize = await ProductVariantModel.aggregate([
-            { $sort: { _id: 1 } },
-            {
-                $group: {
-                    _id: "$size",
-                    first: { $first: "$_id" }
-                }
-            },
-            { $sort: { first: 1 } },
-            { $project: { _id: 0, size: "$_id" } }
-        ])
+        // Get all variants to extract sizes
+        const allVariants = await ProductVariantModel.find({ deletedAt: null }).select('size').lean()
 
-        if (!getSize.length) {
+        // Extract unique sizes from all variants
+        const uniqueSizes = new Set()
+        const validSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL']
+
+        allVariants.forEach(variant => {
+            if (Array.isArray(variant.size)) {
+                // New format: array of sizes
+                variant.size.forEach(s => uniqueSizes.add(s))
+            } else if (typeof variant.size === 'string') {
+                // Old format: string like "SMLXL" - parse using valid sizes
+                let remaining = variant.size
+                // Sort valid sizes by length (descending) to match longer sizes first (XL before L)
+                const sortedSizes = [...validSizes].sort((a, b) => b.length - a.length)
+                for (const size of sortedSizes) {
+                    while (remaining.includes(size)) {
+                        uniqueSizes.add(size)
+                        remaining = remaining.replace(size, '')
+                    }
+                }
+            }
+        })
+
+        const sizes = Array.from(uniqueSizes)
+
+        if (!sizes.length) {
             return response(false, 404, 'Size not found.')
         }
-
-        const sizes = getSize.map(item => item.size)
 
         return response(true, 200, 'Size found.', sizes)
 

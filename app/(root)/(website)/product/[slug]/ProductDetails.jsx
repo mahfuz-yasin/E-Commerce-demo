@@ -32,24 +32,38 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
     const [qty, setQty] = useState(1)
     const [isAddedIntoCart, setIsAddedIntoCart] = useState(false)
     const [isProductLoading, setIsProductLoading] = useState(false)
+    const [selectedSizes, setSelectedSizes] = useState([])
     useEffect(() => {
         setActiveThumb(variant?.media[0]?.secure_url)
+        // Don't auto-select sizes - let user choose manually
+        setSelectedSizes([])
     }, [variant])
 
     useEffect(() => {
         if (cartStore.count > 0) {
-            const existingProduct = cartStore.products.findIndex((cartProduct) => cartProduct.productId === product._id && cartProduct.variantId === variant._id)
+            // Check if ALL selected sizes are already in cart
+            const allSelectedInCart = selectedSizes.every(size => 
+                cartStore.products.some(cartProduct => 
+                    cartProduct.productId === product._id && 
+                    cartProduct.variantId === variant._id &&
+                    cartProduct.size === size
+                )
+            )
+            
+            // Show "Go To Cart" only if there are items in cart for this variant
+            const anySizeInCart = cartStore.products.some(cartProduct => 
+                cartProduct.productId === product._id && 
+                cartProduct.variantId === variant._id
+            )
 
-            if (existingProduct >= 0) {
-                setIsAddedIntoCart(true)
-            } else {
-                setIsAddedIntoCart(false)
-            }
+            setIsAddedIntoCart(anySizeInCart && selectedSizes.length > 0 && allSelectedInCart)
+        } else {
+            setIsAddedIntoCart(false)
         }
 
         setIsProductLoading(false)
 
-    }, [variant])
+    }, [variant, selectedSizes, cartStore.products, cartStore.count, product._id, variant._id])
 
     const handleThumb = (thumbUrl) => {
         setActiveThumb(thumbUrl)
@@ -65,22 +79,39 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
         }
     }
 
+    const handleSizeSelection = (size) => {
+        setSelectedSizes(prev => {
+            if (prev.includes(size)) {
+                return prev.filter(s => s !== size)
+            } else {
+                return [...prev, size]
+            }
+        })
+    }
 
     const handleAddToCart = () => {
-        const cartProduct = {
-            productId: product._id,
-            variantId: variant._id,
-            name: product.name,
-            url: product.slug,
-            size: variant.size,
-            color: variant.color,
-            mrp: variant.mrp,
-            sellingPrice: variant.sellingPrice,
-            media: variant?.media[0]?.secure_url,
-            qty: qty
+        if (selectedSizes.length === 0) {
+            return showToast('error', 'Please select at least one size.')
         }
 
-        dispatch(addIntoCart(cartProduct))
+        // Add each selected size as a separate cart item
+        selectedSizes.forEach(size => {
+            const cartProduct = {
+                productId: product._id,
+                variantId: variant._id,
+                name: product.name,
+                url: product.slug,
+                size: size,
+                color: variant.color,
+                mrp: variant.mrp,
+                sellingPrice: variant.sellingPrice,
+                media: variant?.media[0]?.secure_url,
+                qty: qty
+            }
+
+            dispatch(addIntoCart(cartProduct))
+        })
+
         setIsAddedIntoCart(true)
         showToast('success', 'Product added into cart.')
     }
@@ -178,16 +209,18 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                     </div>
                     <div className="mt-5">
                         <p className="mb-2">
-                            <span className="font-semibold">Size: </span> {variant?.size}
+                            <span className="font-semibold">Size: </span> {selectedSizes.length > 0 ? selectedSizes.join(', ') : 'Select sizes'}
                         </p>
-                        <div className="flex gap-5">
+                        <div className="flex gap-3 flex-wrap">
                             {sizes.map(size => (
-                                <Link onClick={() => setIsProductLoading(true)} href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${variant.color}&size=${size}`}
+                                <button
                                     key={size}
-                                    className={`border py-1 px-3 rounded-lg cursor-pointer hover:bg-primary hover:text-white ${size === variant.size ? 'bg-primary text-white' : ''}`}
+                                    type="button"
+                                    onClick={() => handleSizeSelection(size)}
+                                    className={`border py-1 px-3 rounded-lg cursor-pointer hover:bg-primary hover:text-white ${selectedSizes.includes(size) ? 'bg-primary text-white' : ''}`}
                                 >
                                     {size}
-                                </Link>
+                                </button>
                             ))}
                         </div>
                     </div>

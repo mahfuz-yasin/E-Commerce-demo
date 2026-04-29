@@ -77,8 +77,7 @@ const Cart = () => {
 
                                 <div>
                                     <button type="button" className="text-red-500 underline underline-offset-1 mb-2 cursor-pointer"
-                                        onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId }))}
-                                    >
+                                        onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))}>
                                         Remove
                                     </button>
 
