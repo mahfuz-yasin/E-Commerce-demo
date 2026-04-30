@@ -1,11 +1,17 @@
 import React from 'react'
 import ProductDetails from './ProductDetails'
+import { headers } from 'next/headers'
 
 const ProductPage = async ({ params, searchParams }) => {
     const { slug } = await params
     const { color, size } = await searchParams
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://alhilalpanjabi.com'
+    // Get the base URL from headers for server component
+    const headersList = await headers()
+    const host = headersList.get('host') || 'alhilalpanjabi.com'
+    const protocol = host.includes('localhost') ? 'http' : 'https'
+    const baseUrl = `${protocol}://${host}`
+
     let url = `${baseUrl}/api/product/details/${slug}`
 
     if (color && size) {

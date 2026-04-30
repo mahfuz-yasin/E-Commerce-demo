@@ -4,9 +4,18 @@ import Image from "next/image"
 import placeholderImg from '@/public/assets/images/img-placeholder.webp'
 import Link from "next/link"
 import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute"
+import { headers } from 'next/headers'
+
 const OrderDetails = async ({ params }) => {
     const { orderid } = await params
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://alhilalpanjabi.com'}/api/orders/get/${orderid}`, {
+
+    // Get the base URL from headers for server component
+    const headersList = await headers()
+    const host = headersList.get('host') || 'alhilalpanjabi.com'
+    const protocol = host.includes('localhost') ? 'http' : 'https'
+    const baseUrl = `${protocol}://${host}`
+
+    const response = await fetch(`${baseUrl}/api/orders/get/${orderid}`, {
         cache: 'no-store'
     })
     const orderData = await response.json()
