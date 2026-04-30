@@ -22,7 +22,8 @@ export async function POST(request) {
             mrp: true,
             sellingPrice: true,
             discountPercentage: true,
-            description: true,
+            shortDescription: true,
+            longDescription: true,
             media: true
         })
 
@@ -41,7 +42,8 @@ export async function POST(request) {
             mrp: productData.mrp,
             sellingPrice: productData.sellingPrice,
             discountPercentage: productData.discountPercentage,
-            description: encode(productData.description),
+            shortDescription: encode(productData.shortDescription),
+            longDescription: productData.longDescription,
             media: productData.media,
         })
 

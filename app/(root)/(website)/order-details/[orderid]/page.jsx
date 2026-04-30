@@ -6,7 +6,10 @@ import Link from "next/link"
 import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute"
 const OrderDetails = async ({ params }) => {
     const { orderid } = await params
-    const { data: orderData } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/get/${orderid}`)
+    const response = await fetch(`http://localhost:3000/api/orders/get/${orderid}`, {
+        cache: 'no-store'
+    })
+    const orderData = await response.json()
     console.log(orderData)
     const breadcrumb = {
         title: 'Order Details',
@@ -37,8 +40,8 @@ const OrderDetails = async ({ params }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orderData && orderData?.data?.products?.map((product) => (
-                                    <tr key={product.variantId._id} className="md:table-row block border-b">
+                                {orderData && orderData?.data?.products?.map((product, index) => (
+                                    <tr key={`${product.variantId._id}-${index}`} className="md:table-row block border-b">
                                         <td className="p-3">
                                             <div className="flex items-center gap-5">
                                                 <Image src={product?.variantId?.media[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
@@ -53,7 +56,7 @@ const OrderDetails = async ({ params }) => {
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Price</span>
-                                            <span>{product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                            <span>{product.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Quantity</span>
@@ -61,7 +64,7 @@ const OrderDetails = async ({ params }) => {
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Total</span>
-                                            <span>{(product.qty * product.sellingPrice).toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                            <span>{(product.qty * product.sellingPrice).toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
                                         </td>
                                     </tr>
                                 ))}
@@ -79,32 +82,12 @@ const OrderDetails = async ({ params }) => {
                                                 <td className="text-end py-2">{orderData?.data?.name}</td>
                                             </tr>
                                             <tr>
-                                                <td className="font-medium py-2">Email</td>
-                                                <td className="text-end py-2">{orderData?.data?.email}</td>
-                                            </tr>
-                                            <tr>
                                                 <td className="font-medium py-2">Phone</td>
                                                 <td className="text-end py-2">{orderData?.data?.phone}</td>
                                             </tr>
                                             <tr>
-                                                <td className="font-medium py-2">Country</td>
-                                                <td className="text-end py-2">{orderData?.data?.country}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="font-medium py-2">State</td>
-                                                <td className="text-end py-2">{orderData?.data?.state}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="font-medium py-2">City</td>
-                                                <td className="text-end py-2">{orderData?.data?.city}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="font-medium py-2">Pincode</td>
-                                                <td className="text-end py-2">{orderData?.data?.pincode}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="font-medium py-2">Landmark</td>
-                                                <td className="text-end py-2">{orderData?.data?.landmark}</td>
+                                                <td className="font-medium py-2">Address</td>
+                                                <td className="text-end py-2">{orderData?.data?.address}</td>
                                             </tr>
                                             <tr>
                                                 <td className="font-medium py-2">Order note</td>
@@ -122,19 +105,19 @@ const OrderDetails = async ({ params }) => {
                                         <tbody>
                                             <tr>
                                                 <td className="font-medium py-2">Subtotal</td>
-                                                <td className="text-end py-2">{orderData?.data?.subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                <td className="text-end py-2">{orderData?.data?.subtotal.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
                                             </tr>
                                             <tr>
                                                 <td className="font-medium py-2">Discount</td>
-                                                <td className="text-end py-2">{orderData?.data?.discount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                <td className="text-end py-2">{orderData?.data?.discount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
                                             </tr>
                                             <tr>
                                                 <td className="font-medium py-2">Coupon Discount</td>
-                                                <td className="text-end py-2">{orderData?.data?.couponDiscountAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                <td className="text-end py-2">{orderData?.data?.couponDiscountAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
                                             </tr>
                                             <tr>
                                                 <td className="font-medium py-2">Total</td>
-                                                <td className="text-end py-2">{orderData?.data?.totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                <td className="text-end py-2">{orderData?.data?.totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
                                             </tr>
 
 

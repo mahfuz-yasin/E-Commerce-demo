@@ -13,10 +13,14 @@ const FeaturedProduct = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-featured-product`)
+                const url = '/api/product/get-featured-product'
+                console.log('Fetching featured products from:', url)
+                const { data } = await axios.get(url)
+                console.log('Featured products response:', data)
                 setProductData(data)
             } catch (error) {
-                console.log(error)
+                console.error('Error fetching featured products:', error)
+                setProductData({ success: false, error: true })
             } finally {
                 setLoading(false)
             }
@@ -52,8 +56,8 @@ const FeaturedProduct = () => {
 
             {productData.success && productData.data.length > 0 && (
                 <div className='text-center mt-8 sm:mt-12'>
-                    <Link 
-                        href={WEBSITE_SHOP} 
+                    <Link
+                        href={WEBSITE_SHOP}
                         className='inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-amber-600 transition-colors duration-300 font-medium'
                     >
                         View All Products

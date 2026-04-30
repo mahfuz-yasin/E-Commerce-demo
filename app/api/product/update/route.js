@@ -23,7 +23,8 @@ export async function PUT(request) {
             mrp: true,
             sellingPrice: true,
             discountPercentage: true,
-            description: true,
+            shortDescription: true,
+            longDescription: true,
             media: true
         })
         const validate = schema.safeParse(payload)
@@ -44,7 +45,8 @@ export async function PUT(request) {
         getProduct.mrp = validatedData.mrp
         getProduct.sellingPrice = validatedData.sellingPrice
         getProduct.discountPercentage = validatedData.discountPercentage
-        getProduct.description = encode(validatedData.description)
+        getProduct.shortDescription = encode(validatedData.shortDescription)
+        getProduct.longDescription = validatedData.longDescription
         getProduct.media = validatedData.media
         await getProduct.save()
 

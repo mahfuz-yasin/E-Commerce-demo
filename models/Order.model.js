@@ -10,32 +10,11 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true
-    },
     phone: {
         type: String,
         required: true
     },
-    country: {
-        type: String,
-        required: true
-    },
-    state: {
-        type: String,
-        required: true
-    },
-
-    city: {
-        type: String,
-        required: true
-    },
-    pincode: {
-        type: String,
-        required: true
-    },
-    landmark: {
+    address: {
         type: String,
         required: true
     },
@@ -77,11 +56,20 @@ const orderSchema = new mongoose.Schema({
     },
     payment_id: {
         type: String,
-        required: true
+        required: false
     },
     order_id: {
         type: String,
         required: true
+    },
+    paymentMethod: {
+        type: String,
+        default: 'COD'
+    },
+    orderSource: {
+        type: String,
+        enum: ['cart', 'direct', 'whatsapp'],
+        default: 'cart'
     },
     deletedAt: {
         type: Date,

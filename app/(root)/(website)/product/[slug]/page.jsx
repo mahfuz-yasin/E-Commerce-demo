@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React from 'react'
 import ProductDetails from './ProductDetails'
 
@@ -6,13 +5,26 @@ const ProductPage = async ({ params, searchParams }) => {
     const { slug } = await params
     const { color, size } = await searchParams
 
-    let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/details/${slug}`
+    const baseUrl = 'http://localhost:3000'
+    let url = `${baseUrl}/api/product/details/${slug}`
 
     if (color && size) {
         url += `?color=${color}&size=${size}`
     }
 
-    const { data: getProduct } = await axios.get(url)
+    const response = await fetch(url, {
+        cache: 'no-store'
+    })
+
+    if (!response.ok) {
+        return (
+            <div className='flex justify-center items-center py-10 h-[300px]'>
+                <h1 className='text-4xl font-semibold'>Data not found.</h1>
+            </div>
+        )
+    }
+
+    const getProduct = await response.json()
 
     if (!getProduct.success) {
         return (

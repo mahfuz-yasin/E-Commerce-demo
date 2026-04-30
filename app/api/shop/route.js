@@ -148,6 +148,8 @@ export async function GET(request) {
             products.pop() // remove extra item
         }
 
+        console.log(`Shop API: Found ${products.length} products for page ${page}`)
+
         return response(true, 200, 'Product data found.', { products, nextPage })
 
     } catch (error) {

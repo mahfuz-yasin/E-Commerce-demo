@@ -8,7 +8,7 @@ import useFetch from '@/hooks/useFetch'
 import { showToast } from '@/lib/showToast'
 import { zSchema } from '@/lib/zodSchema'
 import { WEBSITE_ORDER_DETAILS, WEBSITE_PRODUCT_DETAILS, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
-import { addIntoCart, clearCart } from '@/store/reducer/cartReducer'
+import { clearCart } from '@/store/reducer/cartReducer'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import Image from 'next/image'
@@ -47,15 +47,12 @@ const Checkout = () => {
     const [couponCode, setCouponCode] = useState('')
 
     const [placingOrder, setPlacingOrder] = useState(false)
-    const [savingOrder, setSavingOrder] = useState(false)
+    const [showConfirmation, setShowConfirmation] = useState(false)
+    const [orderDetails, setOrderDetails] = useState(null)
     useEffect(() => {
         if (getVerifiedCartData && getVerifiedCartData.success) {
             const cartData = getVerifiedCartData.data
             setVerifiedCartData(cartData)
-            dispatch(clearCart())
-            cartData.forEach(cartItem => {
-                dispatch(addIntoCart(cartItem))
-            });
         }
     }, [getVerifiedCartData])
 
@@ -125,17 +122,11 @@ const Checkout = () => {
 
 
     // place order 
-    const orderFormSchema = zSchema.pick({
-        name: true,
-        email: true,
-        phone: true,
-        country: true,
-        state: true,
-        city: true,
-        pincode: true,
-        landmark: true,
-        ordernote: true
-    }).extend({
+    const orderFormSchema = z.object({
+        name: z.string().min(2, 'Name is required'),
+        phone: z.string().min(10, 'Phone number is required'),
+        address: z.string().min(10, 'Address is required'),
+        ordernote: z.string().optional(),
         userId: z.string().optional()
     })
 
@@ -143,13 +134,8 @@ const Checkout = () => {
         resolver: zodResolver(orderFormSchema),
         defaultValues: {
             name: '',
-            email: '',
             phone: '',
-            country: '',
-            state: '',
-            city: '',
-            pincode: '',
-            landmark: '',
+            address: '',
             ordernote: '',
             userId: authStore?.auth?._id,
         }
@@ -162,126 +148,97 @@ const Checkout = () => {
         }
     }, [authStore])
 
-    // get order id 
-    const getOrderId = async (amount) => {
-        try {
-            const { data: orderIdData } = await axios.post('/api/payment/get-order-id', { amount })
-            if (!orderIdData.success) {
-                throw new Error(orderIdData.message)
-            }
-
-            return { success: true, order_id: orderIdData.data }
-
-        } catch (error) {
-            return { success: false, message: error.message }
-        }
-    }
-
     const placeOrder = async (formData) => {
- 
         setPlacingOrder(true)
         try {
-            const generateOrderId = await getOrderId(totalAmount)
-            if (!generateOrderId.success) {
-                throw new Error(generateOrderId.message)
-            }
-
-            const order_id = generateOrderId.order_id
-
-            const razOption = {
-                "key": process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                "amount": totalAmount * 100,
-                "currency": "INR",
-                "name": "E-store",
-                "description": "Payment for order",
-                "image": "https://res.cloudinary.com/dg7efdu9o/image/upload/v1750052410/logo-black_mb1rve.webp",
-                "order_id": order_id,
-                "handler": async function (response) {
-                    setSavingOrder(true)
-                    const products = verifiedCartData.map((cartItem) => (
-                        {
-                            productId: cartItem.productId,
-                            variantId: cartItem.variantId,
-                            name: cartItem.name,
-                            qty: cartItem.qty,
-                            mrp: cartItem.mrp,
-                            sellingPrice: cartItem.sellingPrice,
-                        }
-                    ))
-
-                    const { data: paymentResponseData } = await axios.post('/api/payment/save-order', {
-                        ...formData,
-                        ...response,
-                        products: products,
-                        subtotal: subtotal,
-                        discount: discount,
-                        couponDiscountAmount: couponDiscountAmount,
-                        totalAmount: totalAmount
-                    })
-
-                    if (paymentResponseData.success) {
-                        showToast('success', paymentResponseData.message)
-                        dispatch(clearCart())
-                        orderForm.reset()
-                        router.push(WEBSITE_ORDER_DETAILS(response.razorpay_order_id))
-                        setSavingOrder(false)
-                    } else {
-                        showToast('error', paymentResponseData.message)
-                        setSavingOrder(false)
-                    }
-                },
-                "prefill": {
-                    "name": formData.name,
-                    "email": formData.email,
-                    "contact": formData.phone
-                },
-
-                "theme": {
-                    "color": "#7c3aed"
+            const products = verifiedCartData.map((cartItem) => (
+                {
+                    productId: cartItem.productId,
+                    variantId: cartItem.variantId,
+                    name: cartItem.name,
+                    qty: cartItem.qty,
+                    mrp: cartItem.mrp,
+                    sellingPrice: cartItem.sellingPrice,
                 }
+            ))
+
+            const { data: orderResponseData } = await axios.post('/api/payment/save-cod-order', {
+                ...formData,
+                products: products,
+                subtotal: subtotal,
+                discount: discount,
+                couponDiscountAmount: couponDiscountAmount,
+                totalAmount: totalAmount,
+                paymentMethod: 'COD'
+            })
+
+            if (orderResponseData.success) {
+                setOrderDetails({
+                    orderId: orderResponseData.data.order_id,
+                    totalAmount: totalAmount
+                })
+                setShowConfirmation(true)
+                dispatch(clearCart())
+                orderForm.reset()
+            } else {
+                showToast('error', orderResponseData.message)
             }
-
-            const rzp = new Razorpay(razOption)
-            rzp.on('payment.failed', function (response) {
-                showToast('error', response.error.description)
-            });
-
-            rzp.open()
 
         } catch (error) {
-            showToast('error', error.message)
+            console.error('Error in placeOrder:', error)
+            showToast('error', error.message || 'Failed to place order. Please try again.')
         } finally {
             setPlacingOrder(false)
         }
     }
 
+    const handleViewOrder = () => {
+        setShowConfirmation(false)
+        router.push(WEBSITE_ORDER_DETAILS(orderDetails.orderId))
+    }
+
     return (
         <div>
-
-            {savingOrder &&
-                <div className='h-screen w-screen fixed top-0 left-0 z-50 bg-black/10'>
-                    <div className='h-screen flex justify-center items-center'>
-                        <Image src={loading.src} height={80} width={80} alt='Loading' />
-                        <h4 className='font-semibold'>Order Confirming...</h4>
-                    </div>
-                </div>
-            }
-
-            <WebsiteBreadcrumb props={breadCrumb} />
-            {cart.count === 0
-                ?
-                <div className='w-screen h-[500px] flex justify-center items-center py-32'>
-                    <div className='text-center'>
-                        <h4 className='text-4xl font-semibold mb-5'>Your cart is empty!</h4>
-
-                        <Button type="button" asChild>
-                            <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
+            {/* Order Confirmation Modal */}
+            {showConfirmation && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
+                    <div className='bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center'>
+                        <div className='text-green-500 mb-4'>
+                            <svg className='w-16 h-16 mx-auto' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
+                            </svg>
+                        </div>
+                        <h2 className='text-2xl font-bold mb-2'>Order Placed Successfully!</h2>
+                        <p className='text-gray-600 mb-4'>
+                            Your order has been placed with Cash on Delivery.
+                        </p>
+                        <div className='bg-gray-50 rounded-lg p-4 mb-6'>
+                            <p className='text-sm text-gray-500'>Order ID</p>
+                            <p className='font-semibold text-lg'>{orderDetails?.orderId}</p>
+                            <p className='text-sm text-gray-500 mt-2'>Total Amount</p>
+                            <p className='font-semibold text-lg'>{orderDetails?.totalAmount?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</p>
+                        </div>
+                        <Button onClick={handleViewOrder} className='w-full bg-black rounded-full px-5 cursor-pointer'>
+                            View Order Details
                         </Button>
-
                     </div>
                 </div>
-                :
-                <div className='flex lg:flex-nowrap flex-wrap gap-10 my-20 lg:px-32 px-4'>
+            )}
+
+            <div className="lg:px-32 px-4">
+                <WebsiteBreadcrumb props={breadCrumb} />
+                {cart.count === 0
+                    ?
+                    <div className='w-screen h-[500px] flex justify-center items-center py-32'>
+                        <div className='text-center'>
+                            <h4 className='text-4xl font-semibold mb-5'>Your cart is empty!</h4>
+                            <Button type="button" asChild>
+                                <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
+                            </Button>
+                        </div>
+                    </div>
+                    :
+                    <div className='flex lg:flex-nowrap flex-wrap gap-10 my-20 lg:px-32 px-4'>
                     <div className='lg:w-[60%] w-full'>
                         <div className='flex font-semibold gap-2 items-center'>
                             <FaShippingFast size={25} /> Shipping Address:
@@ -289,7 +246,7 @@ const Checkout = () => {
                         <div className='mt-5'>
 
                             <Form {...orderForm}>
-                                <form className='grid grid-cols-2 gap-5' onSubmit={orderForm.handleSubmit(placeOrder)}>
+                                <form className='grid grid-cols-1 gap-5' onSubmit={orderForm.handleSubmit(placeOrder)}>
                                     <div className='mb-3'>
                                         <FormField
                                             control={orderForm.control}
@@ -297,30 +254,12 @@ const Checkout = () => {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Input placeholder="Full name*" {...field} />
+                                                        <Input placeholder="Full Name*" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        >
-
-                                        </FormField>
-                                    </div>
-                                    <div className='mb-3'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='email'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input type="email" placeholder="Email*" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
+                                        />
                                     </div>
                                     <div className='mb-3'>
                                         <FormField
@@ -329,110 +268,40 @@ const Checkout = () => {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Input placeholder="Phone*" {...field} />
+                                                        <Input placeholder="Phone Number*" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        >
-
-                                        </FormField>
+                                        />
                                     </div>
                                     <div className='mb-3'>
                                         <FormField
                                             control={orderForm.control}
-                                            name='country'
+                                            name='address'
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Input placeholder="Country*" {...field} />
+                                                        <Textarea placeholder="Full Address*" className="min-h-[100px]" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        >
-
-                                        </FormField>
+                                        />
                                     </div>
                                     <div className='mb-3'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='state'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input placeholder="State*" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
-                                    </div>
-                                    <div className='mb-3'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='city'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input placeholder="City*" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
-                                    </div>
-                                    <div className='mb-3'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='pincode'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input placeholder="Pincode*" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
-                                    </div>
-                                    <div className='mb-3'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='landmark'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input placeholder="Landmark*" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
-                                    </div>
-                                    <div className='mb-3 col-span-2'>
                                         <FormField
                                             control={orderForm.control}
                                             name='ordernote'
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Textarea placeholder="Enter order note" />
+                                                        <Textarea placeholder="Order Note (Optional)" className="min-h-[80px]" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        >
-
-                                        </FormField>
+                                        />
                                     </div>
 
                                     <div className='mb-3'>
@@ -451,8 +320,8 @@ const Checkout = () => {
 
                                 <table className='w-full border'>
                                     <tbody>
-                                        {verifiedCartData && verifiedCartData?.map(product => (
-                                            <tr key={product.variantId}>
+                                        {verifiedCartData && verifiedCartData?.map((product, index) => (
+                                            <tr key={product.cartItemId || `${product.variantId}-${index}`}>
                                                 <td className='p-3'>
                                                     <div className='flex items-center gap-5'>
                                                         <Image src={product.media} width={60} height={60} alt={product.name} className='rounded' />
@@ -467,7 +336,7 @@ const Checkout = () => {
                                                 </td>
                                                 <td className='p-3 text-center'>
                                                     <p className='text-nowrap text-sm'>
-                                                        {product.qty} x {product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+                                                        {product.qty} x {product.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
                                                     </p>
                                                 </td>
                                             </tr>
@@ -480,25 +349,25 @@ const Checkout = () => {
                                         <tr>
                                             <td className='font-medium py-2'>Subtotal</td>
                                             <td className='text-end py-2'>
-                                                {subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+                                                {subtotal.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Discount</td>
                                             <td className='text-end py-2'>
-                                                - {discount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+                                                - {discount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Coupon Discount</td>
                                             <td className='text-end py-2'>
-                                                -  {couponDiscountAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+                                                -  {couponDiscountAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2 text-xl'>Total</td>
                                             <td className='text-end py-2'>
-                                                {totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+                                                {totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -548,8 +417,7 @@ const Checkout = () => {
                     </div>
                 </div>
             }
-
-            <Script src='https://checkout.razorpay.com/v1/checkout.js' />
+            </div>
         </div>
     )
 }
