@@ -5,7 +5,7 @@ const ProductPage = async ({ params, searchParams }) => {
     const { slug } = await params
     const { color, size } = await searchParams
 
-    const baseUrl = 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || ''
     let url = `${baseUrl}/api/product/details/${slug}`
 
     if (color && size) {
