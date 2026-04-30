@@ -14,9 +14,11 @@ import { showToast } from '@/lib/showToast'
 import axios from 'axios'
 import useFetch from '@/hooks/useFetch'
 import Select from '@/components/Application/Select'
-import Editor from '@/components/Application/Admin/Editor'
 import MediaModal from '@/components/Application/Admin/MediaModal'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
   { href: ADMIN_PRODUCT_SHOW, label: 'Products' },
@@ -47,7 +49,8 @@ const AddProduct = () => {
     mrp: true,
     sellingPrice: true,
     discountPercentage: true,
-    description: true,
+    shortDescription: true,
+    longDescription: true,
   })
 
   const form = useForm({
@@ -59,7 +62,8 @@ const AddProduct = () => {
       mrp: 0,
       sellingPrice: 0,
       discountPercentage: 0,
-      description: "",
+      shortDescription: "",
+      longDescription: [{ header: "", paragraph: "" }],
     },
   })
 
@@ -82,9 +86,25 @@ const AddProduct = () => {
 
   }, [form.watch('mrp'), form.watch('sellingPrice')])
 
-  const editor = (event, editor) => {
-    const data = editor.getData()
-    form.setValue('description', data)
+  // Dynamic longDescription handlers
+  const addLongDescriptionSection = () => {
+    const currentLongDescription = form.getValues('longDescription') || []
+    form.setValue('longDescription', [...currentLongDescription, { header: "", paragraph: "" }])
+  }
+
+  const removeLongDescriptionSection = (index) => {
+    const currentLongDescription = form.getValues('longDescription') || []
+    if (currentLongDescription.length > 1) {
+      const updated = currentLongDescription.filter((_, i) => i !== index)
+      form.setValue('longDescription', updated)
+    }
+  }
+
+  const updateLongDescription = (index, field, value) => {
+    const currentLongDescription = form.getValues('longDescription') || []
+    const updated = [...currentLongDescription]
+    updated[index][field] = value
+    form.setValue('longDescription', updated)
   }
 
   const onSubmit = async (values) => {
@@ -221,10 +241,101 @@ const AddProduct = () => {
                     )}
                   />
                 </div>
-                <div className='mb-5 md:col-span-2'>
-                  <FormLabel className="mb-2">Description <span className='text-red-500'>*</span></FormLabel>
-                  <Editor onChange={editor} />
-                  <FormMessage></FormMessage>
+                <div className='md:col-span-2'>
+                  <FormField
+                    control={form.control}
+                    name="shortDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Short Description <span className='text-red-500'>*</span></FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Enter a brief description (10+ characters)" 
+                            className="min-h-[80px]"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Dynamic Long Description */}
+                <div className='md:col-span-2'>
+                  <div className='flex justify-between items-center mb-3'>
+                    <FormLabel>Long Description <span className='text-red-500'>*</span></FormLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addLongDescriptionSection}
+                      className="cursor-pointer"
+                    >
+                      <IoMdAdd className="mr-1" /> Add Section
+                    </Button>
+                  </div>
+                  
+                  <div className='space-y-4'>
+                    {form.watch('longDescription')?.map((section, index) => (
+                      <div key={index} className='border rounded-lg p-4 bg-gray-50 dark:bg-card'>
+                        <div className='flex justify-between items-center mb-3'>
+                          <span className='text-sm font-medium text-gray-600 dark:text-gray-400'>
+                            Section {index + 1}
+                          </span>
+                          {form.watch('longDescription').length > 1 && (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeLongDescriptionSection(index)}
+                              className="cursor-pointer"
+                            >
+                              <IoMdRemove className="mr-1" /> Remove
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <div className='space-y-3'>
+                          <FormField
+                            control={form.control}
+                            name={`longDescription.${index}.header`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Header <span className='text-red-500'>*</span></FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    placeholder="Enter section header"
+                                    {...field}
+                                    className="mt-1"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`longDescription.${index}.paragraph`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Paragraph <span className='text-red-500'>*</span></FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Enter section description (10+ characters)"
+                                    className="min-h-[100px] mt-1"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
               </div>

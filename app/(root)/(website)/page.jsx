@@ -17,15 +17,15 @@ import { TbRosetteDiscountFilled } from "react-icons/tb";
 
 export const dynamic = 'force-dynamic'
 
-const MainSlider = nextDynamic(() => import('@/components/Application/Website/MainSlider'), { ssr: false })
+const HeroSlider = nextDynamic(() => import('@/components/Application/Website/HeroSlider'), { ssr: false })
 const Testimonial = nextDynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
 
 const Home = () => {
     return (
         <>
-            {/* Main Slider Section */}
+            {/* Hero Slider Section */}
             <section className='w-full'>
-                <MainSlider />
+                <HeroSlider />
             </section>
 
             {/* Promo Banners Section */}

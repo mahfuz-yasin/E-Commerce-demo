@@ -23,16 +23,20 @@ import { showToast } from "@/lib/showToast";
 import { Button } from "@/components/ui/button";
 import loadingSvg from '@/public/assets/images/loading.svg'
 import ProductReveiw from "@/components/Application/Website/ProductReveiw";
+import DirectOrderModal from "@/components/Application/Website/DirectOrderModal";
+import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
     const cartStore = useSelector(store => store.cartStore)
-    
+
     const [activeThumb, setActiveThumb] = useState()
     const [qty, setQty] = useState(1)
     const [isAddedIntoCart, setIsAddedIntoCart] = useState(false)
     const [isProductLoading, setIsProductLoading] = useState(false)
     const [selectedSizes, setSelectedSizes] = useState([])
+    const [isDirectModalOpen, setIsDirectModalOpen] = useState(false)
+    const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false)
     useEffect(() => {
         setActiveThumb(variant?.media[0]?.secure_url)
         // Don't auto-select sizes - let user choose manually
@@ -180,8 +184,8 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                         <span className="text-sm ps-2">({reviewCount} Reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xl font-semibold">{variant.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
-                        <span className="text-sm line-through text-gray-500">{variant.mrp.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-xl font-semibold">{variant.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-sm line-through text-gray-500">{variant.mrp.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
 
 
                         <span className="bg-red-500 rounded-2xl px-3 py-1 text-white text-xs ms-5">-{variant.discountPercentage}%</span>
@@ -189,8 +193,10 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
                     </div>
 
-                    <div className="line-clamp-3" dangerouslySetInnerHTML={{ __html: decode(product.description) }}></div>
-
+                    {/* Short Description */}
+                    <div className="line-clamp-3 text-gray-700 mb-3">
+                        {product.shortDescription ? decode(product.shortDescription) : decode(product.description)}
+                    </div>
 
                     <div className="mt-5">
                         <p className="mb-2">
@@ -250,6 +256,21 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                             </Button>
                         }
 
+                        {/* Direct Order and WhatsApp Order Buttons */}
+                        <div className="flex gap-3 mt-3">
+                            <Button
+                                onClick={() => setIsDirectModalOpen(true)}
+                                className="flex-1 bg-black hover:bg-gray-800 rounded-full py-3 text-md cursor-pointer"
+                            >
+                                অর্ডার করুন
+                            </Button>
+                            <Button
+                                onClick={() => setIsWhatsAppModalOpen(true)}
+                                className="flex-1 bg-green-600 hover:bg-green-700 rounded-full py-3 text-md cursor-pointer"
+                            >
+                                ওয়াটসঅ্যাপে অর্ডার
+                            </Button>
+                        </div>
 
                     </div>
 
@@ -263,12 +284,46 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                         <h2 className="font-semibold text-2xl">Product Description</h2>
                     </div>
                     <div className="p-3">
-                        <div dangerouslySetInnerHTML={{ __html: encode(product.description) }}></div>
+                        {/* Display longDescription if available, otherwise fallback to old description */}
+                        {product.longDescription && product.longDescription.length > 0 ? (
+                            <div className="space-y-6">
+                                {product.longDescription.map((section, index) => (
+                                    <div key={index}>
+                                        <h3 className="text-xl font-semibold mb-2 text-gray-800">
+                                            {decode(section.header)}
+                                        </h3>
+                                        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                            {decode(section.paragraph)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div dangerouslySetInnerHTML={{ __html: encode(product.description) }}></div>
+                        )}
                     </div>
                 </div>
             </div>
 
             <ProductReveiw productId={product._id} />
+
+            {/* Direct Order Modal */}
+            <DirectOrderModal
+                isOpen={isDirectModalOpen}
+                onClose={() => setIsDirectModalOpen(false)}
+                product={product}
+                variant={variant}
+                selectedSize={selectedSizes.length > 0 ? selectedSizes.join(', ') : null}
+            />
+
+            {/* WhatsApp Order Modal */}
+            <WhatsAppOrderModal
+                isOpen={isWhatsAppModalOpen}
+                onClose={() => setIsWhatsAppModalOpen(false)}
+                product={product}
+                variant={variant}
+                selectedSize={selectedSizes.length > 0 ? selectedSizes.join(', ') : null}
+            />
 
         </div>
     )

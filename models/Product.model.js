@@ -37,10 +37,25 @@ const productSchema = new mongoose.Schema({
             required: true
         }
     ],
-    description: {
+    shortDescription: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
+    longDescription: [
+        {
+            header: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            paragraph: {
+                type: String,
+                required: true,
+                trim: true
+            }
+        }
+    ],
     deletedAt: {
         type: Date,
         default: null,

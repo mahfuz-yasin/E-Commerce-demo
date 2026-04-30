@@ -12,6 +12,7 @@ export async function POST(request) {
                 const variant = await ProductVariantModel.findById(cartItem.variantId).populate('product').populate('media', 'secure_url').lean()
                 if (variant) {
                     return {
+                        cartItemId: cartItem.cartItemId || Date.now() + Math.random().toString(36).substr(2, 9),
                         productId: variant.product._id,
                         variantId: variant._id,
                         name: variant.product.name,

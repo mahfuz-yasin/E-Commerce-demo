@@ -1,31 +1,138 @@
+'use client'
+
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import imgPlaceholder from '@/public/assets/images/img-placeholder.webp'
 import Link from 'next/link'
 import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
+import { Button } from '@/components/ui/button'
+import DirectOrderModal from './DirectOrderModal'
+import WhatsAppOrderModal from './WhatsAppOrderModal'
+import { useDispatch } from 'react-redux'
+import { addIntoCart } from '@/store/reducer/cartReducer'
+import { showToast } from '@/lib/showToast'
+
 const ProductBox = ({ product }) => {
+    const dispatch = useDispatch()
+    const [showOverlay, setShowOverlay] = useState(false)
+    const [isDirectModalOpen, setIsDirectModalOpen] = useState(false)
+    const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false)
+
+    const handleAddToCart = () => {
+        const cartProduct = {
+            productId: product._id,
+            variantId: product.variantId?._id || product._id,
+            name: product.name,
+            url: product.slug,
+            size: product.size || 'Default',
+            color: product.color || 'Default',
+            mrp: product.mrp,
+            sellingPrice: product.sellingPrice,
+            media: product?.media[0]?.secure_url,
+            qty: 1
+        }
+        dispatch(addIntoCart(cartProduct))
+        showToast('success', 'Product added to cart')
+    }
+
+    const discount = Math.round(((product.mrp - product.sellingPrice) / product.mrp) * 100)
 
     return (
-        <div className='rounded-lg hover:shadow-lg border overflow-hidden'>
-            <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block relative w-full lg:h-[300px] sm:h-[250px] h-[150px]'>
-                <Image
-                    src={product?.media[0]?.secure_url || imgPlaceholder}
-                    alt={product?.media[0]?.alt || product?.name}
-                    title={product?.media[0]?.title || product?.name}
-                    className='object-cover object-top'
-                    quality={90}
-                    sizes='(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw'
-                    fill
-                />
-                <div className="p-3 border-t">
-                    <h4>{product?.name}</h4>
-                    <p className='flex gap-2 text-sm mt-2'>
-                        <span className='line-through text-gray-400'>{product?.mrp.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
-                        <span className='font-semibold'>{product?.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
-                    </p>
+        <>
+            <div className='group rounded-lg hover:shadow-xl border overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 bg-white'>
+                {/* Image Container with Smooth Hover Overlay */}
+                <div
+                    className='relative w-full aspect-[3/4] overflow-hidden'
+                    onMouseEnter={() => setShowOverlay(true)}
+                    onMouseLeave={() => setShowOverlay(false)}
+                    onTouchStart={() => setShowOverlay(true)}
+                >
+                    {/* Discount Badge */}
+                    {discount > 0 && (
+                        <div className='absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10'>
+                            -{discount}%
+                        </div>
+                    )}
+                    <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block w-full h-full' aria-label={`View ${product?.name}`}>
+                        <Image
+                            src={product?.media[0]?.secure_url || imgPlaceholder}
+                            alt={product?.media[0]?.alt || product?.name || 'Product image'}
+                            title={product?.media[0]?.title || product?.name}
+                            className={`object-cover object-top transition-transform duration-500 ${showOverlay ? 'scale-110' : 'scale-100'}`}
+                            quality={80}
+                            sizes='(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+                            fill
+                            loading="lazy"
+                        />
+                    </Link>
+
+                    {/* Smooth Hover Overlay */}
+                    <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 transition-all duration-300 ${showOverlay ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                        <h3 className='text-white text-center px-4 font-semibold text-sm md:text-base line-clamp-2'>{product?.name}</h3>
+                        <div className='flex items-center gap-2'>
+                            <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
+                                <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Details</Button>
+                            </Link>
+                            <Button onClick={handleAddToCart} className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Add to Cart</Button>
+                        </div>
+                    </div>
                 </div>
-            </Link>
-        </div>
+
+                <div className="p-3 md:p-4 border-t">
+                    <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block'>
+                        <h4 className='font-medium text-sm md:text-base line-clamp-2 hover:text-primary transition-colors duration-200 min-h-[2.5rem]'>{product?.name}</h4>
+                    </Link>
+
+                    <div className='flex items-center gap-2 mt-2'>
+                        <span className='font-bold text-sm md:text-base text-gray-900'>{product?.sellingPrice?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                        {product?.mrp > product?.sellingPrice && (
+                            <span className='line-through text-gray-400 text-xs md:text-sm'>{product?.mrp?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                        )}
+                    </div>
+
+                    {/* Order Now - Full Width */}
+                    <Button
+                        onClick={() => setIsDirectModalOpen(true)}
+                        className='w-full mt-3 bg-black hover:bg-gray-800 rounded-full py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all duration-200 hover:shadow-md'
+                    >
+                        অর্ডার করুন
+                    </Button>
+
+                    {/* WhatsApp Order - Full Width */}
+                    <Button
+                        onClick={() => setIsWhatsAppModalOpen(true)}
+                        className='w-full mt-2 bg-green-600 hover:bg-green-700 rounded-full py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all duration-200 hover:shadow-md'
+                    >
+                        ওয়াটসঅ্যাপে অর্ডার করুন
+                    </Button>
+                </div>
+            </div>
+
+            {/* Direct Order Modal - rendered outside card via portal */}
+            {typeof window !== 'undefined' && createPortal(
+                <DirectOrderModal
+                    isOpen={isDirectModalOpen}
+                    onClose={() => setIsDirectModalOpen(false)}
+                    product={product}
+                    variant={product.variantId || product}
+                    selectedSize={product.size}
+                />,
+                document.body
+            )}
+
+            {/* WhatsApp Order Modal - rendered outside card via portal */}
+            {typeof window !== 'undefined' && createPortal(
+                <WhatsAppOrderModal
+                    isOpen={isWhatsAppModalOpen}
+                    onClose={() => setIsWhatsAppModalOpen(false)}
+                    product={product}
+                    variant={product.variantId || product}
+                    selectedSize={product.size}
+                />,
+                document.body
+            )}
+        </>
     )
 }
 

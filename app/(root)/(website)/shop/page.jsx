@@ -33,13 +33,21 @@ const Shop = () => {
 
 
     const fetchProduct = async (pageParam) => {
-        const { data: getProduct } = await axios.get(`/api/shop?page=${pageParam}&limit=${limit}&sort=${sorting}&${searchParams}`)
+        try {
+            const url = `/api/shop?page=${pageParam}&limit=${limit}&sort=${sorting}&${searchParams}`
+            console.log('Fetching products from:', url)
+            const { data: getProduct } = await axios.get(url)
+            console.log('Shop API response:', getProduct)
 
-        if (!getProduct.success) {
-            return
+            if (!getProduct.success) {
+                return { products: [], nextPage: undefined }
+            }
+
+            return getProduct.data || { products: [], nextPage: undefined }
+        } catch (err) {
+            console.error('Error fetching products:', err)
+            return { products: [], nextPage: undefined }
         }
-
-        return getProduct.data
     }
 
     const { error, data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQuery({
@@ -47,7 +55,7 @@ const Shop = () => {
         queryFn: async ({ pageParam }) => await fetchProduct(pageParam),
         initialPageParam: 0,
         getNextPageParam: (lastPage) => {
-            return lastPage.nextPage
+            return lastPage?.nextPage ?? undefined
         }
     })
 
@@ -90,15 +98,24 @@ const Shop = () => {
                     />
 
                     {isFetching && <div className='p-3 font-semibold text-center'>Loading...</div>}
-                    {error && <div className='p-3 font-semibold text-center'>{error.message}</div>}
+                    {error && <div className='p-3 font-semibold text-center text-red-500'>
+                        Error: {error.message || 'Failed to load products'}
+                    </div>}
 
                     <div className='grid lg:grid-cols-3 grid-cols-2 lg:gap-10 gap-5 mt-10'>
-                        {data && data.pages.map(page => (
-                            page.products.map(product => (
-                                <ProductBox key={product._id} product={product} />
+                        {data && data.pages?.filter(Boolean).map((page, i) => (
+                            page?.products?.filter(Boolean).map(product => (
+                                <ProductBox key={`${product._id}-${i}`} product={product} />
                             ))
                         ))}
                     </div>
+
+                    {/* No products found message */}
+                    {data && data.pages?.filter(Boolean).every(page => !page?.products || page.products.length === 0) && !isFetching && (
+                        <div className='text-center py-10'>
+                            <p className='text-gray-500 text-lg'>No products found.</p>
+                        </div>
+                    )}
 
                     {/* load more button  */}
 

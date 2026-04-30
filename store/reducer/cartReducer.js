@@ -15,6 +15,8 @@ export const cartReducer = createSlice({
             )
 
             if (existingProduct < 0) {
+                // Add unique cartItemId
+                payload.cartItemId = Date.now() + Math.random().toString(36).substr(2, 9)
                 state.products.push(payload)
                 state.count = state.products.length
             }
