@@ -24,3 +24,4 @@ To maintain high performance and visual consistency across the **Al-Hilal Panjab
 * **Format:** Use `.webp` for general images and `.svg` for icons/logos to ensure fast loading.
 * **Hero Slider:** Ensure the focal point of the image is centered to avoid clipping on mobile devices.
 * **Cloudinary:** All dynamic images should be uploaded via the Admin Panel to leverage auto-optimization.
+* Premium Panjabi & Pyjama Store - Wholesale & Retail *
