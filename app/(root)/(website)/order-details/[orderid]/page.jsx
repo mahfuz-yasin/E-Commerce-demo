@@ -6,7 +6,7 @@ import Link from "next/link"
 import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute"
 const OrderDetails = async ({ params }) => {
     const { orderid } = await params
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/orders/get/${orderid}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://alhilalpanjabi.com'}/api/orders/get/${orderid}`, {
         cache: 'no-store'
     })
     const orderData = await response.json()

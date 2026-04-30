@@ -5,7 +5,7 @@ const ProductPage = async ({ params, searchParams }) => {
     const { slug } = await params
     const { color, size } = await searchParams
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://alhilalpanjabi.com'
     let url = `${baseUrl}/api/product/details/${slug}`
 
     if (color && size) {
