@@ -64,6 +64,7 @@ export const config = {
         '/review', '/review/:path*',
         '/admin-orders', '/admin-orders/:path*',
         '/trash', '/trash/:path*',
+        '/slider', '/slider/:path*',
         // User routes
         '/my-account/:path*',
         '/auth/:path*'

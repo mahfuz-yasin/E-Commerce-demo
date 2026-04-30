@@ -47,3 +47,6 @@ export const ADMIN_ORDER_DETAILS = (order_id) => order_id ? `/admin-orders/detai
 // Trash route 
 
 export const ADMIN_TRASH = '/trash'
+
+// Slider routes
+export const ADMIN_SLIDER = '/slider'

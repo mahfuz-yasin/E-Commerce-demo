@@ -23,8 +23,12 @@ const ModalMediaBlock = ({ media, selectedMedia, setSelectedMedia, isMultiple })
             setSelectedMedia(newSelectedMedia)
 
         } else {
-            // select single media 
-            setSelectedMedia([{ _id: media._id, url: media.secure_url }])
+            // select single media - include full media object for slider use
+            setSelectedMedia([{ 
+                _id: media._id, 
+                secure_url: media.secure_url,
+                public_id: media.public_id
+            }])
         }
     }
     return (
