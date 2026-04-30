@@ -85,9 +85,9 @@ const ProductBox = ({ product }) => {
                     </Link>
 
                     <div className='flex items-center gap-2 mt-2'>
-                        <span className='font-bold text-sm md:text-base text-gray-900'>{product?.sellingPrice?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className='font-bold text-sm md:text-base text-gray-900'>{product?.sellingPrice?.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
                         {product?.mrp > product?.sellingPrice && (
-                            <span className='line-through text-gray-400 text-xs md:text-sm'>{product?.mrp?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                            <span className='line-through text-gray-400 text-xs md:text-sm'>{product?.mrp?.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
                         )}
                     </div>
 

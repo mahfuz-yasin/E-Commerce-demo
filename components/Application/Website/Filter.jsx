@@ -176,8 +176,8 @@ const Filter = () => {
                     <AccordionContent>
                         <Slider defaultValue={[0, 3000]} max={3000} step={1} onValueChange={handlePriceChange} />
                         <div className='flex justify-between items-center pt-2'>
-                            <span>{priceFilter.minPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
-                            <span>{priceFilter.maxPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                            <span>{priceFilter.minPrice.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
+                            <span>{priceFilter.maxPrice.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
                         </div>
 
                         <div className='mt-4'>
