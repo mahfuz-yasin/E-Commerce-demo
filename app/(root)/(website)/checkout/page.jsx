@@ -216,7 +216,7 @@ const Checkout = () => {
                             <p className='text-sm text-gray-500'>Order ID</p>
                             <p className='font-semibold text-lg'>{orderDetails?.orderId}</p>
                             <p className='text-sm text-gray-500 mt-2'>Total Amount</p>
-                            <p className='font-semibold text-lg'>{orderDetails?.totalAmount?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</p>
+                            <p className='font-semibold text-lg'>{orderDetails?.totalAmount?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</p>
                         </div>
                         <Button onClick={handleViewOrder} className='w-full bg-black rounded-full px-5 cursor-pointer'>
                             View Order Details
@@ -336,7 +336,7 @@ const Checkout = () => {
                                                 </td>
                                                 <td className='p-3 text-center'>
                                                     <p className='text-nowrap text-sm'>
-                                                        {product.qty} x {product.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                        {product.qty} x {product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                                     </p>
                                                 </td>
                                             </tr>
@@ -349,25 +349,25 @@ const Checkout = () => {
                                         <tr>
                                             <td className='font-medium py-2'>Subtotal</td>
                                             <td className='text-end py-2'>
-                                                {subtotal.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                {subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Discount</td>
                                             <td className='text-end py-2'>
-                                                - {discount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                - {discount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Coupon Discount</td>
                                             <td className='text-end py-2'>
-                                                -  {couponDiscountAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                -  {couponDiscountAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2 text-xl'>Total</td>
                                             <td className='text-end py-2'>
-                                                {totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                {totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                             </td>
                                         </tr>
                                     </tbody>

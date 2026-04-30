@@ -82,7 +82,7 @@ const Cart = () => {
                                     </button>
 
                                     <p className="font-semibold">
-                                        {product.qty} X {product.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                        {product.qty} X {product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                     </p>
 
                                 </div>
@@ -90,8 +90,8 @@ const Cart = () => {
                         ))}
                     </div>
                     <div className="h-32 border-t pt-5 px-2">
-                        <h2 className="flex justify-between items-center text-lg font-semibold"><span >Subtotal</span> <span>{subtotal?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span></h2>
-                        <h2 className="flex justify-between items-center text-lg font-semibold"><span >Discount</span> <span>{discount?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span></h2>
+                        <h2 className="flex justify-between items-center text-lg font-semibold"><span >Subtotal</span> <span>{subtotal?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span></h2>
+                        <h2 className="flex justify-between items-center text-lg font-semibold"><span >Discount</span> <span>{discount?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span></h2>
 
                         <div className="flex justify-between mt-3 gap-5">
                             <Button type="button" asChild variant="secondary" className="w-[200px]" onClick={() => setOpen(false)}>

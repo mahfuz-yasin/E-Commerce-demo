@@ -68,7 +68,7 @@ const MyAccount = () => {
                                                     {order.products.length}
                                                 </td>
                                                 <td className='text-start text-sm text-gray-500 p-2 '>
-                                                    {order.totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+                                                    {order.totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
                                                 </td>
                                             </tr>
                                         ))}

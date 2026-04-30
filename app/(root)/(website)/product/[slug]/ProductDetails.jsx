@@ -184,8 +184,8 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                         <span className="text-sm ps-2">({reviewCount} Reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xl font-semibold">{variant.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
-                        <span className="text-sm line-through text-gray-500">{variant.mrp.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-xl font-semibold">{variant.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-sm line-through text-gray-500">{variant.mrp.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
 
 
                         <span className="bg-red-500 rounded-2xl px-3 py-1 text-white text-xs ms-5">-{variant.discountPercentage}%</span>

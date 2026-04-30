@@ -110,7 +110,7 @@ const OrderDetails = ({ params }) => {
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Price</span>
-                                                <span>{product.sellingPrice.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                                                <span>{product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Quantity</span>
@@ -118,7 +118,7 @@ const OrderDetails = ({ params }) => {
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Total</span>
-                                                <span>{(product.qty * product.sellingPrice).toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</span>
+                                                <span>{(product.qty * product.sellingPrice).toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
                                             </td>
                                         </tr>
                                     ))}
@@ -179,19 +179,19 @@ const OrderDetails = ({ params }) => {
                                             <tbody>
                                                 <tr>
                                                     <td className="font-medium py-2">Subtotal</td>
-                                                    <td className="text-end py-2">{orderData?.subtotal.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{orderData?.subtotal.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Discount</td>
-                                                    <td className="text-end py-2">{orderData?.discount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{orderData?.discount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Coupon Discount</td>
-                                                    <td className="text-end py-2">{orderData?.couponDiscountAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{orderData?.couponDiscountAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Total</td>
-                                                    <td className="text-end py-2">{orderData?.totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{orderData?.totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
 
 

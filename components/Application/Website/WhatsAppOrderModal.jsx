@@ -40,8 +40,8 @@ const WhatsAppOrderModal = ({ isOpen, onClose, product, variant, selectedSize })
 Product: ${product?.name}
 Color: ${variant?.color}
 ${selectedSize ? `Size: ${selectedSize}` : ''}
-Price: ${variant?.sellingPrice?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
-MRP: ${variant?.mrp?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}
+Price: ${variant?.sellingPrice?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
+MRP: ${variant?.mrp?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}
 
 *Customer Details:*
 Name: ${data.name}
@@ -116,7 +116,7 @@ Thank you for your order!
                     <p className='font-semibold'>{product?.name}</p>
                     <p className='text-sm text-gray-600'>Color: {variant?.color}</p>
                     {selectedSize && <p className='text-sm text-gray-600'>Size: {selectedSize}</p>}
-                    <p className='font-bold mt-2'>{variant?.sellingPrice?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</p>
+                    <p className='font-bold mt-2'>{variant?.sellingPrice?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</p>
                 </div>
 
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>

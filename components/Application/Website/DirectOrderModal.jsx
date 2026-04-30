@@ -84,7 +84,7 @@ const DirectOrderModal = ({ isOpen, onClose, product, variant, selectedSize }) =
                     <p className='font-semibold'>{product?.name}</p>
                     <p className='text-sm text-gray-600'>Color: {variant?.color}</p>
                     {selectedSize && <p className='text-sm text-gray-600'>Size: {selectedSize}</p>}
-                    <p className='font-bold mt-2'>{variant?.sellingPrice?.toLocaleString('en-US', { style: 'currency', currency: 'BDT' })}</p>
+                    <p className='font-bold mt-2'>{variant?.sellingPrice?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</p>
                 </div>
 
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
