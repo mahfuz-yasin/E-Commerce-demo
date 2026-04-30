@@ -6,7 +6,7 @@ import Link from "next/link"
 import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute"
 const OrderDetails = async ({ params }) => {
     const { orderid } = await params
-    const response = await fetch(`http://localhost:3000/api/orders/get/${orderid}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/orders/get/${orderid}`, {
         cache: 'no-store'
     })
     const orderData = await response.json()
@@ -41,10 +41,10 @@ const OrderDetails = async ({ params }) => {
                             </thead>
                             <tbody>
                                 {orderData && orderData?.data?.products?.map((product, index) => (
-                                    <tr key={`${product.variantId._id}-${index}`} className="md:table-row block border-b">
+                                    <tr key={`${product?.variantId?._id || index}-${index}`} className="md:table-row block border-b">
                                         <td className="p-3">
                                             <div className="flex items-center gap-5">
-                                                <Image src={product?.variantId?.media[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
+                                                <Image src={product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
                                                 <div>
                                                     <h4 className="text-lg line-clamp-1">
                                                         <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>{product?.productId?.name}</Link>
@@ -56,15 +56,15 @@ const OrderDetails = async ({ params }) => {
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Price</span>
-                                            <span>{product.sellingPrice.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                            <span>{product?.sellingPrice?.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' }) || 'N/A'}</span>
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Quantity</span>
-                                            <span>{product.qty}</span>
+                                            <span>{product?.qty || 0}</span>
                                         </td>
                                         <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                             <span className="md:hidden font-medium">Total</span>
-                                            <span>{(product.qty * product.sellingPrice).toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                            <span>{((product?.qty || 0) * (product?.sellingPrice || 0)).toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</span>
                                         </td>
                                     </tr>
                                 ))}
