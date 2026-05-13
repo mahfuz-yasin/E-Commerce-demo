@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import "./globals.css";
 import { Assistant } from 'next/font/google'
+import FacebookPixel from '@/components/FacebookPixel/FacebookPixel'
 const assistantFont = Assistant({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
@@ -49,6 +50,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <FacebookPixel />
+      </head>
       <body
         className={`${assistantFont.className} antialiased`}
       >

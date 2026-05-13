@@ -115,8 +115,8 @@ const CartPage = () => {
 
                                         <td className='md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center'>
                                             <span className='md:hidden font-medium'>Remove</span>
-                                            <button type='button' onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))} className='text-red-500'>
-                                                <IoCloseCircleOutline />
+                                            <button type='button' onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))} className='text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors'>
+                                                <IoCloseCircleOutline size={24} />
                                             </button>
                                         </td>
                                     </tr>
