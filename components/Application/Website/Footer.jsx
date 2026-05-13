@@ -21,7 +21,19 @@ const Footer = () => {
     const trelloShadow = "shadow-[rgba(9,30,66,0.25)_0px_4px_8px_-2px,rgba(9,30,66,0.08)_0px_0px_0px_1px]";
 
     // Parse social links if available
-    const socialLinks = footer?.link ? JSON.parse(footer.link) : [
+    const socialLinks = footer?.link ? (() => {
+        try {
+            return JSON.parse(footer.link)
+        } catch (e) {
+            console.error('Error parsing social links:', e)
+            return [
+                { platform: 'facebook', url: '#' },
+                { platform: 'whatsapp', url: 'https://wa.me/8801810841539' },
+                { platform: 'instagram', url: '#' },
+                { platform: 'youtube', url: '#' }
+            ]
+        }
+    })() : [
         { platform: 'facebook', url: '#' },
         { platform: 'whatsapp', url: 'https://wa.me/8801810841539' },
         { platform: 'instagram', url: '#' },
@@ -46,7 +58,14 @@ const Footer = () => {
     const footerContent = footer?.content || ''
 
     // Parse page links if available
-    const footerPageLinks = footer?.pageLinks ? JSON.parse(footer.pageLinks) : []
+    const footerPageLinks = footer?.pageLinks ? (() => {
+        try {
+            return JSON.parse(footer.pageLinks)
+        } catch (e) {
+            console.error('Error parsing page links:', e)
+            return []
+        }
+    })() : []
 
     return (
         <footer className='bg-white border-t border-slate-100 mt-20 font-sans'>
