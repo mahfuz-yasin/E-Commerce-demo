@@ -1,8 +1,9 @@
 import { connectDB } from "@/lib/databaseConnection";
-import { catchError,  response } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
 import MediaModel from "@/models/Media.model";
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/authentication";
+
 export async function GET(request) {
     try {
         const auth = await isAuthenticated('admin')
