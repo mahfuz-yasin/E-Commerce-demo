@@ -26,6 +26,7 @@ import ProductReveiw from "@/components/Application/Website/ProductReveiw";
 import DirectOrderModal from "@/components/Application/Website/DirectOrderModal";
 import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import ImageZoom from "@/components/ui/ImageZoom";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
@@ -153,13 +154,12 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
             <div className="md:flex justify-between items-start lg:gap-10 gap-5 mb-20">
                 <div className="md:w-1/2 xl:flex xl:justify-center xl:gap-5 md:sticky md:top-0">
                     <div className="xl:order-last xl:mb-0 mb-5 xl:w-[calc(100%-144px)]">
-                        <OptimizedImage
+                        <ImageZoom
                             src={activeThumb}
                             width={650}
                             height={650}
                             alt={product?.name || 'product'}
                             className="border rounded max-w-full"
-                            priority={true}
                         />
                     </div>
                     <div className="flex xl:flex-col items-center xl:gap-5 gap-3 xl:w-36 overflow-auto xl:pb-0 pb-2 max-h-[600px]">
