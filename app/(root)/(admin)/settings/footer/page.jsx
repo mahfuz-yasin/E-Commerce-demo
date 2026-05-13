@@ -11,7 +11,7 @@ import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
-import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube, FaTwitter, FaLinkedin } from "react-icons/fa"
+import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube, FaTwitter, FaLinkedin, FaUpload } from "react-icons/fa"
 import { IoMdClose } from "react-icons/io"
 import useFetch from "@/hooks/useFetch"
 
@@ -33,7 +33,7 @@ const socialPlatforms = [
 const FooterSettings = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(true)
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm()
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm()
     const [existingFooter, setExistingFooter] = useState(null)
     const [socialLinks, setSocialLinks] = useState([])
     const [newSocialLink, setNewSocialLink] = useState({ platform: 'facebook', url: '' })
@@ -41,6 +41,9 @@ const FooterSettings = () => {
     const [newPageLink, setNewPageLink] = useState({ title: '', slug: '' })
     const { data: pagesData } = useFetch('/api/admin/pagebuilder?pageType=page', 'GET')
     const [availablePages, setAvailablePages] = useState([])
+    const [logoImage, setLogoImage] = useState('')
+    const [isUploading, setIsUploading] = useState(false)
+    const titleValue = watch('title', '')
 
     useEffect(() => {
         fetchFooterData()
@@ -51,6 +54,47 @@ const FooterSettings = () => {
             setAvailablePages(pagesData.data || [])
         }
     }, [pagesData])
+
+    useEffect(() => {
+        if (titleValue) {
+            const slug = titleValue
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+            setValue('slug', slug)
+        }
+    }, [titleValue, setValue])
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        setIsUploading(true)
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            const result = await response.json()
+            
+            if (result.success) {
+                setLogoImage(result.data.url)
+                setValue('logo', result.data.url)
+                showToast('success', 'Image uploaded successfully')
+            } else {
+                showToast('error', 'Failed to upload image')
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred')
+        } finally {
+            setIsUploading(false)
+        }
+    }
 
     const fetchFooterData = async () => {
         setIsFetching(true)
@@ -64,6 +108,12 @@ const FooterSettings = () => {
                     setExistingFooter(footer)
                     setValue('title', footer.title || '')
                     setValue('content', footer.content || '')
+                    setValue('slug', footer.slug || '')
+                    
+                    if (footer.logo) {
+                        setLogoImage(footer.logo)
+                        setValue('logo', footer.logo)
+                    }
                     
                     // Parse social links
                     if (footer.link) {
@@ -162,6 +212,11 @@ const FooterSettings = () => {
         }
     }
 
+    const removeLogo = () => {
+        setLogoImage('')
+        setValue('logo', '')
+    }
+
     return (
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
@@ -186,6 +241,47 @@ const FooterSettings = () => {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <Label htmlFor="slug">Slug (Auto-generated)</Label>
+                                    <Input
+                                        id="slug"
+                                        {...register('slug')}
+                                        placeholder="company-slug"
+                                        readOnly
+                                        className="bg-gray-50"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="logo">Company Logo</Label>
+                                    <div className="flex gap-4">
+                                        <div className="flex-1">
+                                            <Input
+                                                id="logo"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                disabled={isUploading}
+                                            />
+                                        </div>
+                                        <Button type="button" variant="outline" disabled={isUploading}>
+                                            {isUploading ? 'Uploading...' : <FaUpload />}
+                                        </Button>
+                                    </div>
+                                    {logoImage && (
+                                        <div className="mt-2 flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                            <img src={logoImage} alt="Logo" className="w-16 h-16 object-contain rounded" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">Current Logo</p>
+                                                <p className="text-xs text-gray-500 truncate">{logoImage}</p>
+                                            </div>
+                                            <Button type="button" variant="destructive" size="sm" onClick={removeLogo}>
+                                                <IoMdClose />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label htmlFor="content">Footer Content (HTML)</Label>
                                     <Textarea
                                         id="content"
@@ -205,31 +301,41 @@ const FooterSettings = () => {
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-4">
-                            <div className="flex gap-4">
-                                <Select
-                                    value={newSocialLink.platform}
-                                    onValueChange={(value) => setNewSocialLink({ ...newSocialLink, platform: value })}
-                                >
-                                    <SelectTrigger className="w-[200px]">
-                                        <SelectValue placeholder="Select platform" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {socialPlatforms.map((platform) => (
-                                            <SelectItem key={platform.value} value={platform.value}>
-                                                <div className="flex items-center gap-2">
-                                                    <platform.icon size={16} />
-                                                    {platform.label}
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Input
-                                    placeholder="Enter URL"
-                                    value={newSocialLink.url}
-                                    onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
-                                />
-                                <Button type="button" onClick={addSocialLink}>Add</Button>
+                            <div className="flex gap-4 items-end">
+                                <div className="flex-1">
+                                    <Label className="mb-2">Platform</Label>
+                                    <Select
+                                        value={newSocialLink.platform}
+                                        onValueChange={(value) => setNewSocialLink({ ...newSocialLink, platform: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select platform" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {socialPlatforms.map((platform) => (
+                                                <SelectItem key={platform.value} value={platform.value}>
+                                                    <div className="flex items-center gap-2">
+                                                        <platform.icon size={16} />
+                                                        {platform.label}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex-[2]">
+                                    <Label className="mb-2">URL</Label>
+                                    <Input
+                                        placeholder="Enter URL"
+                                        value={newSocialLink.url}
+                                        onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <Button type="button" onClick={addSocialLink} className="w-full">
+                                        Add
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -237,22 +343,28 @@ const FooterSettings = () => {
                                     const platform = socialPlatforms.find(p => p.value === link.platform)
                                     const Icon = platform?.icon || FaFacebookF
                                     return (
-                                        <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                            <div className={`p-2 rounded-lg ${platform?.color || 'bg-blue-600'} text-white`}>
+                                        <div key={index} className="flex items-center gap-4 p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
+                                            <div className={`p-2.5 rounded-lg ${platform?.color || 'bg-blue-600'} text-white shadow-sm`}>
                                                 <Icon size={18} />
                                             </div>
-                                            <span className="flex-1">{link.url}</span>
+                                            <span className="flex-1 text-sm">{link.url}</span>
                                             <Button
                                                 type="button"
                                                 variant="destructive"
                                                 size="sm"
                                                 onClick={() => removeSocialLink(index)}
+                                                className="rounded-full"
                                             >
                                                 <IoMdClose />
                                             </Button>
                                         </div>
                                     )
                                 })}
+                                {socialLinks.length === 0 && (
+                                    <div className="text-center py-8 text-gray-400 text-sm">
+                                        No social media links added yet
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CardContent>
@@ -264,33 +376,40 @@ const FooterSettings = () => {
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-4">
-                            <div className="flex gap-4">
-                                <Select
-                                    value={newPageLink.slug}
-                                    onValueChange={handlePageSelect}
-                                >
-                                    <SelectTrigger className="w-[300px]">
-                                        <SelectValue placeholder="Select a page" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {availablePages.map((page) => (
-                                            <SelectItem key={page._id} value={page.slug}>
-                                                {page.title}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button type="button" onClick={addPageLink}>Add Page</Button>
+                            <div className="flex gap-4 items-end">
+                                <div className="flex-1">
+                                    <Label className="mb-2">Select Page</Label>
+                                    <Select
+                                        value={newPageLink.slug}
+                                        onValueChange={handlePageSelect}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a page" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availablePages.map((page) => (
+                                                <SelectItem key={page._id} value={page.slug}>
+                                                    {page.title}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Button type="button" onClick={addPageLink} className="w-full">
+                                        Add Page
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
                                 {pageLinks.map((link, index) => (
-                                    <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                        <div className="p-2 rounded-lg bg-amber-600 text-white">
+                                    <div key={index} className="flex items-center gap-4 p-3 bg-gradient-to-r from-amber-50 to-white rounded-lg border border-amber-100 hover:border-amber-200 transition-all">
+                                        <div className="p-2.5 rounded-lg bg-amber-600 text-white shadow-sm">
                                             <span className="font-bold">{link.title[0]}</span>
                                         </div>
                                         <div className="flex-1">
-                                            <div className="font-medium">{link.title}</div>
+                                            <div className="font-medium text-sm">{link.title}</div>
                                             <div className="text-xs text-gray-500">/page/{link.slug}</div>
                                         </div>
                                         <Button
@@ -298,11 +417,17 @@ const FooterSettings = () => {
                                             variant="destructive"
                                             size="sm"
                                             onClick={() => removePageLink(index)}
+                                            className="rounded-full"
                                         >
                                             <IoMdClose />
                                         </Button>
                                     </div>
                                 ))}
+                                {pageLinks.length === 0 && (
+                                    <div className="text-center py-8 text-gray-400 text-sm">
+                                        No page links added yet
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CardContent>
