@@ -17,6 +17,17 @@ export async function POST(request) {
             sellingPrice: z.number().nonnegative()
         })
 
+        const paymentDetailsSchema = z.object({
+            bkash: z.object({
+                number: z.string(),
+                transactionId: z.string()
+            }).nullable().optional(),
+            nagad: z.object({
+                number: z.string(),
+                transactionId: z.string()
+            }).nullable().optional()
+        }).optional().nullable()
+
         const orderSchema = z.object({
             name: z.string().min(2, 'Name is required'),
             phone: z.string().min(10, 'Phone number is required'),
@@ -24,6 +35,8 @@ export async function POST(request) {
             ordernote: z.string().optional(),
             userId: z.string().optional(),
             orderSource: z.enum(['direct', 'whatsapp']).default('direct'),
+            paymentMethod: z.string().optional(),
+            paymentDetails: paymentDetailsSchema,
             products: z.array(productSchema)
         })
 
@@ -43,6 +56,9 @@ export async function POST(request) {
         // Generate a unique order ID
         const order_id = 'DIRECT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase()
 
+        const hasOnlinePayment = validatedData.paymentDetails && 
+            (validatedData.paymentDetails.bkash || validatedData.paymentDetails.nagad)
+
         const newOrder = await OrderModel.create({
             user: validatedData.userId,
             name: validatedData.name,
@@ -54,10 +70,11 @@ export async function POST(request) {
             couponDiscountAmount: 0,
             totalAmount: totalAmount,
             subtotal: subtotal,
-            payment_id: null,
+            payment_id: hasOnlinePayment ? `PAY-${Date.now()}` : null,
             order_id: order_id,
-            status: 'pending',
-            paymentMethod: 'COD',
+            status: hasOnlinePayment ? 'paid' : 'pending',
+            paymentMethod: validatedData.paymentMethod || 'COD',
+            paymentDetails: validatedData.paymentDetails || null,
             orderSource: validatedData.orderSource
         })
 
