@@ -174,12 +174,17 @@ const EditFeature = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="link">Link *</Label>
-                                <Input
-                                    id="link"
-                                    {...register('link', { required: 'Link is required' })}
-                                    placeholder="Enter link URL"
-                                    defaultValue={featureData.link}
-                                />
+                                <Select onValueChange={(value) => setValue('link', value)} defaultValue={featureData.link}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select page" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="/return-policy">Return Policy</SelectItem>
+                                        <SelectItem value="/shipping-policy">Shipping Policy</SelectItem>
+                                        <SelectItem value="/support">Support</SelectItem>
+                                        <SelectItem value="/membership">Membership</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 {errors.link && <p className="text-red-500 text-sm">{errors.link.message}</p>}
                             </div>
 
