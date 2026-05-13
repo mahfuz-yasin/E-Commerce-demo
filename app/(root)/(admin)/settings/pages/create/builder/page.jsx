@@ -11,8 +11,8 @@ import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { FaUpload, FaMagic, FaPalette, FaRobot } from "react-icons/fa"
-import { IoMdClose } from "react-icons/io"
+import { FaUpload, FaMagic, FaPalette, FaRobot, FaPlus, FaTrash, FaEdit, FaEye, FaSave, FaArrowRight, FaLayerGroup } from "react-icons/fa"
+import { IoMdClose, IoMdSettings } from "react-icons/io"
 import useFetch from "@/hooks/useFetch"
 
 const breadcrumbData = [
@@ -27,61 +27,71 @@ const componentLibrary = [
         id: 'hero',
         name: 'Hero Section',
         icon: '🎯',
-        description: 'Large hero banner with title and CTA'
+        description: 'Large hero banner with title and CTA',
+        color: 'from-blue-500 to-purple-600'
     },
     {
         id: 'text',
         name: 'Text Block',
         icon: '📝',
-        description: 'Rich text content block'
+        description: 'Rich text content block',
+        color: 'from-green-500 to-teal-600'
     },
     {
         id: 'image',
         name: 'Image',
         icon: '🖼️',
-        description: 'Image with optional caption'
+        description: 'Image with optional caption',
+        color: 'from-pink-500 to-rose-600'
     },
     {
         id: 'button',
         name: 'Button',
         icon: '🔘',
-        description: 'Call-to-action button'
+        description: 'Call-to-action button',
+        color: 'from-orange-500 to-red-600'
     },
     {
         id: 'section',
         name: 'Section',
         icon: '📦',
-        description: 'Container section with background'
+        description: 'Container section with background',
+        color: 'from-cyan-500 to-blue-600'
     },
     {
         id: 'spacer',
         name: 'Spacer',
         icon: '↕️',
-        description: 'Vertical space between elements'
+        description: 'Vertical space between elements',
+        color: 'from-gray-500 to-gray-600'
     },
     {
         id: 'divider',
         name: 'Divider',
         icon: '➖',
-        description: 'Horizontal line separator'
+        description: 'Horizontal line separator',
+        color: 'from-slate-500 to-slate-600'
     },
     {
         id: 'video',
         name: 'Video',
         icon: '🎬',
-        description: 'Video embed or upload'
+        description: 'Video embed or upload',
+        color: 'from-red-500 to-pink-600'
     },
     {
         id: 'gallery',
         name: 'Gallery',
         icon: '🖼️',
-        description: 'Image grid gallery'
+        description: 'Image grid gallery',
+        color: 'from-violet-500 to-purple-600'
     },
     {
         id: 'form',
         name: 'Form',
         icon: '📋',
-        description: 'Contact or lead generation form'
+        description: 'Contact or lead generation form',
+        color: 'from-amber-500 to-orange-600'
     }
 ]
 
@@ -320,23 +330,29 @@ const PageBuilder = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Component Library */}
-                <Card className="lg:col-span-1">
-                    <CardHeader>
-                        <h4 className='text-lg font-semibold'>Components</h4>
+                <Card className="lg:col-span-1 bg-gradient-to-br from-slate-50 to-slate-100 border-0 shadow-xl">
+                    <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+                        <div className="flex items-center gap-2">
+                            <FaLayerGroup className="text-xl" />
+                            <h4 className='text-lg font-semibold'>Components</h4>
+                        </div>
                     </CardHeader>
-                    <CardContent className="space-y-2">
+                    <CardContent className="p-4 space-y-3">
                         {componentLibrary.map((component) => (
                             <Button
                                 key={component.id}
                                 variant="outline"
-                                className="w-full justify-start h-auto py-3"
+                                className="w-full justify-start h-auto py-4 px-4 hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-400 group"
                                 onClick={() => addComponent(component.id)}
                             >
-                                <span className="text-2xl mr-2">{component.icon}</span>
+                                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${component.color} flex items-center justify-center mr-3 shadow-md group-hover:scale-110 transition-transform`}>
+                                    <span className="text-2xl">{component.icon}</span>
+                                </div>
                                 <div className="text-left">
-                                    <div className="font-medium">{component.name}</div>
+                                    <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{component.name}</div>
                                     <div className="text-xs text-gray-500">{component.description}</div>
                                 </div>
+                                <FaPlus className="ml-auto text-gray-400 group-hover:text-blue-600 transition-colors" />
                             </Button>
                         ))}
                     </CardContent>
@@ -345,57 +361,63 @@ const PageBuilder = () => {
                 {/* Page Builder Canvas */}
                 <div className="lg:col-span-3 space-y-6">
                     {/* Page Settings */}
-                    <Card>
-                        <CardHeader>
+                    <Card className="shadow-xl border-2 border-blue-100">
+                        <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
                             <div className="flex justify-between items-center">
-                                <h4 className='text-lg font-semibold'>Page Settings</h4>
+                                <div className="flex items-center gap-2">
+                                    <IoMdSettings className="text-xl" />
+                                    <h4 className='text-lg font-semibold'>Page Settings</h4>
+                                </div>
                                 <Button 
                                     type="button" 
                                     variant="outline" 
                                     onClick={handleAIGenerate}
                                     disabled={isGenerating}
-                                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+                                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 hover:from-pink-600 hover:to-rose-600 shadow-lg"
                                 >
-                                    <FaMagic className="mr-2" />
+                                    <FaRobot className="mr-2" />
                                     {isGenerating ? 'Generating...' : 'AI Generate'}
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-slate-50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
-                                    <Label htmlFor="pageTitle">Page Title *</Label>
+                                    <Label htmlFor="pageTitle" className="text-sm font-semibold text-gray-700">Page Title *</Label>
                                     <Input
                                         id="pageTitle"
                                         value={pageTitle}
                                         onChange={(e) => setPageTitle(e.target.value)}
                                         placeholder="Enter page title"
+                                        className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="pageSlug">Page Slug (Auto-generated) *</Label>
+                                    <Label htmlFor="pageSlug" className="text-sm font-semibold text-gray-700">Page Slug (Auto-generated) *</Label>
                                     <Input
                                         id="pageSlug"
                                         value={pageSlug}
                                         onChange={(e) => setPageSlug(e.target.value)}
                                         placeholder="page-slug"
-                                        className="bg-gray-50"
+                                        className="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200"
+                                        readOnly
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="pageDescription">Description</Label>
+                                <Label htmlFor="pageDescription" className="text-sm font-semibold text-gray-700">Description</Label>
                                 <Textarea
                                     id="pageDescription"
                                     value={pageDescription}
                                     onChange={(e) => setPageDescription(e.target.value)}
                                     placeholder="Page description"
                                     rows={3}
+                                    className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="featuredImage">Featured Image</Label>
-                                <div className="flex gap-4">
+                                <Label htmlFor="featuredImage" className="text-sm font-semibold text-gray-700">Featured Image</Label>
+                                <div className="flex gap-3">
                                     <div className="flex-1">
                                         <Input
                                             id="featuredImage"
@@ -403,17 +425,23 @@ const PageBuilder = () => {
                                             accept="image/*"
                                             onChange={handleImageUpload}
                                             disabled={isUploading}
+                                            className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                                         />
                                     </div>
-                                    <Button type="button" variant="outline" disabled={isUploading}>
+                                    <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        disabled={isUploading}
+                                        className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 hover:from-blue-600 hover:to-indigo-600 shadow-md"
+                                    >
                                         {isUploading ? 'Uploading...' : <FaUpload />}
                                     </Button>
                                 </div>
                                 {featuredImage && (
-                                    <div className="mt-2 flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                        <img src={featuredImage} alt="Featured" className="w-16 h-16 object-contain rounded" />
+                                    <div className="mt-3 flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                                        <img src={featuredImage} alt="Featured" className="w-20 h-20 object-contain rounded-lg shadow-md" />
                                         <div className="flex-1">
-                                            <p className="text-sm font-medium">Current Image</p>
+                                            <p className="text-sm font-semibold text-gray-800">Current Image</p>
                                             <p className="text-xs text-gray-500 truncate">{featuredImage.substring(0, 50)}...</p>
                                         </div>
                                         <Button
@@ -421,6 +449,7 @@ const PageBuilder = () => {
                                             variant="destructive"
                                             size="sm"
                                             onClick={() => setFeaturedImage('')}
+                                            className="rounded-full shadow-md"
                                         >
                                             <IoMdClose />
                                         </Button>
@@ -431,22 +460,22 @@ const PageBuilder = () => {
                     </Card>
 
                     {/* Page Styles */}
-                    <Card>
-                        <CardHeader>
-                            <h4 className='text-lg font-semibold flex items-center gap-2'>
-                                <FaPalette />
-                                Page Styles
-                            </h4>
+                    <Card className="shadow-xl border-2 border-purple-100">
+                        <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                            <div className="flex items-center gap-2">
+                                <FaPalette className="text-xl" />
+                                <h4 className='text-lg font-semibold'>Page Styles</h4>
+                            </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-purple-50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
-                                    <Label htmlFor="animation">Animation</Label>
+                                    <Label htmlFor="animation" className="text-sm font-semibold text-gray-700">Animation</Label>
                                     <Select
                                         value={pageStyles.animation}
                                         onValueChange={(value) => setPageStyles({ ...pageStyles, animation: value })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all">
                                             <SelectValue placeholder="Select animation" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -459,44 +488,44 @@ const PageBuilder = () => {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="primaryColor">Primary Color</Label>
+                                    <Label htmlFor="primaryColor" className="text-sm font-semibold text-gray-700">Primary Color</Label>
                                     <div className="flex gap-2">
                                         <Input
                                             type="color"
                                             value={pageStyles.primaryColor}
                                             onChange={(e) => setPageStyles({ ...pageStyles, primaryColor: e.target.value })}
-                                            className="w-16 h-10"
+                                            className="w-16 h-10 border-2 rounded-lg cursor-pointer"
                                         />
                                         <Input
                                             value={pageStyles.primaryColor}
                                             onChange={(e) => setPageStyles({ ...pageStyles, primaryColor: e.target.value })}
-                                            className="flex-1"
+                                            className="flex-1 border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="secondaryColor">Secondary Color</Label>
+                                    <Label htmlFor="secondaryColor" className="text-sm font-semibold text-gray-700">Secondary Color</Label>
                                     <div className="flex gap-2">
                                         <Input
                                             type="color"
                                             value={pageStyles.secondaryColor}
                                             onChange={(e) => setPageStyles({ ...pageStyles, secondaryColor: e.target.value })}
-                                            className="w-16 h-10"
+                                            className="w-16 h-10 border-2 rounded-lg cursor-pointer"
                                         />
                                         <Input
                                             value={pageStyles.secondaryColor}
                                             onChange={(e) => setPageStyles({ ...pageStyles, secondaryColor: e.target.value })}
-                                            className="flex-1"
+                                            className="flex-1 border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="shadow">Shadow</Label>
+                                    <Label htmlFor="shadow" className="text-sm font-semibold text-gray-700">Shadow</Label>
                                     <Select
                                         value={pageStyles.shadow}
                                         onValueChange={(value) => setPageStyles({ ...pageStyles, shadow: value })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all">
                                             <SelectValue placeholder="Select shadow" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -508,20 +537,21 @@ const PageBuilder = () => {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="borderRadius">Border Radius</Label>
+                                    <Label htmlFor="borderRadius" className="text-sm font-semibold text-gray-700">Border Radius</Label>
                                     <Input
                                         value={pageStyles.borderRadius}
                                         onChange={(e) => setPageStyles({ ...pageStyles, borderRadius: e.target.value })}
                                         placeholder="0px"
+                                        className="border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="fontFamily">Font Family</Label>
+                                    <Label htmlFor="fontFamily" className="text-sm font-semibold text-gray-700">Font Family</Label>
                                     <Select
                                         value={pageStyles.fontFamily}
                                         onValueChange={(value) => setPageStyles({ ...pageStyles, fontFamily: value })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all">
                                             <SelectValue placeholder="Select font" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -537,39 +567,43 @@ const PageBuilder = () => {
                     </Card>
 
                     {/* Categories */}
-                    <Card>
-                        <CardHeader>
+                    <Card className="shadow-xl border-2 border-amber-100">
+                        <CardHeader className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-t-lg">
                             <h4 className='text-lg font-semibold'>Categories</h4>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex flex-wrap gap-2">
+                        <CardContent className="p-6 space-y-4 bg-gradient-to-b from-white to-amber-50">
+                            <div className="flex flex-wrap gap-3">
                                 {availableCategories.map((category) => (
                                     <Button
                                         key={category._id}
                                         type="button"
                                         variant={selectedCategories.includes(category._id) ? "default" : "outline"}
                                         onClick={() => handleCategoryToggle(category._id)}
-                                        className={selectedCategories.includes(category._id) ? "bg-amber-600 hover:bg-amber-700" : ""}
+                                        className={selectedCategories.includes(category._id) 
+                                            ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0 shadow-md hover:from-amber-600 hover:to-orange-700" 
+                                            : "border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50 transition-all"}
                                     >
                                         {category.name}
                                     </Button>
                                 ))}
                             </div>
                             {selectedCategories.length === 0 && (
-                                <p className="text-gray-400 text-sm">No categories selected</p>
+                                <div className="text-center py-6 bg-amber-50 rounded-lg border-2 border-amber-200">
+                                    <p className="text-amber-600 text-sm font-medium">No categories selected</p>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
 
                     {/* Related Categories & Products */}
-                    <Card>
-                        <CardHeader>
+                    <Card className="shadow-xl border-2 border-teal-100">
+                        <CardHeader className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-t-lg">
                             <h4 className='text-lg font-semibold'>Related Categories & Products</h4>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Related Categories</Label>
-                                <div className="flex flex-wrap gap-2">
+                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-teal-50">
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-700">Related Categories</Label>
+                                <div className="flex flex-wrap gap-3">
                                     {availableCategories
                                         .filter(cat => !selectedCategories.includes(cat._id))
                                         .map((category) => (
@@ -585,15 +619,18 @@ const PageBuilder = () => {
                                                     )
                                                 }}
                                                 size="sm"
+                                                className={relatedCategories.includes(category._id)
+                                                    ? "bg-gradient-to-r from-teal-500 to-cyan-600 text-white border-0 shadow-md"
+                                                    : "border-2 border-teal-200 hover:border-teal-400 hover:bg-teal-50 transition-all"}
                                             >
                                                 {category.name}
                                             </Button>
                                         ))}
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Related Products</Label>
-                                <div className="flex flex-wrap gap-2">
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-700">Related Products</Label>
+                                <div className="flex flex-wrap gap-3">
                                     {availableProducts.map((product) => (
                                         <Button
                                             key={product._id}
@@ -607,6 +644,9 @@ const PageBuilder = () => {
                                                 )
                                             }}
                                             size="sm"
+                                            className={relatedProducts.includes(product._id)
+                                                ? "bg-gradient-to-r from-teal-500 to-cyan-600 text-white border-0 shadow-md"
+                                                : "border-2 border-teal-200 hover:border-teal-400 hover:bg-teal-50 transition-all"}
                                         >
                                             {product.name}
                                         </Button>
@@ -617,22 +657,36 @@ const PageBuilder = () => {
                     </Card>
 
                     {/* Canvas */}
-                    <Card>
-                        <CardHeader>
+                    <Card className="shadow-xl border-2 border-indigo-100">
+                        <CardHeader className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-lg">
                             <div className="flex justify-between items-center">
-                                <h4 className='text-lg font-semibold'>Page Canvas</h4>
+                                <div className="flex items-center gap-2">
+                                    <FaEdit className="text-xl" />
+                                    <h4 className='text-lg font-semibold'>Page Canvas</h4>
+                                </div>
                                 {isLoading ? (
                                     <ButtonLoading />
                                 ) : (
-                                    <Button onClick={handleSave}>Save Page</Button>
+                                    <Button 
+                                        onClick={handleSave}
+                                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 shadow-lg"
+                                    >
+                                        <FaSave className="mr-2" />
+                                        Save Page
+                                    </Button>
                                 )}
                             </div>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6 bg-gradient-to-b from-white to-indigo-50">
                             {components.length === 0 ? (
-                                <div className="text-center py-12 text-gray-500">
-                                    <p className="text-lg mb-2">Start building your page</p>
-                                    <p>Drag components from the library or click to add</p>
+                                <div className="text-center py-16 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border-2 border-dashed border-indigo-200">
+                                    <div className="mb-4">
+                                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-100 to-blue-100 rounded-full flex items-center justify-center">
+                                            <FaPlus className="text-3xl text-indigo-500" />
+                                        </div>
+                                    </div>
+                                    <p className="text-xl font-semibold text-gray-700 mb-2">Start building your page</p>
+                                    <p className="text-gray-500">Drag components from the library or click to add</p>
                                 </div>
                             ) : (
                                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -654,19 +708,23 @@ const PageBuilder = () => {
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
-                                                                className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-500 transition-colors"
+                                                                className="border-2 border-dashed border-indigo-300 rounded-xl p-5 hover:border-indigo-500 hover:shadow-lg transition-all bg-white"
                                                             >
-                                                                <div className="flex justify-between items-start mb-3">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="text-xl cursor-move">⋮⋮</span>
-                                                                        <span className="font-medium capitalize">{component.type}</span>
+                                                                <div className="flex justify-between items-start mb-4">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="text-2xl cursor-move text-gray-400 hover:text-indigo-500 transition-colors">⋮⋮</span>
+                                                                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${componentLibrary.find(c => c.id === component.type)?.color || 'from-gray-500 to-gray-600'} flex items-center justify-center shadow-md`}>
+                                                                            <span className="text-xl">{componentLibrary.find(c => c.id === component.type)?.icon || '📦'}</span>
+                                                                        </div>
+                                                                        <span className="font-semibold text-gray-800 capitalize">{component.type}</span>
                                                                     </div>
                                                                     <Button
                                                                         variant="destructive"
                                                                         size="sm"
                                                                         onClick={() => removeComponent(index)}
+                                                                        className="rounded-full shadow-md"
                                                                     >
-                                                                        Remove
+                                                                        <FaTrash />
                                                                     </Button>
                                                                 </div>
                                                                 <ComponentEditor
