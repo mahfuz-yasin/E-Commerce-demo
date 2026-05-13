@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import { zSchema } from "@/lib/zodSchema"
 import ProductVariantModel from "@/models/ProductVariant.model"
+import { z } from 'zod'
 
 export async function PUT(request) {
     try {
