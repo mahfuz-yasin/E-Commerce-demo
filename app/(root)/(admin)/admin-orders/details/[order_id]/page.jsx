@@ -94,34 +94,45 @@ const OrderDetails = ({ params }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {orderData && orderData?.products?.map((product) => (
-                                        <tr key={product.variantId._id} className="md:table-row block border-b">
+                                    {orderData && orderData?.products?.map((product, index) => (
+                                        <tr key={product.variantId?._id || index} className="md:table-row block border-b">
                                             <td className="md:table-cell p-3">
                                                 <div className="flex items-center gap-5">
-                                                    <Image src={product?.variantId?.media[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
+                                                    <Image src={product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
                                                     <div>
                                                         <h4 className="text-lg">
-                                                            <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>{product?.productId?.name}</Link>
-                                                            <p>Color: {product?.variantId?.color}</p>
-                                                            <p>Size: {product?.variantId?.size}</p>
+                                                            {product?.productId?.slug ? (
+                                                                <Link href={WEBSITE_PRODUCT_DETAILS(product.productId.slug)}>{product?.productId?.name || product?.name || 'Unknown Product'}</Link>
+                                                            ) : (
+                                                                <span>{product?.productId?.name || product?.name || 'Unknown Product'}</span>
+                                                            )}
+                                                            {product?.variantId?.color && <p className="text-sm text-gray-500">Color: {product.variantId.color}</p>}
+                                                            {product?.variantId?.size && <p className="text-sm text-gray-500">Size: {Array.isArray(product.variantId.size) ? product.variantId.size.join(', ') : product.variantId.size}</p>}
                                                         </h4>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Price</span>
-                                                <span>{product.sellingPrice.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                                <span>{product.sellingPrice?.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' }) || 'N/A'}</span>
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Quantity</span>
-                                                <span>{product.qty}</span>
+                                                <span>{product.qty || 0}</span>
                                             </td>
                                             <td className="md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center">
                                                 <span className="md:hidden font-medium">Total</span>
-                                                <span>{(product.qty * product.sellingPrice).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
+                                                <span>{((product.qty || 0) * (product.sellingPrice || 0)).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
                                             </td>
                                         </tr>
                                     ))}
+                                    {(!orderData?.products || orderData.products.length === 0) && (
+                                        <tr>
+                                            <td colSpan="4" className="p-5 text-center text-gray-500">
+                                                No products found in this order.
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
 
@@ -133,39 +144,27 @@ const OrderDetails = ({ params }) => {
                                             <tbody>
                                                 <tr>
                                                     <td className="font-medium py-2">Name</td>
-                                                    <td className="text-end py-2">{orderData?.name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Email</td>
-                                                    <td className="text-end py-2">{orderData?.email}</td>
+                                                    <td className="text-end py-2">{orderData?.name || 'N/A'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Phone</td>
-                                                    <td className="text-end py-2">{orderData?.phone}</td>
+                                                    <td className="text-end py-2">{orderData?.phone || 'N/A'}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="font-medium py-2">Country</td>
-                                                    <td className="text-end py-2">{orderData?.country}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">State</td>
-                                                    <td className="text-end py-2">{orderData?.state}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">City</td>
-                                                    <td className="text-end py-2">{orderData?.city}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Pincode</td>
-                                                    <td className="text-end py-2">{orderData?.pincode}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Landmark</td>
-                                                    <td className="text-end py-2">{orderData?.landmark}</td>
+                                                    <td className="font-medium py-2">Address</td>
+                                                    <td className="text-end py-2">{orderData?.address || 'N/A'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Order note</td>
                                                     <td className="text-end py-2">{orderData?.ordernote || '---'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="font-medium py-2">Payment Method</td>
+                                                    <td className="text-end py-2">{orderData?.paymentMethod || 'COD'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="font-medium py-2">Order Source</td>
+                                                    <td className="text-end py-2 capitalize">{orderData?.orderSource || 'cart'}</td>
                                                 </tr>
 
                                             </tbody>
@@ -179,19 +178,19 @@ const OrderDetails = ({ params }) => {
                                             <tbody>
                                                 <tr>
                                                     <td className="font-medium py-2">Subtotal</td>
-                                                    <td className="text-end py-2">{orderData?.subtotal.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{(orderData?.subtotal || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Discount</td>
-                                                    <td className="text-end py-2">{orderData?.discount.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{(orderData?.discount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Coupon Discount</td>
-                                                    <td className="text-end py-2">{orderData?.couponDiscountAmount.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{(orderData?.couponDiscountAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="font-medium py-2">Total</td>
-                                                    <td className="text-end py-2">{orderData?.totalAmount.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    <td className="text-end py-2">{(orderData?.totalAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
                                                 </tr>
 
 
