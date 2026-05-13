@@ -167,6 +167,40 @@ const OrderDetails = ({ params }) => {
                                                     <td className="text-end py-2 capitalize">{orderData?.orderSource || 'cart'}</td>
                                                 </tr>
 
+                                                {/* Payment Details for bKash */}
+                                                {orderData?.paymentDetails?.bkash && (
+                                                    <>
+                                                        <tr>
+                                                            <td className="font-medium py-2 text-pink-600" colSpan="2">bKash Payment Details</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="font-medium py-1 pl-4 text-sm">bKash Number</td>
+                                                            <td className="text-end py-1 text-sm">{orderData.paymentDetails.bkash.number}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="font-medium py-1 pl-4 text-sm">Transaction ID</td>
+                                                            <td className="text-end py-1 text-sm">{orderData.paymentDetails.bkash.transactionId}</td>
+                                                        </tr>
+                                                    </>
+                                                )}
+
+                                                {/* Payment Details for Nagad */}
+                                                {orderData?.paymentDetails?.nagad && (
+                                                    <>
+                                                        <tr>
+                                                            <td className="font-medium py-2 text-orange-600" colSpan="2">Nagad Payment Details</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="font-medium py-1 pl-4 text-sm">Nagad Number</td>
+                                                            <td className="text-end py-1 text-sm">{orderData.paymentDetails.nagad.number}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="font-medium py-1 pl-4 text-sm">Transaction ID</td>
+                                                            <td className="text-end py-1 text-sm">{orderData.paymentDetails.nagad.transactionId}</td>
+                                                        </tr>
+                                                    </>
+                                                )}
+
                                             </tbody>
                                         </table>
                                     </div>

@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { z } from 'zod'
 import { FaShippingFast } from "react-icons/fa";
+import { BsCashCoin, BsCreditCard, BsPhone, BsCheckCircleFill } from "react-icons/bs";
 import { Textarea } from '@/components/ui/textarea'
 import Script from 'next/script'
 import { useRouter } from 'next/navigation'
@@ -33,9 +34,18 @@ const breadCrumb = {
 const Checkout = () => {
     const router = useRouter()
     const dispatch = useDispatch()
-    const cart = useSelector(store => store.cartStore)
-    const authStore = useSelector(store => store.authStore)
+    const cart = useSelector(store => store?.cartStore || { products: [], count: 0 })
+    const authStore = useSelector(store => store?.authStore || { auth: null })
     const [verifiedCartData, setVerifiedCartData] = useState([])
+    
+    // Payment Method State
+    const [selectedPaymentMethods, setSelectedPaymentMethods] = useState(['cod'])
+    const [paymentDetails, setPaymentDetails] = useState({
+        bkashNumber: '',
+        bkashTransactionId: '',
+        nagadNumber: '',
+        nagadTransactionId: ''
+    })
     const { data: getVerifiedCartData } = useFetch('/api/cart-verification', 'POST', { data: cart.products })
 
     const [isCouponApplied, setIsCouponApplied] = useState(false)
@@ -149,6 +159,20 @@ const Checkout = () => {
     }, [authStore])
 
     const placeOrder = async (formData) => {
+        // Validate payment details for bKash/Nagad
+        if (selectedPaymentMethods.includes('bkash')) {
+            if (!paymentDetails.bkashNumber || !paymentDetails.bkashTransactionId) {
+                showToast('error', 'Please enter bKash number and transaction ID')
+                return
+            }
+        }
+        if (selectedPaymentMethods.includes('nagad')) {
+            if (!paymentDetails.nagadNumber || !paymentDetails.nagadTransactionId) {
+                showToast('error', 'Please enter Nagad number and transaction ID')
+                return
+            }
+        }
+
         setPlacingOrder(true)
         try {
             const products = verifiedCartData.map((cartItem) => (
@@ -162,6 +186,11 @@ const Checkout = () => {
                 }
             ))
 
+            // Build payment method string
+            const paymentMethodString = selectedPaymentMethods.length > 1 
+                ? selectedPaymentMethods.join('+')
+                : selectedPaymentMethods[0]
+
             const { data: orderResponseData } = await axios.post('/api/payment/save-cod-order', {
                 ...formData,
                 products: products,
@@ -169,13 +198,25 @@ const Checkout = () => {
                 discount: discount,
                 couponDiscountAmount: couponDiscountAmount,
                 totalAmount: totalAmount,
-                paymentMethod: 'COD'
+                paymentMethod: paymentMethodString,
+                paymentDetails: selectedPaymentMethods.includes('cod') ? null : {
+                    bkash: selectedPaymentMethods.includes('bkash') ? {
+                        number: paymentDetails.bkashNumber,
+                        transactionId: paymentDetails.bkashTransactionId
+                    } : null,
+                    nagad: selectedPaymentMethods.includes('nagad') ? {
+                        number: paymentDetails.nagadNumber,
+                        transactionId: paymentDetails.nagadTransactionId
+                    } : null
+                }
             })
 
             if (orderResponseData.success) {
                 setOrderDetails({
                     orderId: orderResponseData.data.order_id,
-                    totalAmount: totalAmount
+                    totalAmount: totalAmount,
+                    paymentMethods: selectedPaymentMethods,
+                    paymentDetails: selectedPaymentMethods.includes('cod') ? null : paymentDetails
                 })
                 setShowConfirmation(true)
                 dispatch(clearCart())
@@ -210,7 +251,9 @@ const Checkout = () => {
                         </div>
                         <h2 className='text-2xl font-bold mb-2'>Order Placed Successfully!</h2>
                         <p className='text-gray-600 mb-4'>
-                            Your order has been placed with Cash on Delivery.
+                            Your order has been placed with {orderDetails?.paymentMethods?.map(m => 
+                                m === 'bkash' ? 'bKash' : m === 'nagad' ? 'Nagad' : 'Cash on Delivery'
+                            ).join(' + ')}.
                         </p>
                         <div className='bg-gray-50 rounded-lg p-4 mb-6'>
                             <p className='text-sm text-gray-500'>Order ID</p>
@@ -304,8 +347,213 @@ const Checkout = () => {
                                         />
                                     </div>
 
+                                    {/* Payment Method Section */}
+                                    <div className='mb-6'>
+                                        <h3 className='flex items-center gap-2 text-lg font-semibold mb-4'>
+                                            <BsCreditCard size={20} />
+                                            Select Payment Method
+                                        </h3>
+                                        <p className='text-sm text-gray-500 mb-4'>You can select one or multiple payment methods</p>
+                                        
+                                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6'>
+                                            {/* bKash Option */}
+                                            <label className={`relative cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 hover:shadow-lg ${
+                                                selectedPaymentMethods.includes('bkash') 
+                                                    ? 'border-pink-500 bg-pink-50 shadow-md' 
+                                                    : 'border-gray-200 hover:border-pink-300'
+                                            }`}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only"
+                                                    checked={selectedPaymentMethods.includes('bkash')}
+                                                    onChange={() => {
+                                                        setSelectedPaymentMethods(prev => 
+                                                            prev.includes('bkash') 
+                                                                ? prev.filter(m => m !== 'bkash')
+                                                                : [...prev.filter(m => m !== 'cod'), 'bkash']
+                                                        )
+                                                    }}
+                                                />
+                                                <div className='flex flex-col items-center text-center'>
+                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                                                        selectedPaymentMethods.includes('bkash') ? 'bg-pink-500 text-white' : 'bg-pink-100 text-pink-600'
+                                                    }`}>
+                                                        <BsPhone size={24} />
+                                                    </div>
+                                                    <span className='font-semibold text-pink-600'>bKash</span>
+                                                    {selectedPaymentMethods.includes('bkash') && (
+                                                        <BsCheckCircleFill className='absolute top-3 right-3 text-pink-500' size={20} />
+                                                    )}
+                                                </div>
+                                            </label>
+
+                                            {/* Nagad Option */}
+                                            <label className={`relative cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 hover:shadow-lg ${
+                                                selectedPaymentMethods.includes('nagad') 
+                                                    ? 'border-orange-500 bg-orange-50 shadow-md' 
+                                                    : 'border-gray-200 hover:border-orange-300'
+                                            }`}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only"
+                                                    checked={selectedPaymentMethods.includes('nagad')}
+                                                    onChange={() => {
+                                                        setSelectedPaymentMethods(prev => 
+                                                            prev.includes('nagad') 
+                                                                ? prev.filter(m => m !== 'nagad')
+                                                                : [...prev.filter(m => m !== 'cod'), 'nagad']
+                                                        )
+                                                    }}
+                                                />
+                                                <div className='flex flex-col items-center text-center'>
+                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                                                        selectedPaymentMethods.includes('nagad') ? 'bg-orange-500 text-white' : 'bg-orange-100 text-orange-600'
+                                                    }`}>
+                                                        <BsPhone size={24} />
+                                                    </div>
+                                                    <span className='font-semibold text-orange-600'>Nagad</span>
+                                                    {selectedPaymentMethods.includes('nagad') && (
+                                                        <BsCheckCircleFill className='absolute top-3 right-3 text-orange-500' size={20} />
+                                                    )}
+                                                </div>
+                                            </label>
+
+                                            {/* Cash on Delivery Option */}
+                                            <label className={`relative cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 hover:shadow-lg ${
+                                                selectedPaymentMethods.includes('cod') 
+                                                    ? 'border-green-500 bg-green-50 shadow-md' 
+                                                    : 'border-gray-200 hover:border-green-300'
+                                            }`}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only"
+                                                    checked={selectedPaymentMethods.includes('cod')}
+                                                    onChange={() => {
+                                                        setSelectedPaymentMethods(prev => {
+                                                            const hasCod = prev.includes('cod')
+                                                            if (hasCod) {
+                                                                return prev.filter(m => m !== 'cod')
+                                                            }
+                                                            // If selecting COD, remove other methods
+                                                            return ['cod']
+                                                        })
+                                                    }}
+                                                />
+                                                <div className='flex flex-col items-center text-center'>
+                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                                                        selectedPaymentMethods.includes('cod') ? 'bg-green-500 text-white' : 'bg-green-100 text-green-600'
+                                                    }`}>
+                                                        <BsCashCoin size={24} />
+                                                    </div>
+                                                    <span className='font-semibold text-green-600'>Cash on Delivery</span>
+                                                    {selectedPaymentMethods.includes('cod') && (
+                                                        <BsCheckCircleFill className='absolute top-3 right-3 text-green-500' size={20} />
+                                                    )}
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        {/* bKash Payment Details */}
+                                        {selectedPaymentMethods.includes('bkash') && (
+                                            <div className='bg-pink-50 rounded-xl p-5 mb-4 border border-pink-200 animate-in fade-in slide-in-from-top-2 duration-300'>
+                                                <h4 className='font-semibold text-pink-700 mb-3 flex items-center gap-2'>
+                                                    <BsPhone size={18} />
+                                                    bKash Payment Details
+                                                </h4>
+                                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                                                    <div>
+                                                        <label className='block text-sm font-medium text-pink-700 mb-1'>
+                                                            bKash Number *
+                                                        </label>
+                                                        <Input
+                                                            type="tel"
+                                                            placeholder="01XXXXXXXXX"
+                                                            value={paymentDetails.bkashNumber}
+                                                            onChange={(e) => setPaymentDetails(prev => ({ ...prev, bkashNumber: e.target.value }))}
+                                                            className="border-pink-200 focus:border-pink-500 focus:ring-pink-500"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className='block text-sm font-medium text-pink-700 mb-1'>
+                                                            Transaction ID *
+                                                        </label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Enter transaction ID"
+                                                            value={paymentDetails.bkashTransactionId}
+                                                            onChange={(e) => setPaymentDetails(prev => ({ ...prev, bkashTransactionId: e.target.value }))}
+                                                            className="border-pink-200 focus:border-pink-500 focus:ring-pink-500"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <p className='text-xs text-pink-600 mt-2'>
+                                                    Send money to our bKash number and enter the transaction ID above
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Nagad Payment Details */}
+                                        {selectedPaymentMethods.includes('nagad') && (
+                                            <div className='bg-orange-50 rounded-xl p-5 mb-4 border border-orange-200 animate-in fade-in slide-in-from-top-2 duration-300'>
+                                                <h4 className='font-semibold text-orange-700 mb-3 flex items-center gap-2'>
+                                                    <BsPhone size={18} />
+                                                    Nagad Payment Details
+                                                </h4>
+                                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                                                    <div>
+                                                        <label className='block text-sm font-medium text-orange-700 mb-1'>
+                                                            Nagad Number *
+                                                        </label>
+                                                        <Input
+                                                            type="tel"
+                                                            placeholder="01XXXXXXXXX"
+                                                            value={paymentDetails.nagadNumber}
+                                                            onChange={(e) => setPaymentDetails(prev => ({ ...prev, nagadNumber: e.target.value }))}
+                                                            className="border-orange-200 focus:border-orange-500 focus:ring-orange-500"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className='block text-sm font-medium text-orange-700 mb-1'>
+                                                            Transaction ID *
+                                                        </label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Enter transaction ID"
+                                                            value={paymentDetails.nagadTransactionId}
+                                                            onChange={(e) => setPaymentDetails(prev => ({ ...prev, nagadTransactionId: e.target.value }))}
+                                                            className="border-orange-200 focus:border-orange-500 focus:ring-orange-500"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <p className='text-xs text-orange-600 mt-2'>
+                                                    Send money to our Nagad number and enter the transaction ID above
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Selected Payment Summary */}
+                                        <div className='bg-gray-50 rounded-xl p-4 border border-gray-200'>
+                                            <h4 className='font-medium text-gray-700 mb-2'>Selected Payment Methods:</h4>
+                                            <div className='flex flex-wrap gap-2'>
+                                            {selectedPaymentMethods.length === 0 ? (
+                                                <span className='text-sm text-gray-500'>Please select a payment method</span>
+                                            ) : (
+                                                selectedPaymentMethods.map(method => (
+                                                    <span key={method} className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                                        method === 'bkash' ? 'bg-pink-100 text-pink-700' :
+                                                        method === 'nagad' ? 'bg-orange-100 text-orange-700' :
+                                                        'bg-green-100 text-green-700'
+                                                    }`}>
+                                                        {method === 'bkash' ? 'bKash' : method === 'nagad' ? 'Nagad' : 'Cash on Delivery'}
+                                                    </span>
+                                                ))
+                                            )}
+                                        </div>
+                                        </div>
+                                    </div>
+
                                     <div className='mb-3'>
-                                        <ButtonLoading type="submit" text="Place Order" loading={placingOrder} className="bg-black rounded-full px-5 cursor-pointer" />
+                                        <ButtonLoading type="submit" text={`Place Order ${selectedPaymentMethods.includes('cod') ? '(Cash on Delivery)' : '(Online Payment)'}`} loading={placingOrder} className="w-full bg-black hover:bg-gray-800 rounded-full px-5 cursor-pointer py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all" />
                                     </div>
 
                                 </form>

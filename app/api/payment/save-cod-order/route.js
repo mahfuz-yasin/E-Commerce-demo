@@ -17,6 +17,17 @@ export async function POST(request) {
             sellingPrice: z.number().nonnegative()
         })
 
+        const paymentDetailsSchema = z.object({
+            bkash: z.object({
+                number: z.string(),
+                transactionId: z.string()
+            }).nullable().optional(),
+            nagad: z.object({
+                number: z.string(),
+                transactionId: z.string()
+            }).nullable().optional()
+        }).optional().nullable()
+
         const orderSchema = z.object({
             name: z.string().min(2, 'Name is required'),
             phone: z.string().min(10, 'Phone number is required'),
@@ -28,7 +39,8 @@ export async function POST(request) {
             discount: z.number().nonnegative(),
             couponDiscountAmount: z.number().nonnegative(),
             totalAmount: z.number().nonnegative(),
-            products: z.array(productSchema)
+            products: z.array(productSchema),
+            paymentDetails: paymentDetailsSchema
         })
 
         const validate = orderSchema.safeParse(payload)
@@ -54,15 +66,16 @@ export async function POST(request) {
             couponDiscountAmount: validatedData.couponDiscountAmount,
             totalAmount: validatedData.totalAmount,
             subtotal: validatedData.subtotal,
-            payment_id: null,
+            payment_id: validatedData.paymentDetails ? `PAY-${Date.now()}` : null,
             order_id: order_id,
-            status: 'pending',
-            paymentMethod: validatedData.paymentMethod
+            status: validatedData.paymentDetails ? 'paid' : 'pending',
+            paymentMethod: validatedData.paymentMethod,
+            paymentDetails: validatedData.paymentDetails || null
         })
 
         console.log('Order created successfully:', newOrder)
 
-        return response(true, 200, 'Order placed successfully with Cash on Delivery.', { order_id })
+        return response(true, 200, validatedData.paymentDetails ? 'Order placed successfully with online payment.' : 'Order placed successfully with Cash on Delivery.', { order_id })
 
     } catch (error) {
         return catchError(error)

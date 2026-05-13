@@ -71,6 +71,19 @@ const orderSchema = new mongoose.Schema({
         enum: ['cart', 'direct', 'whatsapp'],
         default: 'cart'
     },
+    paymentDetails: {
+        type: {
+            bkash: {
+                number: { type: String },
+                transactionId: { type: String }
+            },
+            nagad: {
+                number: { type: String },
+                transactionId: { type: String }
+            }
+        },
+        default: null
+    },
     deletedAt: {
         type: Date,
         default: null,
