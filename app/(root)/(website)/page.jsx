@@ -7,7 +7,7 @@ import banner1 from '@/public/assets/images/banner1.avif'
 import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
-import { WEBSITE_SHOP } from '@/routes/WebsiteRoute'
+import { WEBSITE_SHOP, WEBSITE_RETURN_POLICY, WEBSITE_SHIPPING_POLICY, WEBSITE_SUPPORT, WEBSITE_MEMBERSHIP } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
 import useFetch from '@/hooks/useFetch'
 
