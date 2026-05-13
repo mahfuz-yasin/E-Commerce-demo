@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic'
 import "./globals.css";
 import { Assistant } from 'next/font/google'
 import FacebookPixel from '@/components/FacebookPixel/FacebookPixel'
+import ScrollProgress from '@/components/ui/ScrollProgress'
 const assistantFont = Assistant({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${assistantFont.className} antialiased`}
       >
+        <ScrollProgress />
         <GlobalProvider>
           {children}
         </GlobalProvider>
