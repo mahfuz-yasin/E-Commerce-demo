@@ -17,6 +17,7 @@ import { WEBSITE_CART, WEBSITE_CHECKOUT } from "@/routes/WebsiteRoute";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { showToast } from "@/lib/showToast";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 const Cart = () => {
     const [open, setOpen] = useState(false)
     const [subtotal, setSubTotal] = useState(0)
@@ -64,9 +65,9 @@ const Cart = () => {
                         {cart.products?.map((product) => (
                             <div key={product.cartItemId} className="flex justify-between items-center gap-5 mb-4 border-b pb-4 last:border-0">
                                 <div className="flex gap-5 items-center">
-                                    <Image src={product?.media || imgPlaceholder.src} height={100} width={100} alt={product.name} className="w-20 h-20 rounded border" />
+                                    <OptimizedImage src={product?.media} height={100} width={100} alt={product.name} className="w-20 h-20 rounded border" />
 
-                                    <div >
+                                    <div className="flex-1">
                                         <h4 className="text-lg mb-1">{product.name}</h4>
                                         <p className="text-gray-500">
                                             {product.size}/{product.color}
@@ -75,7 +76,7 @@ const Cart = () => {
 
                                 </div>
 
-                                <div>
+                                <div className="flex flex-col items-end">
                                     <button type="button" className="text-red-500 underline underline-offset-1 mb-2 cursor-pointer"
                                         onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))}>
                                         Remove

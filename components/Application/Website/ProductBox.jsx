@@ -12,6 +12,7 @@ import WhatsAppOrderModal from './WhatsAppOrderModal'
 import { useDispatch } from 'react-redux'
 import { addIntoCart } from '@/store/reducer/cartReducer'
 import { showToast } from '@/lib/showToast'
+import OptimizedImage from '@/components/ui/OptimizedImage'
 
 const ProductBox = ({ product }) => {
     const dispatch = useDispatch()
@@ -55,8 +56,8 @@ const ProductBox = ({ product }) => {
                         </div>
                     )}
                     <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block w-full h-full' aria-label={`View ${product?.name}`}>
-                        <Image
-                            src={product?.media[0]?.secure_url || imgPlaceholder}
+                        <OptimizedImage
+                            src={product?.media[0]?.secure_url}
                             alt={product?.media[0]?.alt || product?.name || 'Product image'}
                             title={product?.media[0]?.title || product?.name}
                             className={`object-cover object-top transition-transform duration-500 ${showOverlay ? 'scale-110' : 'scale-100'}`}

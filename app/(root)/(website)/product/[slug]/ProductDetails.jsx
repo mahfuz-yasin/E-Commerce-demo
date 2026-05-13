@@ -25,6 +25,7 @@ import loadingSvg from '@/public/assets/images/loading.svg'
 import ProductReveiw from "@/components/Application/Website/ProductReveiw";
 import DirectOrderModal from "@/components/Application/Website/DirectOrderModal";
 import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
@@ -152,22 +153,23 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
             <div className="md:flex justify-between items-start lg:gap-10 gap-5 mb-20">
                 <div className="md:w-1/2 xl:flex xl:justify-center xl:gap-5 md:sticky md:top-0">
                     <div className="xl:order-last xl:mb-0 mb-5 xl:w-[calc(100%-144px)]">
-                        <Image
-                            src={activeThumb || imgPlaceholder.src}
+                        <OptimizedImage
+                            src={activeThumb}
                             width={650}
                             height={650}
-                            alt="product"
+                            alt={product?.name || 'product'}
                             className="border rounded max-w-full"
+                            priority={true}
                         />
                     </div>
                     <div className="flex xl:flex-col items-center xl:gap-5 gap-3 xl:w-36 overflow-auto xl:pb-0 pb-2 max-h-[600px]">
                         {variant?.media?.map((thumb) => (
-                            <Image
+                            <OptimizedImage
                                 key={thumb._id}
-                                src={thumb?.secure_url || imgPlaceholder.src}
+                                src={thumb?.secure_url}
                                 width={100}
                                 height={100}
-                                alt="product thumbnail"
+                                alt={`${product?.name} thumbnail`}
                                 className={`md:max-w-full max-w-16 rounded cursor-pointer ${thumb.secure_url === activeThumb ? 'border-2 border-primary' : 'border'}`}
                                 onClick={() => handleThumb(thumb.secure_url)}
                             />

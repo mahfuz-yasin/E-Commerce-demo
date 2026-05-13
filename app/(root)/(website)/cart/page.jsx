@@ -10,6 +10,7 @@ import imgPlaceholder from '@/public/assets/images/img-placeholder.webp'
 import { HiMinus, HiPlus } from "react-icons/hi2";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { decreaseQuantity, increaseQuantity, removeFromCart } from '@/store/reducer/cartReducer'
+import OptimizedImage from '@/components/ui/OptimizedImage'
 
 const breadCrumb = {
     title: 'Cart',
@@ -69,7 +70,7 @@ const CartPage = () => {
                                     <tr key={product.variantId} className='md:table-row block border-b'>
                                         <td className='p-3'>
                                             <div className='flex items-center gap-5'>
-                                                <Image src={product.media || imgPlaceholder.src} width={60} height={60} alt={product.name} />
+                                                <OptimizedImage src={product.media} width={60} height={60} alt={product.name} />
                                                 <div>
                                                     <h4 className='text-lg font-medium line-clamp-1'>
                                                         <Link href={WEBSITE_PRODUCT_DETAILS(product.url)}>
