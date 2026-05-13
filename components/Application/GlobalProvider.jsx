@@ -5,6 +5,8 @@ import Loading from './Loading'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { store, persistor } from '@/store/client-store'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const queryClient = new QueryClient()
 
@@ -14,6 +16,7 @@ const GlobalProvider = ({ children }) => {
             <Provider store={store}>
                 <Suspense fallback={<Loading />}>
                     {children}
+                    <ToastContainer />
                 </Suspense>
             </Provider>
             <Suspense fallback={null}>
