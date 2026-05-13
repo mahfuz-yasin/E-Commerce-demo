@@ -19,6 +19,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
+import ColorPicker from '@/components/ui/ColorPicker'
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
   { href: ADMIN_PRODUCT_SHOW, label: 'Products' },
@@ -28,6 +29,7 @@ const breadcrumbData = [
 const AddProduct = () => {
   const [loading, setLoading] = useState(false)
   const [categoryOption, setCategoryOption] = useState([])
+  const [selectedColors, setSelectedColors] = useState([])
   const { data: getCategory } = useFetch('/api/category?deleteType=SD&&size=10000')
 
   // media modal states  
@@ -114,8 +116,13 @@ const AddProduct = () => {
         return showToast('error', 'Please select media.')
       }
 
+      if (selectedColors.length <= 0) {
+        return showToast('error', 'Please select at least one color.')
+      }
+
       const mediaIds = selectedMedia.map(media => media._id)
       values.media = mediaIds
+      values.colors = selectedColors
 
       const { data: response } = await axios.post('/api/product/create', values)
       if (!response.success) {
@@ -123,6 +130,7 @@ const AddProduct = () => {
       }
 
       form.reset()
+      setSelectedColors([])
       showToast('success', response.message)
     } catch (error) {
       showToast('error', error.message)
@@ -338,6 +346,20 @@ const AddProduct = () => {
                   </div>
                 </div>
 
+              </div>
+
+              {/* Color Selection Section */}
+              <div className='md:col-span-2'>
+                <div className='border rounded-lg p-5 bg-gray-50/50'>
+                  <div className='mb-4'>
+                    <h3 className='text-lg font-semibold text-gray-900'>Product Colors <span className='text-red-500'>*</span></h3>
+                    <p className='text-sm text-gray-500'>Select one or more colors for this product</p>
+                  </div>
+                  <ColorPicker 
+                    selectedColors={selectedColors} 
+                    onChange={setSelectedColors} 
+                  />
+                </div>
               </div>
 
               <div className='md:col-span-2 border border-dashed rounded p-5 text-center'>
