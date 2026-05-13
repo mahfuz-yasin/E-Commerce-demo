@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
@@ -19,21 +19,68 @@ const breadcrumbData = [
 
 const FooterSettings = () => {
     const [isLoading, setIsLoading] = useState(false)
-    const { register, handleSubmit, formState: { errors } } = useForm()
+    const [isFetching, setIsFetching] = useState(true)
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm()
+    const [existingFooter, setExistingFooter] = useState(null)
+
+    useEffect(() => {
+        fetchFooterData()
+    }, [])
+
+    const fetchFooterData = async () => {
+        setIsFetching(true)
+        try {
+            const response = await fetch('/api/admin/settings?type=footer')
+            const result = await response.json()
+            
+            if (result.success && result.data && result.data.length > 0) {
+                const footer = result.data.find(f => f.key === 'main_footer')
+                if (footer) {
+                    setExistingFooter(footer)
+                    setValue('title', footer.title || '')
+                    setValue('content', footer.content || '')
+                    setValue('link', footer.link || '')
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching footer data:', error)
+        } finally {
+            setIsFetching(false)
+        }
+    }
 
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
-            const response = await fetch('/api/admin/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...data, type: 'footer', key: 'main_footer' })
-            })
+            const payload = {
+                ...data,
+                type: 'footer',
+                key: 'main_footer',
+                isActive: true
+            }
+
+            let response
+            if (existingFooter) {
+                response = await fetch(`/api/admin/settings/${existingFooter._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+            } else {
+                response = await fetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+            }
 
             const result = await response.json()
 
             if (result.success) {
                 showToast('success', 'Footer settings saved successfully')
+                if (!existingFooter) {
+                    setExistingFooter(result.data)
+                }
             } else {
                 showToast('error', result.message || 'Failed to save footer settings')
             }
@@ -53,44 +100,51 @@ const FooterSettings = () => {
                     <h4 className='text-xl font-semibold'>Footer Settings</h4>
                 </CardHeader>
                 <CardContent className="p-6">
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Company Name</Label>
-                            <Input
-                                id="title"
-                                {...register('title')}
-                                placeholder="Enter company name"
-                            />
-                        </div>
+                    {isFetching ? (
+                        <div className="text-center py-8">Loading...</div>
+                    ) : (
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="title">Company Name</Label>
+                                <Input
+                                    id="title"
+                                    {...register('title')}
+                                    placeholder="Enter company name"
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="content">Footer Content (HTML)</Label>
-                            <Textarea
-                                id="content"
-                                {...register('content')}
-                                placeholder="Enter footer HTML content"
-                                rows={8}
-                            />
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="content">Footer Content (HTML)</Label>
+                                <Textarea
+                                    id="content"
+                                    {...register('content')}
+                                    placeholder="Enter footer HTML content"
+                                    rows={8}
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="link">Social Links</Label>
-                            <Textarea
-                                id="link"
-                                {...register('link')}
-                                placeholder="Enter social media links (JSON format)"
-                                rows={4}
-                            />
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="link">Social Links (JSON)</Label>
+                                <Textarea
+                                    id="link"
+                                    {...register('link')}
+                                    placeholder='[{"platform": "facebook", "url": "#"}, {"platform": "whatsapp", "url": "https://wa.me/8801810841539"}]'
+                                    rows={4}
+                                />
+                                <p className="text-xs text-gray-500">
+                                    Example: platform, url pairs in JSON format
+                                </p>
+                            </div>
 
-                        <div className="flex gap-4">
-                            {isLoading ? (
-                                <ButtonLoading />
-                            ) : (
-                                <Button type="submit">Save Settings</Button>
-                            )}
-                        </div>
-                    </form>
+                            <div className="flex gap-4">
+                                {isLoading ? (
+                                    <ButtonLoading />
+                                ) : (
+                                    <Button type="submit">Save Settings</Button>
+                                )}
+                            </div>
+                        </form>
+                    )}
                 </CardContent>
             </Card>
         </div>
