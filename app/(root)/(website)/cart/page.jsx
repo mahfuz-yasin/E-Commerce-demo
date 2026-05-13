@@ -11,6 +11,7 @@ import { HiMinus, HiPlus } from "react-icons/hi2";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { decreaseQuantity, increaseQuantity, removeFromCart } from '@/store/reducer/cartReducer'
 import OptimizedImage from '@/components/ui/OptimizedImage'
+import { showToast } from '@/lib/showToast'
 
 const breadCrumb = {
     title: 'Cart',
@@ -94,12 +95,18 @@ const CartPage = () => {
                                             <div className='flex justify-center'>
                                                 <div className="flex justify-center items-center md:h-10 h-7 border w-fit rounded-full">
 
-                                                    <button type="button" className="h-full w-10 flex justify-center items-center cursor-pointer" onClick={() => dispatch(decreaseQuantity({ productId: product.productId, variantId: product.variantId, size: product.size }))}>
+                                                    <button type="button" className="h-full w-10 flex justify-center items-center cursor-pointer" onClick={() => {
+                                                        dispatch(decreaseQuantity({ productId: product.productId, variantId: product.variantId, size: product.size }))
+                                                        showToast('success', 'Quantity decreased')
+                                                    }}>
                                                         <HiMinus />
                                                     </button>
                                                     <input type="text" value={product.qty} className="md:w-14 w-8  text-center border-none outline-offset-0" readOnly />
                                                     <button type="button" className="h-full w-10 flex justify-center items-center cursor-pointer"
-                                                        onClick={() => dispatch(increaseQuantity({ productId: product.productId, variantId: product.variantId, size: product.size }))}>
+                                                        onClick={() => {
+                                                            dispatch(increaseQuantity({ productId: product.productId, variantId: product.variantId, size: product.size }))
+                                                            showToast('success', 'Quantity increased')
+                                                        }}>
                                                         <HiPlus />
                                                     </button>
 
@@ -116,7 +123,10 @@ const CartPage = () => {
 
                                         <td className='md:table-cell flex justify-between md:p-3 px-3 pb-2 text-center'>
                                             <span className='md:hidden font-medium'>Remove</span>
-                                            <button type='button' onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))} className='text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors'>
+                                            <button type='button' onClick={() => {
+                                                dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))
+                                                showToast('success', 'Item removed from cart')
+                                            }} className='text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors'>
                                                 <IoCloseCircleOutline size={24} />
                                             </button>
                                         </td>

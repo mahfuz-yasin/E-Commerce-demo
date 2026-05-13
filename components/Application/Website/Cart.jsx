@@ -78,7 +78,10 @@ const Cart = () => {
 
                                 <div className="flex flex-col items-end">
                                     <button type="button" className="text-red-500 underline underline-offset-1 mb-2 cursor-pointer"
-                                        onClick={() => dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))}>
+                                        onClick={() => {
+                                            dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId, size: product.size }))
+                                            showToast('success', 'Item removed from cart')
+                                        }}>
                                         Remove
                                     </button>
 
