@@ -12,8 +12,13 @@ export const WEBSITE_CHECKOUT = "/checkout"
 
 export const WEBSITE_ORDER_DETAILS = (order_id) => `/order-details/${order_id}`
 
+// Policy pages
+export const WEBSITE_RETURN_POLICY = "/return-policy"
+export const WEBSITE_SHIPPING_POLICY = "/shipping-policy"
+export const WEBSITE_SUPPORT = "/support"
+export const WEBSITE_MEMBERSHIP = "/membership"
 
-// User routes 
+// User routes
 export const USER_DASHBOARD = "/my-account"
 export const USER_PROFILE = "/profile"
 export const USER_ORDERS = "/orders"
