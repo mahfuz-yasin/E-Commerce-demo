@@ -47,15 +47,23 @@ const Header = () => {
 
                 <div className='flex items-center gap-4 lg:gap-20'>
                     {/* Mobile Navigation Menu */}
-                    <nav className={`lg:relative lg:w-auto lg:h-auto lg:top-0 lg:left-0 lg:p-0 bg-white fixed z-50 top-0 w-full h-screen transition-all duration-500 ease-in-out ${isMobileMenu ? 'left-0' : '-left-full'}`}>
-                        <div className='lg:hidden flex justify-between items-center bg-gray-50 py-4 border-b px-5'>
-                            <Image src={logo} width={120} height={50} alt='logo' />
-                            <button onClick={closeMenu} className="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                                <IoMdClose size={28} className='text-gray-600' />
+                    {/* Backdrop Overlay - closes menu when clicked */}
+                    {isMobileMenu && (
+                        <div 
+                            className="lg:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+                            onClick={closeMenu}
+                        />
+                    )}
+                    
+                    <nav className={`lg:relative lg:w-auto lg:h-auto lg:top-0 lg:left-0 lg:p-0 bg-white fixed z-50 top-0 w-full max-h-[85vh] h-auto rounded-b-2xl shadow-2xl transition-all duration-500 ease-in-out overflow-hidden ${isMobileMenu ? 'left-0' : '-left-full'}`}>
+                        <div className='lg:hidden flex justify-between items-center bg-gray-50 py-3 border-b px-5'>
+                            <Image src={logo} width={100} height={40} alt='logo' className='h-auto' />
+                            <button onClick={closeMenu} className="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                                <IoMdClose size={24} className='text-gray-600' />
                             </button>
                         </div>
 
-                        <ul className='lg:flex justify-between items-center lg:gap-8 gap-1 px-5 lg:px-0 mt-5 lg:mt-0'>
+                        <ul className='lg:flex justify-between items-center lg:gap-8 gap-1 px-5 lg:px-0 mt-3 lg:mt-0 pb-5'>
                             {[
                                 { label: 'Home', href: WEBSITE_HOME },
                                 { label: 'All', href: WEBSITE_SHOP },
@@ -64,11 +72,11 @@ const Header = () => {
                                 { label: 'Oversized', href: `${WEBSITE_SHOP}?category=overshized` },
                                 { label: 'About', href: '/about-us' },
                             ].map((item) => (
-                                <li key={item.label} className='border-b lg:border-none'>
+                                <li key={item.label} className='border-b lg:border-none last:border-none'>
                                     <Link 
                                         href={item.href} 
                                         onClick={closeMenu} 
-                                        className='block py-4 lg:py-0 text-gray-700 font-medium hover:text-amber-600 transition-colors duration-300'
+                                        className='block py-3 lg:py-0 text-gray-700 font-medium hover:text-amber-600 hover:bg-amber-50 lg:hover:bg-transparent rounded-lg lg:rounded-none px-2 lg:px-0 -mx-2 lg:mx-0 transition-colors duration-200'
                                     >
                                         {item.label}
                                     </Link>
