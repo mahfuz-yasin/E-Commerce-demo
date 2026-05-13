@@ -28,13 +28,6 @@ const Footer = () => {
                     <Link href={WEBSITE_HOME} className="inline-block mb-6 group">
                         <div className="flex flex-col">
                             <Image src={logo} alt="Al-Hilal Panjabi" width={100} height={100} className="w-24 h-24" />
-                            <span className="text-3xl sm:text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-amber-700 via-amber-500 to-amber-800 bg-clip-text text-transparent drop-shadow-sm transition-all duration-500 group-hover:tracking-normal">
-                                AL-HILAL
-                            </span>
-                            
-                            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-400 -mt-1 ml-1">
-                                Premium Panjabi
-                            </span>
                         </div>
                     </Link>
                     <p className='text-slate-500 text-sm leading-relaxed max-w-sm'>
