@@ -9,8 +9,8 @@ export async function POST(request) {
         const payload = await request.json()
 
         const productSchema = z.object({
-            productId: z.string().length(24, 'Invalid product id format'),
-            variantId: z.string().length(24, 'Invalid variant id format'),
+            productId: z.string().min(1, 'Product ID is required'),
+            variantId: z.string().min(1, 'Variant ID is required'),
             name: z.string().min(1),
             qty: z.number().min(1),
             mrp: z.number().nonnegative(),
@@ -37,21 +37,32 @@ export async function POST(request) {
             orderSource: z.enum(['direct', 'whatsapp']).default('direct'),
             paymentMethod: z.string().optional(),
             paymentDetails: paymentDetailsSchema,
-            products: z.array(productSchema)
+            products: z.array(productSchema).min(1, 'At least one product is required')
         })
 
         const validate = orderSchema.safeParse(payload)
         if (!validate.success) {
-            return response(false, 400, 'Invalid or missing fields.', { error: validate.error })
+            console.error('Validation error:', validate.error)
+            const errorMessages = validate.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+            return response(false, 400, `Validation failed: ${errorMessages}`, { error: validate.error })
         }
 
         const validatedData = validate.data
 
+        // Check if products exist
+        if (!validatedData.products || validatedData.products.length === 0) {
+            return response(false, 400, 'No products in order', {})
+        }
+
         // Calculate totals from single product
         const product = validatedData.products[0]
-        const subtotal = product.mrp * product.qty
-        const discount = (product.mrp - product.sellingPrice) * product.qty
-        const totalAmount = product.sellingPrice * product.qty
+        if (!product) {
+            return response(false, 400, 'Product data is missing', {})
+        }
+
+        const subtotal = (product.mrp || 0) * (product.qty || 1)
+        const discount = ((product.mrp || 0) - (product.sellingPrice || 0)) * (product.qty || 1)
+        const totalAmount = (product.sellingPrice || 0) * (product.qty || 1)
 
         // Generate a unique order ID
         const order_id = 'DIRECT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase()
@@ -83,6 +94,8 @@ export async function POST(request) {
         return response(true, 200, 'Order placed successfully.', { order_id })
 
     } catch (error) {
-        return catchError(error)
+        console.error('Direct order error:', error)
+        console.error('Error stack:', error.stack)
+        return catchError(error, 'Failed to create order. Please try again.')
     }
 }
