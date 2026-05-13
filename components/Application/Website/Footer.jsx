@@ -45,6 +45,9 @@ const Footer = () => {
     // Parse content HTML if available
     const footerContent = footer?.content || ''
 
+    // Parse page links if available
+    const footerPageLinks = footer?.pageLinks ? JSON.parse(footer.pageLinks) : []
+
     return (
         <footer className='bg-white border-t border-slate-100 mt-20 font-sans'>
             {footerContent ? (
@@ -99,6 +102,23 @@ const Footer = () => {
                                 ))}
                             </ul>
                         </div>
+
+                        {/* Pages সেকশন - ডাইনামিক পেজ লিংক */}
+                        {footerPageLinks.length > 0 && (
+                            <div className='col-span-1 lg:col-span-2'>
+                                <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Pages</h4>
+                                <ul className='space-y-3 text-sm'>
+                                    {footerPageLinks.map((page, index) => (
+                                        <li key={index}>
+                                            <Link href={`/page/${page.slug}`} className='text-slate-500 hover:text-amber-600 transition-all flex items-center gap-2 group'>
+                                                <span className='w-1 h-1 rounded-full bg-amber-600 opacity-0 group-hover:opacity-100 transition-all'></span>
+                                                {page.title}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         {/* Support সেকশন - মোবাইলে পাশাপাশি বসবে */}
                         <div className='col-span-1 lg:col-span-2'>
