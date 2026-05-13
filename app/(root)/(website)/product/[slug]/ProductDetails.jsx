@@ -251,7 +251,7 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
                     <div className="mt-5">
                         {!isAddedIntoCart ?
-                            <ButtonLoading type="button" text="Add To Cart" className="w-full rounded-full py-6 text-md cursor-pointer" onClick={handleAddToCart} />
+                            <ButtonLoading type="button" text="Add To Cart" loading={false} className="w-full rounded-full py-6 text-md cursor-pointer" onClick={handleAddToCart} />
                             :
                             <Button className="w-full rounded-full py-6 text-md cursor-pointer" type="button" asChild>
                                 <Link href={WEBSITE_CART}>Go To Cart</Link>
