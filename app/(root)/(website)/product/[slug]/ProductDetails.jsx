@@ -29,7 +29,7 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
-    const cartStore = useSelector(store => store.cartStore)
+    const cartStore = useSelector(store => store?.cartStore || { products: [], count: 0 })
 
     const [activeThumb, setActiveThumb] = useState()
     const [qty, setQty] = useState(1)

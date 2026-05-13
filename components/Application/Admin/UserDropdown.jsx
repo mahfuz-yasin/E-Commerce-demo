@@ -17,7 +17,7 @@ import LogoutButton from "./LogoutButton";
 import { ADMIN_ORDER_SHOW, ADMIN_PRODUCT_ADD } from "@/routes/AdminPanelRoute";
 
 const UserDropdown = () => {
-    const auth = useSelector((store) => store.authStore.auth)
+    const auth = useSelector((store) => store?.authStore?.auth || null)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -28,7 +28,7 @@ const UserDropdown = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="me-5 w-44">
                 <DropdownMenuLabel>
-                    <p className="font-semibold">{auth?.name}</p>
+                    <p className="font-semibold">{auth?.name || 'Admin'}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

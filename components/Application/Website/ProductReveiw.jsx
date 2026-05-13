@@ -22,7 +22,7 @@ import useFetch from '@/hooks/useFetch'
 
 const ProductReveiw = ({ productId }) => {
     const queryClient = useQueryClient()
-    const auth = useSelector(store => store.authStore.auth)
+    const auth = useSelector(store => store?.authStore?.auth || null)
     const [loading, setLoading] = useState(false)
     const [currentUrl, setCurrentUrl] = useState('')
     const [isReview, setIsReview] = useState(false)

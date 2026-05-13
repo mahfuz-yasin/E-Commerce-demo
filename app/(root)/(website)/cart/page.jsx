@@ -21,7 +21,7 @@ const breadCrumb = {
 }
 const CartPage = () => {
     const dispatch = useDispatch()
-    const cart = useSelector(store => store.cartStore)
+    const cart = useSelector(store => store?.cartStore || { products: [], count: 0 })
 
     const [subtotal, setSubTotal] = useState(0)
     const [discount, setDiscount] = useState(0)

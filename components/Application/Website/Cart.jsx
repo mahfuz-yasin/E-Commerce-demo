@@ -24,7 +24,7 @@ const Cart = () => {
     const [discount, setDiscount] = useState(0)
 
 
-    const cart = useSelector(store => store.cartStore)
+    const cart = useSelector(store => store?.cartStore || { products: [], count: 0 })
     const dispatch = useDispatch()
 
 
