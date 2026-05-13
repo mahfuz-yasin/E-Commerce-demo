@@ -1,15 +1,19 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import BreadCrumb from "@/components/Application/Admin/BreadCrumb"
 import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
+import { FaUpload, FaMagic, FaPalette, FaRobot } from "react-icons/fa"
+import { IoMdClose } from "react-icons/io"
+import useFetch from "@/hooks/useFetch"
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -83,11 +87,119 @@ const componentLibrary = [
 
 const PageBuilder = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const [isGenerating, setIsGenerating] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
     const [pageTitle, setPageTitle] = useState('')
     const [pageSlug, setPageSlug] = useState('')
     const [pageDescription, setPageDescription] = useState('')
+    const [featuredImage, setFeaturedImage] = useState('')
     const [components, setComponents] = useState([])
     const [selectedComponent, setSelectedComponent] = useState(null)
+    const [selectedCategories, setSelectedCategories] = useState([])
+    const [relatedCategories, setRelatedCategories] = useState([])
+    const [relatedProducts, setRelatedProducts] = useState([])
+    const [pageStyles, setPageStyles] = useState({
+        animation: 'none',
+        animationDuration: '0.3s',
+        primaryColor: '#3b82f6',
+        secondaryColor: '#10b981',
+        shadow: 'none',
+        borderRadius: '0px',
+        fontFamily: 'default'
+    })
+    const { data: categoriesData } = useFetch('/api/admin/categories', 'GET')
+    const { data: productsData } = useFetch('/api/admin/products', 'GET')
+    const { data: existingPages } = useFetch('/api/admin/pagebuilder?pageType=page', 'GET')
+
+    const availableCategories = categoriesData?.data || []
+    const availableProducts = productsData?.data || []
+    const existingSlugs = existingPages?.data?.map(p => p.slug) || []
+
+    useEffect(() => {
+        if (pageTitle) {
+            let slug = pageTitle
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+            
+            // Check for conflicts and make unique
+            let counter = 1
+            let uniqueSlug = slug
+            while (existingSlugs.includes(uniqueSlug)) {
+                uniqueSlug = `${slug}-${counter}`
+                counter++
+            }
+            
+            setPageSlug(uniqueSlug)
+        }
+    }, [pageTitle, existingSlugs])
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        setIsUploading(true)
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            const result = await response.json()
+            
+            if (result.success) {
+                setFeaturedImage(result.data.url)
+                showToast('success', 'Image uploaded successfully')
+            } else {
+                showToast('error', 'Failed to upload image')
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred')
+        } finally {
+            setIsUploading(false)
+        }
+    }
+
+    const handleAIGenerate = async () => {
+        if (!pageTitle) {
+            showToast('error', 'Please enter a page title first')
+            return
+        }
+
+        setIsGenerating(true)
+        try {
+            const response = await fetch('/api/ai/generate-page', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: pageTitle, description: pageDescription })
+            })
+            const result = await response.json()
+            
+            if (result.success) {
+                setComponents(result.data.components || [])
+                setPageDescription(result.data.description || pageDescription)
+                showToast('success', 'Page content generated successfully')
+            } else {
+                showToast('error', result.message || 'Failed to generate content')
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred')
+        } finally {
+            setIsGenerating(false)
+        }
+    }
+
+    const handleCategoryToggle = (categoryId) => {
+        setSelectedCategories(prev => 
+            prev.includes(categoryId) 
+                ? prev.filter(id => id !== categoryId)
+                : [...prev, categoryId]
+        )
+    }
 
     const handleDragEnd = (result) => {
         if (!result.destination) return
@@ -175,8 +287,13 @@ const PageBuilder = () => {
                     title: pageTitle,
                     slug: pageSlug,
                     description: pageDescription,
+                    featuredImage: featuredImage,
                     pageType: 'page',
                     components: components,
+                    categories: selectedCategories,
+                    relatedCategories: relatedCategories,
+                    relatedProducts: relatedProducts,
+                    styles: pageStyles,
                     isActive: true,
                     isPublished: false
                 })
@@ -230,7 +347,19 @@ const PageBuilder = () => {
                     {/* Page Settings */}
                     <Card>
                         <CardHeader>
-                            <h4 className='text-lg font-semibold'>Page Settings</h4>
+                            <div className="flex justify-between items-center">
+                                <h4 className='text-lg font-semibold'>Page Settings</h4>
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={handleAIGenerate}
+                                    disabled={isGenerating}
+                                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+                                >
+                                    <FaMagic className="mr-2" />
+                                    {isGenerating ? 'Generating...' : 'AI Generate'}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -244,12 +373,13 @@ const PageBuilder = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="pageSlug">Page Slug *</Label>
+                                    <Label htmlFor="pageSlug">Page Slug (Auto-generated) *</Label>
                                     <Input
                                         id="pageSlug"
                                         value={pageSlug}
-                                        onChange={(e) => setPageSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                                        onChange={(e) => setPageSlug(e.target.value)}
                                         placeholder="page-slug"
+                                        className="bg-gray-50"
                                     />
                                 </div>
                             </div>
@@ -262,6 +392,226 @@ const PageBuilder = () => {
                                     placeholder="Page description"
                                     rows={3}
                                 />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="featuredImage">Featured Image</Label>
+                                <div className="flex gap-4">
+                                    <div className="flex-1">
+                                        <Input
+                                            id="featuredImage"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            disabled={isUploading}
+                                        />
+                                    </div>
+                                    <Button type="button" variant="outline" disabled={isUploading}>
+                                        {isUploading ? 'Uploading...' : <FaUpload />}
+                                    </Button>
+                                </div>
+                                {featuredImage && (
+                                    <div className="mt-2 flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                        <img src={featuredImage} alt="Featured" className="w-16 h-16 object-contain rounded" />
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium">Current Image</p>
+                                            <p className="text-xs text-gray-500 truncate">{featuredImage.substring(0, 50)}...</p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => setFeaturedImage('')}
+                                        >
+                                            <IoMdClose />
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Page Styles */}
+                    <Card>
+                        <CardHeader>
+                            <h4 className='text-lg font-semibold flex items-center gap-2'>
+                                <FaPalette />
+                                Page Styles
+                            </h4>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="animation">Animation</Label>
+                                    <Select
+                                        value={pageStyles.animation}
+                                        onValueChange={(value) => setPageStyles({ ...pageStyles, animation: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select animation" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">None</SelectItem>
+                                            <SelectItem value="fade">Fade</SelectItem>
+                                            <SelectItem value="slide">Slide</SelectItem>
+                                            <SelectItem value="zoom">Zoom</SelectItem>
+                                            <SelectItem value="bounce">Bounce</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="primaryColor">Primary Color</Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            type="color"
+                                            value={pageStyles.primaryColor}
+                                            onChange={(e) => setPageStyles({ ...pageStyles, primaryColor: e.target.value })}
+                                            className="w-16 h-10"
+                                        />
+                                        <Input
+                                            value={pageStyles.primaryColor}
+                                            onChange={(e) => setPageStyles({ ...pageStyles, primaryColor: e.target.value })}
+                                            className="flex-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="secondaryColor">Secondary Color</Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            type="color"
+                                            value={pageStyles.secondaryColor}
+                                            onChange={(e) => setPageStyles({ ...pageStyles, secondaryColor: e.target.value })}
+                                            className="w-16 h-10"
+                                        />
+                                        <Input
+                                            value={pageStyles.secondaryColor}
+                                            onChange={(e) => setPageStyles({ ...pageStyles, secondaryColor: e.target.value })}
+                                            className="flex-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="shadow">Shadow</Label>
+                                    <Select
+                                        value={pageStyles.shadow}
+                                        onValueChange={(value) => setPageStyles({ ...pageStyles, shadow: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select shadow" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">None</SelectItem>
+                                            <SelectItem value="small">Small</SelectItem>
+                                            <SelectItem value="medium">Medium</SelectItem>
+                                            <SelectItem value="large">Large</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="borderRadius">Border Radius</Label>
+                                    <Input
+                                        value={pageStyles.borderRadius}
+                                        onChange={(e) => setPageStyles({ ...pageStyles, borderRadius: e.target.value })}
+                                        placeholder="0px"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="fontFamily">Font Family</Label>
+                                    <Select
+                                        value={pageStyles.fontFamily}
+                                        onValueChange={(value) => setPageStyles({ ...pageStyles, fontFamily: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select font" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="default">Default</SelectItem>
+                                            <SelectItem value="sans-serif">Sans Serif</SelectItem>
+                                            <SelectItem value="serif">Serif</SelectItem>
+                                            <SelectItem value="monospace">Monospace</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Categories */}
+                    <Card>
+                        <CardHeader>
+                            <h4 className='text-lg font-semibold'>Categories</h4>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                                {availableCategories.map((category) => (
+                                    <Button
+                                        key={category._id}
+                                        type="button"
+                                        variant={selectedCategories.includes(category._id) ? "default" : "outline"}
+                                        onClick={() => handleCategoryToggle(category._id)}
+                                        className={selectedCategories.includes(category._id) ? "bg-amber-600 hover:bg-amber-700" : ""}
+                                    >
+                                        {category.name}
+                                    </Button>
+                                ))}
+                            </div>
+                            {selectedCategories.length === 0 && (
+                                <p className="text-gray-400 text-sm">No categories selected</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Related Categories & Products */}
+                    <Card>
+                        <CardHeader>
+                            <h4 className='text-lg font-semibold'>Related Categories & Products</h4>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Related Categories</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {availableCategories
+                                        .filter(cat => !selectedCategories.includes(cat._id))
+                                        .map((category) => (
+                                            <Button
+                                                key={category._id}
+                                                type="button"
+                                                variant={relatedCategories.includes(category._id) ? "default" : "outline"}
+                                                onClick={() => {
+                                                    setRelatedCategories(prev =>
+                                                        prev.includes(category._id)
+                                                            ? prev.filter(id => id !== category._id)
+                                                            : [...prev, category._id]
+                                                    )
+                                                }}
+                                                size="sm"
+                                            >
+                                                {category.name}
+                                            </Button>
+                                        ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Related Products</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {availableProducts.map((product) => (
+                                        <Button
+                                            key={product._id}
+                                            type="button"
+                                            variant={relatedProducts.includes(product._id) ? "default" : "outline"}
+                                            onClick={() => {
+                                                setRelatedProducts(prev =>
+                                                    prev.includes(product._id)
+                                                        ? prev.filter(id => id !== product._id)
+                                                        : [...prev, product._id]
+                                                )
+                                            }}
+                                            size="sm"
+                                        >
+                                            {product.name}
+                                        </Button>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -342,6 +692,36 @@ const PageBuilder = () => {
 }
 
 const ComponentEditor = ({ component, onUpdate }) => {
+    const [isUploading, setIsUploading] = useState(false)
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        setIsUploading(true)
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            const result = await response.json()
+            
+            if (result.success) {
+                onUpdate('content', { ...component.content, url: result.data.url })
+                showToast('success', 'Image uploaded successfully')
+            } else {
+                showToast('error', 'Failed to upload image')
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred')
+        } finally {
+            setIsUploading(false)
+        }
+    }
+
     const renderEditor = () => {
         switch (component.type) {
             case 'hero':
@@ -394,10 +774,30 @@ const ComponentEditor = ({ component, onUpdate }) => {
                 return (
                     <div className="space-y-3">
                         <div>
-                            <Label>Image URL</Label>
+                            <Label>Upload Image</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    disabled={isUploading}
+                                />
+                                <Button type="button" variant="outline" disabled={isUploading}>
+                                    {isUploading ? 'Uploading...' : <FaUpload />}
+                                </Button>
+                            </div>
+                        </div>
+                        {component.content.url && (
+                            <div className="mt-2">
+                                <img src={component.content.url} alt="Preview" className="max-w-full h-32 object-cover rounded" />
+                            </div>
+                        )}
+                        <div>
+                            <Label>Or Enter Image URL</Label>
                             <Input
                                 value={component.content.url || ''}
                                 onChange={(e) => onUpdate('content', { ...component.content, url: e.target.value })}
+                                placeholder="https://..."
                             />
                         </div>
                         <div>

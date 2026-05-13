@@ -36,6 +36,10 @@ const PageBuilderSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    featuredImage: {
+        type: String,
+        trim: true
+    },
     pageType: {
         type: String,
         required: true,
@@ -43,6 +47,48 @@ const PageBuilderSchema = new mongoose.Schema({
         default: 'page'
     },
     components: [PageComponentSchema],
+    categories: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }],
+    relatedCategories: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }],
+    relatedProducts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
+    styles: {
+        animation: {
+            type: String,
+            default: 'none'
+        },
+        animationDuration: {
+            type: String,
+            default: '0.3s'
+        },
+        primaryColor: {
+            type: String,
+            default: '#3b82f6'
+        },
+        secondaryColor: {
+            type: String,
+            default: '#10b981'
+        },
+        shadow: {
+            type: String,
+            default: 'none'
+        },
+        borderRadius: {
+            type: String,
+            default: '0px'
+        },
+        fontFamily: {
+            type: String,
+            default: 'default'
+        }
+    },
     metaTitle: {
         type: String
     },
