@@ -36,6 +36,12 @@ const PageBuilderSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    pageType: {
+        type: String,
+        required: true,
+        enum: ['page', 'landing_page'],
+        default: 'page'
+    },
     components: [PageComponentSchema],
     metaTitle: {
         type: String

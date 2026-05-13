@@ -77,7 +77,7 @@ const ShowPages = () => {
                 <CardContent className="px-0 pt-0">
                     <DatatableWrapper
                         queryKey="pages-data"
-                        fetchUrl="/api/admin/pagebuilder"
+                        fetchUrl="/api/admin/pagebuilder?pageType=page"
                         initialPageSize={10}
                         columnsConfig={columns}
                         deleteEndpoint="/api/admin/pagebuilder"

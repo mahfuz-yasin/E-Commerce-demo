@@ -14,8 +14,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
     { href: '/settings', label: 'Settings' },
-    { href: '/settings/pages', label: 'All Pages' },
-    { href: '', label: 'Page Builder' },
+    { href: '/settings/landing-pages', label: 'All Landing Pages' },
+    { href: '', label: 'Landing Page Builder' },
 ]
 
 const componentLibrary = [
@@ -81,7 +81,7 @@ const componentLibrary = [
     }
 ]
 
-const PageBuilder = () => {
+const LandingPageBuilder = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [pageTitle, setPageTitle] = useState('')
     const [pageSlug, setPageSlug] = useState('')
@@ -127,7 +127,7 @@ const PageBuilder = () => {
     const getDefaultContent = (type) => {
         switch (type) {
             case 'hero':
-                return { title: 'Welcome to Our Page', subtitle: 'Your subtitle here', buttonText: 'Get Started', buttonLink: '/' }
+                return { title: 'Welcome to Our Landing Page', subtitle: 'Your subtitle here', buttonText: 'Get Started', buttonLink: '/' }
             case 'text':
                 return { text: 'Your text content here...' }
             case 'image':
@@ -175,7 +175,7 @@ const PageBuilder = () => {
                     title: pageTitle,
                     slug: pageSlug,
                     description: pageDescription,
-                    pageType: 'page',
+                    pageType: 'landing_page',
                     components: components,
                     isActive: true,
                     isPublished: false
@@ -185,10 +185,10 @@ const PageBuilder = () => {
             const result = await response.json()
 
             if (result.success) {
-                showToast('success', 'Page created successfully')
-                window.location.href = '/settings/pages'
+                showToast('success', 'Landing page created successfully')
+                window.location.href = '/settings/landing-pages'
             } else {
-                showToast('error', result.message || 'Failed to create page')
+                showToast('error', result.message || 'Failed to create landing page')
             }
         } catch (error) {
             showToast('error', 'An error occurred')
@@ -230,7 +230,7 @@ const PageBuilder = () => {
                     {/* Page Settings */}
                     <Card>
                         <CardHeader>
-                            <h4 className='text-lg font-semibold'>Page Settings</h4>
+                            <h4 className='text-lg font-semibold'>Landing Page Settings</h4>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,7 +240,7 @@ const PageBuilder = () => {
                                         id="pageTitle"
                                         value={pageTitle}
                                         onChange={(e) => setPageTitle(e.target.value)}
-                                        placeholder="Enter page title"
+                                        placeholder="Enter landing page title"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -249,7 +249,7 @@ const PageBuilder = () => {
                                         id="pageSlug"
                                         value={pageSlug}
                                         onChange={(e) => setPageSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
-                                        placeholder="page-slug"
+                                        placeholder="landing-page-slug"
                                     />
                                 </div>
                             </div>
@@ -259,7 +259,7 @@ const PageBuilder = () => {
                                     id="pageDescription"
                                     value={pageDescription}
                                     onChange={(e) => setPageDescription(e.target.value)}
-                                    placeholder="Page description"
+                                    placeholder="Landing page description"
                                     rows={3}
                                 />
                             </div>
@@ -274,14 +274,14 @@ const PageBuilder = () => {
                                 {isLoading ? (
                                     <ButtonLoading />
                                 ) : (
-                                    <Button onClick={handleSave}>Save Page</Button>
+                                    <Button onClick={handleSave}>Save Landing Page</Button>
                                 )}
                             </div>
                         </CardHeader>
                         <CardContent>
                             {components.length === 0 ? (
                                 <div className="text-center py-12 text-gray-500">
-                                    <p className="text-lg mb-2">Start building your page</p>
+                                    <p className="text-lg mb-2">Start building your landing page</p>
                                     <p>Drag components from the library or click to add</p>
                                 </div>
                             ) : (
@@ -455,4 +455,4 @@ const ComponentEditor = ({ component, onUpdate }) => {
     return renderEditor()
 }
 
-export default PageBuilder
+export default LandingPageBuilder

@@ -24,14 +24,14 @@ const ShowLandingPages = () => {
             cell: ({ row }) => <span>{row.original.title}</span>
         },
         {
-            accessorKey: 'key',
-            header: 'Key',
-            cell: ({ row }) => <span>{row.original.key}</span>
+            accessorKey: 'slug',
+            header: 'Slug',
+            cell: ({ row }) => <span>{row.original.slug}</span>
         },
         {
-            accessorKey: 'link',
-            header: 'Link',
-            cell: ({ row }) => <span>{row.original.link}</span>
+            accessorKey: 'components',
+            header: 'Components',
+            cell: ({ row }) => <span>{row.original.components?.length || 0}</span>
         },
         {
             accessorKey: 'isActive',
@@ -41,12 +41,21 @@ const ShowLandingPages = () => {
                     {row.original.isActive ? 'Active' : 'Inactive'}
                 </span>
             )
+        },
+        {
+            accessorKey: 'isPublished',
+            header: 'Published',
+            cell: ({ row }) => (
+                <span className={row.original.isPublished ? 'text-green-600' : 'text-yellow-600'}>
+                    {row.original.isPublished ? 'Yes' : 'No'}
+                </span>
+            )
         }
     ], [])
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={`/settings/landing-pages/edit/${row.original._id}`} />)
+        actionMenu.push(<EditAction key="edit" href={`/settings/landing-pages/create/builder?edit=${row.original._id}`} />)
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])
@@ -61,17 +70,17 @@ const ShowLandingPages = () => {
                         <h4 className='text-xl font-semibold'>All Landing Pages</h4>
                         <Button>
                             <FiPlus />
-                            <Link href="/settings/landing-pages/create">Create Landing Page</Link>
+                            <Link href="/settings/landing-pages/create/builder">Create Landing Page</Link>
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent className="px-0 pt-0">
                     <DatatableWrapper
                         queryKey="landing-pages-data"
-                        fetchUrl="/api/admin/settings?type=landing_page"
+                        fetchUrl="/api/admin/pagebuilder?pageType=landing_page"
                         initialPageSize={10}
                         columnsConfig={columns}
-                        deleteEndpoint="/api/admin/settings"
+                        deleteEndpoint="/api/admin/pagebuilder"
                         deleteType="SD"
                         createAction={action}
                     />

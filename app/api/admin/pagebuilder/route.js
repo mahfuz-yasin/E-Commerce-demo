@@ -7,7 +7,12 @@ export async function GET(request) {
     try {
         await connectDB()
         
-        const pages = await PageBuilderModel.find()
+        const { searchParams } = new URL(request.url)
+        const pageType = searchParams.get('pageType')
+        
+        const query = pageType ? { pageType } : {}
+        
+        const pages = await PageBuilderModel.find(query)
             .sort({ createdAt: -1 })
             .lean()
 
