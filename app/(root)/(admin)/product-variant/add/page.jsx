@@ -72,7 +72,6 @@ const AddProduct = () => {
   const formSchema = zSchema.pick({
     product: true,
     sku: true,
-    color: true,
     size: true,
     mrp: true,
     sellingPrice: true,
@@ -84,7 +83,6 @@ const AddProduct = () => {
     defaultValues: {
       product: "",
       sku: "",
-      color: "",
       size: [],
       mrp: "",
       sellingPrice: "",
