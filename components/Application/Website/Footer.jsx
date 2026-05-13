@@ -6,6 +6,7 @@ import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from "react-icons/fa"
 import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
 import logo from '@/public/assets/images/logo-black.png'
 import Image from 'next/image'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 const Footer = () => {
     // পিক্সেল-পারফেক্ট ট্রেলো শ্যাডো (#93)
@@ -24,7 +25,7 @@ const Footer = () => {
             <div className='grid lg:grid-cols-12 md:grid-cols-2 grid-cols-2 gap-y-12 gap-x-4 py-16 lg:px-32 px-6'>
 
                 {/* ব্র্যান্ড ভিশন সেকশন - মোবাইলে পুরো উইডথ নেবে */}
-                <div className='col-span-2 lg:col-span-4 md:col-span-2'>
+                <ScrollReveal direction='up' delay={0} className='col-span-2 lg:col-span-4 md:col-span-2'>
                     <Link href={WEBSITE_HOME} className="inline-block mb-6 group">
                         <div className="flex flex-col">
                             <Image src={logo} alt="Al-Hilal Panjabi" width={100} height={100} className="w-24 h-24" />
@@ -45,10 +46,10 @@ const Footer = () => {
                             )
                         })}
                     </div>
-                </div>
+                </ScrollReveal>
 
                 {/* Shop সেকশন - মোবাইলে পাশাপাশি বসবে */}
-                <div className='col-span-1 lg:col-span-2'>
+                <ScrollReveal direction='up' delay={0.1} className='col-span-1 lg:col-span-2'>
                     <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Shop</h4>
                     <ul className='space-y-3'>
                         {['Premium Punjabi', 'Pyjama', 'T-shirt', 'Polo Shirt'].map(link => (
@@ -60,10 +61,10 @@ const Footer = () => {
                             </li>
                         ))}
                     </ul>
-                </div>
+                </ScrollReveal>
 
                 {/* Pages সেকশন */}
-                <div className='col-span-1 lg:col-span-2'>
+                <ScrollReveal direction='up' delay={0.2} className='col-span-1 lg:col-span-2'>
                     <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Pages</h4>
                     <ul className='space-y-3 text-sm'>
                         <li><Link href="/about-us" className='text-slate-500 hover:text-amber-600 transition-all flex items-center gap-2 group'>
@@ -83,10 +84,10 @@ const Footer = () => {
                             Privacy Policy
                         </Link></li>
                     </ul>
-                </div>
+                </ScrollReveal>
 
                 {/* Support সেকশন - মোবাইলে পাশাপাশি বসবে */}
-                <div className='col-span-1 lg:col-span-2'>
+                <ScrollReveal direction='up' delay={0.3} className='col-span-1 lg:col-span-2'>
                     <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-8 after:h-1 after:bg-amber-600'>Support</h4>
                     <ul className='space-y-3 text-sm'>
                         <li><Link href={USER_DASHBOARD} className='text-slate-500 hover:text-amber-600'>My Account</Link></li>
@@ -94,10 +95,10 @@ const Footer = () => {
                         <li><Link href="/privacy-policy" className='text-slate-500 hover:text-amber-600'>Privacy</Link></li>
                         <li><Link href={WEBSITE_LOGIN} className='text-slate-500 hover:text-amber-600'>Login</Link></li>
                     </ul>
-                </div>
+                </ScrollReveal>
 
                 {/* কন্টাক্ট সেকশন - মোবাইলে পুরো উইডথ নেবে */}
-                <div className='col-span-2 lg:col-span-4'>
+                <ScrollReveal direction='up' delay={0.4} className='col-span-2 lg:col-span-4'>
                     <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-amber-600'>Showroom</h4>
                     <div className='space-y-5'>
                         <div className='flex gap-4'>
@@ -122,7 +123,7 @@ const Footer = () => {
                             <Link href="mailto:labibhelal3662@gmail.com" className='text-sm text-slate-600 hover:text-amber-600'>labibhelal3662@gmail.com</Link>
                         </div>
                     </div>
-                </div>
+                </ScrollReveal>
             </div>
 
             {/* ২. কপিরাইট ও ডেভেলপার সিগনেচার */}

@@ -10,6 +10,7 @@ import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 import { WEBSITE_SHOP, WEBSITE_RETURN_POLICY, WEBSITE_SHIPPING_POLICY, WEBSITE_SUPPORT, WEBSITE_MEMBERSHIP } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
 import useFetch from '@/hooks/useFetch'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 
 import { GiReturnArrow } from "react-icons/gi";
@@ -100,52 +101,62 @@ const Home = () => {
             {/* Promo Banners Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-10'>
-                    <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
-                        <Link href={WEBSITE_SHOP} className='block'>
-                            <Image
-                                src={banner1}
-                                alt='Premium Panjabi Collection'
-                                className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
-                                priority
-                                quality={100}
-                                sizes='(max-width: 640px) 100vw, 50vw'
-                            />
-                        </Link>
-                    </div>
-                    <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
-                        <Link href={WEBSITE_SHOP} className='block'>
-                            <Image
-                                src={banner2}
-                                alt='New Arrivals Collection'
-                                className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
-                                priority
-                                quality={100}
-                                sizes='(max-width: 640px) 100vw, 50vw'
-                            />
-                        </Link>
-                    </div>
+                    <ScrollReveal direction='left' delay={0}>
+                        <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
+                            <Link href={WEBSITE_SHOP} className='block'>
+                                <Image
+                                    src={banner1}
+                                    alt='Premium Panjabi Collection'
+                                    className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
+                                    priority
+                                    quality={100}
+                                    sizes='(max-width: 640px) 100vw, 50vw'
+                                />
+                            </Link>
+                        </div>
+                    </ScrollReveal>
+                    <ScrollReveal direction='right' delay={0.1}>
+                        <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
+                            <Link href={WEBSITE_SHOP} className='block'>
+                                <Image
+                                    src={banner2}
+                                    alt='New Arrivals Collection'
+                                    className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
+                                    priority
+                                    quality={100}
+                                    sizes='(max-width: 640px) 100vw, 50vw'
+                                />
+                            </Link>
+                        </div>
+                    </ScrollReveal>
                 </div>
             </section>
 
             {/* Featured Products Section */}
-            <FeaturedProduct />
+            <ScrollReveal direction='up' delay={0}>
+                <FeaturedProduct />
+            </ScrollReveal>
 
             {/* Advertising Banner Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
-                <div className='w-full overflow-hidden rounded-lg shadow-sm'>
-                    <Image
-                        src={advertisingBanner}
-                        alt='Special Offers - Al Hilal Panjabi'
-                        className='w-full h-auto object-cover'
-                        priority
-                        quality={100}
-                        sizes='100vw'
-                    />
-                </div>
+                <ScrollReveal direction='scale' delay={0}>
+                    <div className='w-full overflow-hidden rounded-lg shadow-sm'>
+                        <Image
+                            src={advertisingBanner}
+                            alt='Special Offers - Al Hilal Panjabi'
+                            className='w-full h-auto object-cover'
+                            priority
+                            quality={100}
+                            sizes='100vw'
+                        />
+                    </div>
+                </ScrollReveal>
             </section>
 
             {/* Testimonials Section */}
-            <Testimonial />
+            <ScrollReveal direction='up' delay={0}>
+                <Testimonial />
+            </ScrollReveal>
 
             {/* Features/Trust Badges Section */}
             <section className='lg:px-32 px-4 py-16 sm:py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50'>
@@ -232,21 +243,24 @@ const Home = () => {
                         }
 
                         const colors = getColorClasses(feature.color)
+                        const index = displayFeatures.indexOf(feature)
 
                         return (
-                            <div key={feature._id || feature.icon} className='group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 overflow-hidden'>
-                                <div className={`absolute inset-0 bg-gradient-to-br ${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-                                <div className='relative z-10'>
-                                    <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                                        {IconComponent && <IconComponent size={32} className='text-white' />}
+                            <ScrollReveal key={feature._id || feature.icon} direction='up' delay={index * 0.1}>
+                                <div className='group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 overflow-hidden h-full'>
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                                    <div className='relative z-10'>
+                                        <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                                            {IconComponent && <IconComponent size={32} className='text-white' />}
+                                        </div>
+                                        <h3 className={`text-xl font-bold text-gray-900 mb-3 group-hover:${colors.text} transition-colors`}>{feature.title}</h3>
+                                        <p className='text-gray-600 mb-4'>{feature.description}</p>
+                                        <Button asChild variant="outline" size="sm" className={`w-full hover:${colors.bg} hover:${colors.border} hover:${colors.text} transition-colors`}>
+                                            <Link href={feature.link}>{feature.buttonText}</Link>
+                                        </Button>
                                     </div>
-                                    <h3 className={`text-xl font-bold text-gray-900 mb-3 group-hover:${colors.text} transition-colors`}>{feature.title}</h3>
-                                    <p className='text-gray-600 mb-4'>{feature.description}</p>
-                                    <Button asChild variant="outline" size="sm" className={`w-full hover:${colors.bg} hover:${colors.border} hover:${colors.text} transition-colors`}>
-                                        <Link href={feature.link}>{feature.buttonText}</Link>
-                                    </Button>
                                 </div>
-                            </div>
+                            </ScrollReveal>
                         )
                     })}
                 </div>

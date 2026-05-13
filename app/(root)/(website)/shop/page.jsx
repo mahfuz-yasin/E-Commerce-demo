@@ -18,6 +18,7 @@ import { useSearchParams } from 'next/navigation'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import ProductBox from '@/components/Application/Website/ProductBox'
 import ButtonLoading from '@/components/Application/ButtonLoading'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 const breadcrumb = {
     title: 'Shop',
     links: [
@@ -103,9 +104,15 @@ const Shop = () => {
                     </div>}
 
                     <div className='grid lg:grid-cols-3 grid-cols-2 lg:gap-10 gap-5 mt-10'>
-                        {data && data.pages?.filter(Boolean).map((page, i) => (
-                            page?.products?.filter(Boolean).map(product => (
-                                <ProductBox key={`${product._id}-${i}`} product={product} />
+                        {data && data.pages?.filter(Boolean).map((page, pageIndex) => (
+                            page?.products?.filter(Boolean).map((product, productIndex) => (
+                                <ScrollReveal 
+                                    key={`${product._id}-${pageIndex}`} 
+                                    direction='up' 
+                                    delay={(pageIndex * 9 + productIndex) * 0.03}
+                                >
+                                    <ProductBox product={product} />
+                                </ScrollReveal>
                             ))
                         ))}
                     </div>

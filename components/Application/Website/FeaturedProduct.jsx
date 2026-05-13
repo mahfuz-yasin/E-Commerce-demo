@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { IoIosArrowRoundForward } from "react-icons/io";
 import ProductBox from './ProductBox';
 import { WEBSITE_SHOP } from '@/routes/WebsiteRoute';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 const FeaturedProduct = () => {
     const [productData, setProductData] = useState(null)
@@ -49,8 +50,10 @@ const FeaturedProduct = () => {
                     </div>
                 )}
 
-                {productData.success && productData.data.map((product) => (
-                    <ProductBox key={product._id} product={product} />
+                {productData.success && productData.data.map((product, index) => (
+                    <ScrollReveal key={product._id} direction='up' delay={index * 0.05}>
+                        <ProductBox product={product} />
+                    </ScrollReveal>
                 ))}
             </div>
 
