@@ -19,11 +19,37 @@ import MediaModal from '@/components/Application/Admin/MediaModal'
 import Image from 'next/image'
 import { sizes } from '@/lib/utils'
 import ColorPicker from '@/components/ui/ColorPicker'
+import { Button } from '@/components/ui/button'
+import { RefreshCw } from 'lucide-react'
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
   { href: ADMIN_PRODUCT_VARIANT_SHOW, label: 'Product Variants' },
   { href: '', label: 'Add Product Variants' },
 ]
+
+// Function to generate unique SKU
+const generateSKU = (productName, colors) => {
+  if (!productName || colors.length === 0) return ''
+  
+  // Get product name prefix (first 3-4 characters, uppercase)
+  const namePrefix = productName
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 4)
+  
+  // Get color codes (first 2 chars of each color name)
+  const colorCodes = colors.map(c => 
+    c.name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2)
+  ).join('')
+  
+  // Generate random 4-character code
+  const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
+  
+  // Generate timestamp-based unique identifier (last 2 digits)
+  const timeCode = Date.now().toString(36).slice(-2).toUpperCase()
+  
+  return `${namePrefix}-${colorCodes}-${randomCode}${timeCode}`
+}
 
 const AddProduct = () => {
   const [loading, setLoading] = useState(false)
@@ -79,6 +105,17 @@ const AddProduct = () => {
     }
 
   }, [form.watch('mrp'), form.watch('sellingPrice')])
+
+  // Auto-generate SKU when product or colors change
+  useEffect(() => {
+    const product = form.getValues('product')
+    const selectedProduct = productOption.find(p => p.value === product)
+    
+    if (selectedProduct && selectedColors.length > 0) {
+      const newSKU = generateSKU(selectedProduct.label, selectedColors)
+      form.setValue('sku', newSKU)
+    }
+  }, [form.watch('product'), selectedColors, productOption])
 
 
 
@@ -156,9 +193,28 @@ const AddProduct = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>SKU<span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter sku" {...field} />
-                        </FormControl>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            <Input type="text" placeholder="Enter sku" {...field} readOnly className="bg-gray-50" />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const product = form.getValues('product')
+                              const selectedProduct = productOption.find(p => p.value === product)
+                              if (selectedProduct && selectedColors.length > 0) {
+                                const newSKU = generateSKU(selectedProduct.label, selectedColors)
+                                form.setValue('sku', newSKU)
+                              }
+                            }}
+                            disabled={!form.getValues('product') || selectedColors.length === 0}
+                            title="Regenerate SKU"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

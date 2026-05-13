@@ -1,6 +1,6 @@
 'use client'
 import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW } from '@/routes/AdminPanelRoute'
+import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW } from '@/routes/AdminPanelRoute'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -17,91 +17,96 @@ import Select from '@/components/Application/Select'
 import Editor from '@/components/Application/Admin/Editor'
 import MediaModal from '@/components/Application/Admin/MediaModal'
 import Image from 'next/image'
+import { sizes } from '@/lib/utils'
+import ColorPicker from '@/components/ui/ColorPicker'
+import { Button } from '@/components/ui/button'
+import { RefreshCw } from 'lucide-react'
+
+// Function to generate unique SKU
+const generateSKU = (productName, colors) => {
+  if (!productName || colors.length === 0) return ''
+  
+  const namePrefix = productName.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4)
+  const colorCodes = colors.map(c => c.name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2)).join('')
+  const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
+  const timeCode = Date.now().toString(36).slice(-2).toUpperCase()
+  
+  return `${namePrefix}-${colorCodes}-${randomCode}${timeCode}`
+}
+
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
-  { href: ADMIN_PRODUCT_SHOW, label: 'Products' },
-  { href: '', label: 'Edit Product' },
+  { href: ADMIN_PRODUCT_VARIANT_SHOW, label: 'Product Variants' },
+  { href: '', label: 'Edit Product Variant' },
 ]
 
-const EditProduct = ({ params }) => {
-
+const EditProductVariant = ({ params }) => {
   const { id } = use(params)
 
   const [loading, setLoading] = useState(false)
-  const [categoryOption, setCategoryOption] = useState([])
-  const { data: getCategory } = useFetch('/api/category?deleteType=SD')
-  const { data: getProduct, loading: getProductLoading } = useFetch(`/api/product/get/${id}`)
+  const [productOption, setProductOption] = useState([])
+  const [selectedColors, setSelectedColors] = useState([])
+  const { data: getProduct } = useFetch('/api/product?deleteType=SD&&size=10000')
+  const { data: getVariant, loading: getVariantLoading } = useFetch(`/api/product-variant/get/${id}`)
 
-
-
-  // media modal states  
   const [open, setOpen] = useState(false)
   const [selectedMedia, setSelectedMedia] = useState([])
 
   useEffect(() => {
-    if (getCategory && getCategory.success) {
-      const data = getCategory.data
-      const options = data.map((cat) => ({ label: cat.name, value: cat._id }))
-      setCategoryOption(options)
+    if (getProduct && getProduct.success) {
+      const data = getProduct.data
+      const options = data.map((product) => ({ label: product.name, value: product._id }))
+      setProductOption(options)
     }
-  }, [getCategory])
+  }, [getProduct])
 
   const formSchema = zSchema.pick({
     _id: true,
-    name: true,
-    slug: true,
-    category: true,
+    product: true,
+    sku: true,
+    size: true,
     mrp: true,
     sellingPrice: true,
     discountPercentage: true,
-    description: true,
   })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       _id: id,
-      name: "",
-      slug: "",
-      category: "",
-      mrp: 0,
-      sellingPrice: 0,
-      discountPercentage: 0,
-      description: "",
+      product: "",
+      sku: "",
+      size: [],
+      mrp: "",
+      sellingPrice: "",
+      discountPercentage: "",
     },
   })
 
-
   useEffect(() => {
-    if (getProduct && getProduct.success) {
-      const product = getProduct.data
+    if (getVariant && getVariant.success) {
+      const variant = getVariant.data
       form.reset({
-        _id: product?._id,
-        name: product?.name,
-        slug: product?.slug,
-        category: product?.category,
-        mrp: product?.mrp,
-        sellingPrice: product?.sellingPrice,
-        discountPercentage: product?.discountPercentage,
-        description: product?.description,
+        _id: variant?._id,
+        product: variant?.product?._id || variant?.product,
+        sku: variant?.sku,
+        size: variant?.size || [],
+        mrp: variant?.mrp,
+        sellingPrice: variant?.sellingPrice,
+        discountPercentage: variant?.discountPercentage,
       })
-
-      if (product.media) {
-        const media = product.media.map((media) => ({ _id: media._id, url: media.secure_url }))
+      
+      if (variant.colors) {
+        setSelectedColors(variant.colors)
+      }
+      
+      if (variant.media) {
+        const media = variant.media.map((m) => ({ _id: m._id, url: m.secure_url }))
         setSelectedMedia(media)
       }
-
     }
-  }, [getProduct])
+  }, [getVariant, form])
 
-  useEffect(() => {
-    const name = form.getValues('name')
-    if (name) {
-      form.setValue('slug', slugify(name).toLowerCase())
-    }
-  }, [form.watch('name')])
-
-  // discount percentage calculation 
   useEffect(() => {
     const mrp = form.getValues('mrp') || 0
     const sellingPrice = form.getValues('sellingPrice') || 0
@@ -110,13 +115,7 @@ const EditProduct = ({ params }) => {
       const discountPercentage = ((mrp - sellingPrice) / mrp) * 100
       form.setValue('discountPercentage', Math.round(discountPercentage))
     }
-
   }, [form.watch('mrp'), form.watch('sellingPrice')])
-
-  const editor = (event, editor) => {
-    const data = editor.getData()
-    form.setValue('description', data)
-  }
 
   const onSubmit = async (values) => {
     setLoading(true)
@@ -125,14 +124,18 @@ const EditProduct = ({ params }) => {
         return showToast('error', 'Please select media.')
       }
 
+      if (selectedColors.length <= 0) {
+        return showToast('error', 'Please select at least one color.')
+      }
+
       const mediaIds = selectedMedia.map(media => media._id)
       values.media = mediaIds
+      values.colors = selectedColors
 
-      const { data: response } = await axios.put('/api/product/update', values)
+      const { data: response } = await axios.put('/api/product-variant/update', values)
       if (!response.success) {
         throw new Error(response.message)
       }
-
 
       showToast('success', response.message)
     } catch (error) {
@@ -148,7 +151,7 @@ const EditProduct = ({ params }) => {
 
       <Card className="py-0 rounded shadow-sm">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-          <h4 className='text-xl font-semibold'>Edit Product</h4>
+          <h4 className='text-xl font-semibold'>Edit Product Variant</h4>
         </CardHeader>
         <CardContent className="pb-5">
 
@@ -160,43 +163,13 @@ const EditProduct = ({ params }) => {
                 <div className=''>
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="product"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name<span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter category name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Slug <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter slug" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category <span className='text-red-500'>*</span></FormLabel>
+                        <FormLabel>Product <span className='text-red-500'>*</span></FormLabel>
                         <FormControl>
                           <Select
-                            options={categoryOption}
+                            options={productOption}
                             selected={field.value}
                             setSelected={field.onChange}
                             isMulti={false}
@@ -207,6 +180,74 @@ const EditProduct = ({ params }) => {
                     )}
                   />
                 </div>
+
+                <div className=''>
+                  <FormField
+                    control={form.control}
+                    name="sku"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>SKU<span className='text-red-500'>*</span></FormLabel>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            <Input type="text" placeholder="Enter sku" {...field} />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const product = form.getValues('product')
+                              const selectedProduct = productOption.find(p => p.value === product)
+                              if (selectedProduct && selectedColors.length > 0) {
+                                const newSKU = generateSKU(selectedProduct.label, selectedColors)
+                                form.setValue('sku', newSKU)
+                              }
+                            }}
+                            disabled={!form.getValues('product') || selectedColors.length === 0}
+                            title="Regenerate SKU"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='md:col-span-2'>
+                  <div className='border rounded-lg p-5 bg-gray-50/50'>
+                    <div className='mb-4'>
+                      <h3 className='text-lg font-semibold text-gray-900'>Colors <span className='text-red-500'>*</span></h3>
+                      <p className='text-sm text-gray-500'>Select one or more colors for this product variant</p>
+                    </div>
+                    <ColorPicker
+                      selectedColors={selectedColors}
+                      onChange={setSelectedColors}
+                    />
+                  </div>
+                </div>
+                <div className=''>
+                  <FormField
+                    control={form.control}
+                    name="size"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Size <span className='text-red-500'>*</span></FormLabel>
+                        <FormControl>
+                          <Select
+                            options={sizes}
+                            selected={field.value}
+                            setSelected={field.onChange}
+                            isMulti={true}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className=''>
                   <FormField
                     control={form.control}
@@ -237,7 +278,7 @@ const EditProduct = ({ params }) => {
                     )}
                   />
                 </div>
-                <div className=''>
+                <div className='mb-3'>
                   <FormField
                     control={form.control}
                     name="discountPercentage"
@@ -251,13 +292,6 @@ const EditProduct = ({ params }) => {
                       </FormItem>
                     )}
                   />
-                </div>
-                <div className='mb-5 md:col-span-2'>
-                  <FormLabel className="mb-2">Description <span className='text-red-500'>*</span></FormLabel>
-                  {!getProductLoading &&
-                    <Editor onChange={editor} initialData={form.getValues('description')} />
-                  }
-                  <FormMessage></FormMessage>
                 </div>
 
               </div>
@@ -307,4 +341,4 @@ const EditProduct = ({ params }) => {
   )
 }
 
-export default EditProduct
+export default EditProductVariant
