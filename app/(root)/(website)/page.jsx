@@ -152,13 +152,92 @@ const Home = () => {
                 <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-8'>
                     {displayFeatures.map((feature) => {
                         const IconComponent = iconMap[feature.icon]
-                        const colors = colorMap[feature.color] || colorMap.blue
+
+                        // Get color classes based on feature.color
+                        const getColorClasses = (color) => {
+                            switch (color) {
+                                case 'blue':
+                                    return {
+                                        from: 'from-blue-50',
+                                        to: 'from-blue-500 to-blue-600',
+                                        text: 'text-blue-600',
+                                        bg: 'bg-blue-50',
+                                        border: 'border-blue-500'
+                                    }
+                                case 'green':
+                                    return {
+                                        from: 'from-green-50',
+                                        to: 'from-green-500 to-green-600',
+                                        text: 'text-green-600',
+                                        bg: 'bg-green-50',
+                                        border: 'border-green-500'
+                                    }
+                                case 'purple':
+                                    return {
+                                        from: 'from-purple-50',
+                                        to: 'from-purple-500 to-purple-600',
+                                        text: 'text-purple-600',
+                                        bg: 'bg-purple-50',
+                                        border: 'border-purple-500'
+                                    }
+                                case 'orange':
+                                    return {
+                                        from: 'from-orange-50',
+                                        to: 'from-orange-500 to-orange-600',
+                                        text: 'text-orange-600',
+                                        bg: 'bg-orange-50',
+                                        border: 'border-orange-500'
+                                    }
+                                case 'red':
+                                    return {
+                                        from: 'from-red-50',
+                                        to: 'from-red-500 to-red-600',
+                                        text: 'text-red-600',
+                                        bg: 'bg-red-50',
+                                        border: 'border-red-500'
+                                    }
+                                case 'pink':
+                                    return {
+                                        from: 'from-pink-50',
+                                        to: 'from-pink-500 to-pink-600',
+                                        text: 'text-pink-600',
+                                        bg: 'bg-pink-50',
+                                        border: 'border-pink-500'
+                                    }
+                                case 'indigo':
+                                    return {
+                                        from: 'from-indigo-50',
+                                        to: 'from-indigo-500 to-indigo-600',
+                                        text: 'text-indigo-600',
+                                        bg: 'bg-indigo-50',
+                                        border: 'border-indigo-500'
+                                    }
+                                case 'teal':
+                                    return {
+                                        from: 'from-teal-50',
+                                        to: 'from-teal-500 to-teal-600',
+                                        text: 'text-teal-600',
+                                        bg: 'bg-teal-50',
+                                        border: 'border-teal-500'
+                                    }
+                                default:
+                                    return {
+                                        from: 'from-blue-50',
+                                        to: 'from-blue-500 to-blue-600',
+                                        text: 'text-blue-600',
+                                        bg: 'bg-blue-50',
+                                        border: 'border-blue-500'
+                                    }
+                            }
+                        }
+
+                        const colors = getColorClasses(feature.color)
 
                         return (
                             <div key={feature._id || feature.icon} className='group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 overflow-hidden'>
-                                <div className={`absolute inset-0 bg-gradient-to-br from-${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                                <div className={`absolute inset-0 bg-gradient-to-br ${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
                                 <div className='relative z-10'>
-                                    <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-${colors.to} to-${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                                    <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
                                         {IconComponent && <IconComponent size={32} className='text-white' />}
                                     </div>
                                     <h3 className={`text-xl font-bold text-gray-900 mb-3 group-hover:${colors.text} transition-colors`}>{feature.title}</h3>
