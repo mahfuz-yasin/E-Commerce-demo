@@ -106,7 +106,7 @@ const OrderDetails = ({ params }) => {
                                                             ) : (
                                                                 <span>{product?.productId?.name || product?.name || 'Unknown Product'}</span>
                                                             )}
-                                                            {product?.variantId?.color && <p className="text-sm text-gray-500">Color: {product.variantId.color}</p>}
+                                                            {product?.variantId?.colors && <p className="text-sm text-gray-500">Colors: {product.variantId.colors.map(c => c.name).join(', ')}</p>}
                                                             {product?.variantId?.size && <p className="text-sm text-gray-500">Size: {Array.isArray(product.variantId.size) ? product.variantId.size.join(', ') : product.variantId.size}</p>}
                                                         </h4>
                                                     </div>

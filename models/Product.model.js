@@ -56,24 +56,25 @@ const productSchema = new mongoose.Schema({
             }
         }
     ],
-    colors: [
-        {
-            name: {
-                type: String,
-                required: true,
-                trim: true
-            },
-            hex: {
-                type: String,
-                required: true,
-                trim: true
-            },
-            isCustom: {
-                type: Boolean,
-                default: false
+    colors: {
+        type: [
+            {
+                name: {
+                    type: String,
+                    trim: true
+                },
+                hex: {
+                    type: String,
+                    trim: true
+                },
+                isCustom: {
+                    type: Boolean,
+                    default: false
+                }
             }
-        }
-    ],
+        ],
+        default: []
+    },
     deletedAt: {
         type: Date,
         default: null,

@@ -18,6 +18,7 @@ import Editor from '@/components/Application/Admin/Editor'
 import MediaModal from '@/components/Application/Admin/MediaModal'
 import Image from 'next/image'
 import { sizes } from '@/lib/utils'
+import ColorPicker from '@/components/ui/ColorPicker'
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
   { href: ADMIN_PRODUCT_VARIANT_SHOW, label: 'Product Variants' },
@@ -27,6 +28,7 @@ const breadcrumbData = [
 const AddProduct = () => {
   const [loading, setLoading] = useState(false)
   const [productOption, setProductOption] = useState([])
+  const [selectedColors, setSelectedColors] = useState([])
   const { data: getProduct } = useFetch('/api/product?deleteType=SD&&size=10000')
 
   // media modal states  
@@ -87,8 +89,13 @@ const AddProduct = () => {
         return showToast('error', 'Please select media.')
       }
 
+      if (selectedColors.length <= 0) {
+        return showToast('error', 'Please select at least one color.')
+      }
+
       const mediaIds = selectedMedia.map(media => media._id)
       values.media = mediaIds
+      values.colors = selectedColors
 
       const { data: response } = await axios.post('/api/product-variant/create', values)
       if (!response.success) {
@@ -96,6 +103,8 @@ const AddProduct = () => {
       }
 
       form.reset()
+      setSelectedColors([])
+      setSelectedMedia([])
       showToast('success', response.message)
     } catch (error) {
       showToast('error', error.message)
@@ -155,20 +164,17 @@ const AddProduct = () => {
                     )}
                   />
                 </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Color <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter color" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className='md:col-span-2'>
+                  <div className='border rounded-lg p-5 bg-gray-50/50'>
+                    <div className='mb-4'>
+                      <h3 className='text-lg font-semibold text-gray-900'>Colors <span className='text-red-500'>*</span></h3>
+                      <p className='text-sm text-gray-500'>Select one or more colors for this product variant</p>
+                    </div>
+                    <ColorPicker
+                      selectedColors={selectedColors}
+                      onChange={setSelectedColors}
+                    />
+                  </div>
                 </div>
                 <div className=''>
                   <FormField

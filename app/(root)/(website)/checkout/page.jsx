@@ -577,7 +577,7 @@ const Checkout = () => {
                                                             <h4 className='font-medium line-clamp-1'>
                                                                 <Link href={WEBSITE_PRODUCT_DETAILS(product.url)}>{product.name}</Link>
                                                             </h4>
-                                                            <p className='text-sm'>Color: {product.color}</p>
+                                                            <p className='text-sm'>Colors: {Array.isArray(product.colors) ? product.colors.map(c => c.name).join(', ') : product.colors}</p>
                                                             <p className='text-sm'>Size: {product.size}</p>
                                                         </div>
                                                     </div>

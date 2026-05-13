@@ -44,7 +44,7 @@ export async function GET(request, { params }) {
             variantFilter.size = { $in: size.split(',') }
         }
         if (color) {
-            variantFilter.color = color
+            variantFilter.colors = { $elemMatch: { name: color } }
         }
 
         const variant = await ProductVariantModel.findOne(variantFilter).populate('media', 'secure_url').lean()
@@ -55,7 +55,17 @@ export async function GET(request, { params }) {
 
         // get color and size 
 
-        const getColor = await ProductVariantModel.distinct('color', { product: getProduct._id })
+        // Get all variants and extract unique color names from colors array
+        const allVariantsForColors = await ProductVariantModel.find({ product: getProduct._id }).select('colors').lean()
+        const uniqueColors = new Set()
+        allVariantsForColors.forEach(variant => {
+            if (Array.isArray(variant.colors)) {
+                variant.colors.forEach(c => {
+                    if (c.name) uniqueColors.add(c.name)
+                })
+            }
+        })
+        const getColor = Array.from(uniqueColors)
 
         // Handle both old format (string) and new format (array) for sizes
         // First get all variants to process sizes

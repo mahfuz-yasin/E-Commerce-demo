@@ -15,12 +15,6 @@ export async function POST(request) {
         await connectDB()
         const payload = await request.json()
 
-        const colorSchema = z.array(z.object({
-            name: z.string().min(1, 'Color name is required'),
-            hex: z.string().min(1, 'Color hex is required'),
-            isCustom: z.boolean().optional()
-        })).min(1, 'At least one color is required')
-
         const schema = zSchema.pick({
             name: true,
             slug: true,
@@ -31,8 +25,6 @@ export async function POST(request) {
             shortDescription: true,
             longDescription: true,
             media: true
-        }).extend({
-            colors: colorSchema
         })
 
 
@@ -53,7 +45,6 @@ export async function POST(request) {
             shortDescription: encode(productData.shortDescription),
             longDescription: productData.longDescription,
             media: productData.media,
-            colors: productData.colors,
         })
 
         await newProduct.save()

@@ -57,7 +57,7 @@ const OrderDetails = async ({ params }) => {
                                                 <div>
                                                     <h4 className="text-lg line-clamp-1">
                                                         <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>{product?.productId?.name}</Link>
-                                                        <p>Color: {product?.variantId?.color}</p>
+                                                        <p>Colors: {product?.variantId?.colors?.map(c => c.name).join(', ')}</p>
                                                         <p>Size: {product?.variantId?.size}</p>
                                                     </h4>
                                                 </div>

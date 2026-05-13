@@ -6,10 +6,26 @@ const ProductVariantSchema = new mongoose.Schema({
         ref: "Product",
         required: true,
     },
-    color: {
-        type: String,
+    colors: {
+        type: [
+            {
+                name: {
+                    type: String,
+                    required: true,
+                    trim: true,
+                },
+                hex: {
+                    type: String,
+                    required: true,
+                    trim: true,
+                },
+                isCustom: {
+                    type: Boolean,
+                    default: false,
+                },
+            },
+        ],
         required: true,
-        trim: true,
     },
     size: {
         type: [String],

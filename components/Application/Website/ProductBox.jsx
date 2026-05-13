@@ -27,7 +27,7 @@ const ProductBox = ({ product }) => {
             name: product.name,
             url: product.slug,
             size: product.size || 'Default',
-            color: product.color || 'Default',
+            colors: product.colors || (product.color ? [{ name: product.color }] : [{ name: 'Default' }]),
             mrp: product.mrp,
             sellingPrice: product.sellingPrice,
             media: product?.media[0]?.secure_url,

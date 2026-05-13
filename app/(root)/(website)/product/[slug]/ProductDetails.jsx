@@ -108,7 +108,7 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                 name: product.name,
                 url: product.slug,
                 size: size,
-                color: variant.color,
+                colors: variant.colors,
                 mrp: variant.mrp,
                 sellingPrice: variant.sellingPrice,
                 media: variant?.media[0]?.secure_url,
@@ -202,13 +202,13 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
                     <div className="mt-5">
                         <p className="mb-2">
-                            <span className="font-semibold">Color: </span> {variant?.color}
+                            <span className="font-semibold">Colors: </span> {variant?.colors?.map(c => c.name).join(', ')}
                         </p>
                         <div className="flex gap-5">
                             {colors.map(color => (
                                 <Link onClick={() => setIsProductLoading(true)} href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${color}&size=${variant.size}`}
                                     key={color}
-                                    className={`border py-1 px-3 rounded-lg cursor-pointer hover:bg-primary hover:text-white ${color === variant.color ? 'bg-primary text-white' : ''}`}
+                                    className={`border py-1 px-3 rounded-lg cursor-pointer hover:bg-primary hover:text-white ${variant?.colors?.some(c => c.name === color) ? 'bg-primary text-white' : ''}`}
                                 >
                                     {color}
                                 </Link>

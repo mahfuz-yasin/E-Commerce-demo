@@ -121,7 +121,7 @@ const DirectOrderModal = ({ isOpen, onClose, product, variant, selectedSize }) =
                 {/* Product Summary */}
                 <div className='bg-gray-50 rounded-lg p-4 mb-4'>
                     <p className='font-semibold'>{product?.name}</p>
-                    <p className='text-sm text-gray-600'>Color: {variant?.color}</p>
+                    <p className='text-sm text-gray-600'>Colors: {variant?.colors?.map(c => c.name).join(', ')}</p>
                     {selectedSize && <p className='text-sm text-gray-600'>Size: {selectedSize}</p>}
                     <p className='font-bold mt-2'>{variant?.sellingPrice?.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</p>
                 </div>

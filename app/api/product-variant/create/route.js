@@ -14,15 +14,22 @@ export async function POST(request) {
         await connectDB()
         const payload = await request.json()
 
+        const colorsSchema = z.array(z.object({
+            name: z.string().min(1, 'Color name is required'),
+            hex: z.string().min(1, 'Color hex is required'),
+            isCustom: z.boolean().optional()
+        })).min(1, 'At least one color is required')
+
         const schema = zSchema.pick({
             product: true,
             sku: true,
-            color: true,
             size: true,
             mrp: true,
             sellingPrice: true,
             discountPercentage: true,
             media: true
+        }).extend({
+            colors: colorsSchema
         })
 
 
@@ -35,7 +42,7 @@ export async function POST(request) {
 
         const newProductVariant = new ProductVariantModel({
             product: variantData.product,
-            color: variantData.color,
+            colors: variantData.colors,
             size: variantData.size,
             sku: variantData.sku,
             mrp: variantData.mrp,

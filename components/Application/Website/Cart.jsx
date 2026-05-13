@@ -67,7 +67,7 @@ const Cart = () => {
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="text-sm sm:text-base font-medium mb-1 truncate">{product.name}</h4>
                                                 <p className="text-gray-500 text-sm">
-                                                    {product.size} / {product.color}
+                                                    {product.size} / {Array.isArray(product.colors) ? product.colors.map(c => c.name).join(', ') : product.colors}
                                                 </p>
                                             </div>
                                         </div>

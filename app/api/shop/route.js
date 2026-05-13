@@ -93,7 +93,12 @@ export async function GET(request) {
                                             }
                                         ]
                                     } : { $literal: true },
-                                    color ? { $in: ["$$variant.color", color.split(',')] } : { $literal: true },
+                                    color ? {
+                                        $gt: [
+                                            { $size: { $filter: { input: "$$variant.colors", as: "c", cond: { $in: ["$$c.name", color.split(',')] } } } },
+                                            0
+                                        ]
+                                    } : { $literal: true },
                                     { $gte: ["$$variant.sellingPrice", minPrice] },
                                     { $lte: ["$$variant.sellingPrice", maxPrice] },
                                 ]
@@ -129,7 +134,7 @@ export async function GET(request) {
                         alt: 1
                     },
                     variants: {
-                        color: 1,
+                        colors: 1,
                         size: 1,
                         mrp: 1,
                         sellingPrice: 1,
