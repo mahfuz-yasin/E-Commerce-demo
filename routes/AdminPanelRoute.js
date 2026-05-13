@@ -55,3 +55,6 @@ export const ADMIN_SLIDER = '/slider'
 export const ADMIN_FEATURES_ADD = '/features/add'
 export const ADMIN_FEATURES_SHOW = '/features'
 export const ADMIN_FEATURES_EDIT = (id) => id ? `/features/edit/${id}` : ''
+
+// Settings routes
+export const ADMIN_SETTINGS = '/settings'
