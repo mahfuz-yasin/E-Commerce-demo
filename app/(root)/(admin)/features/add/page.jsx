@@ -22,15 +22,26 @@ const breadcrumbData = [
 
 const AddFeature = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const [icon, setIcon] = useState('')
+    const [color, setColor] = useState('')
+    const [isActive, setIsActive] = useState(true)
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
 
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
+            const payload = {
+                ...data,
+                icon,
+                color,
+                isActive,
+                order: data.order || 0
+            }
+
             const response = await fetch('/api/admin/features', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             })
 
             const result = await response.json()
@@ -71,7 +82,7 @@ const AddFeature = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="icon">Icon *</Label>
-                                <Select onValueChange={(value) => setValue('icon', value)}>
+                                <Select onValueChange={setIcon} value={icon}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select icon" />
                                     </SelectTrigger>
@@ -82,12 +93,12 @@ const AddFeature = () => {
                                         <SelectItem value="TbRosetteDiscountFilled">TbRosetteDiscountFilled</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.icon && <p className="text-red-500 text-sm">{errors.icon.message}</p>}
+                                {!icon && <p className="text-red-500 text-sm">Icon is required</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="color">Color *</Label>
-                                <Select onValueChange={(value) => setValue('color', value)}>
+                                <Select onValueChange={setColor} value={color}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select color" />
                                     </SelectTrigger>
@@ -102,7 +113,7 @@ const AddFeature = () => {
                                         <SelectItem value="teal">Teal</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.color && <p className="text-red-500 text-sm">{errors.color.message}</p>}
+                                {!color && <p className="text-red-500 text-sm">Color is required</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -154,8 +165,8 @@ const AddFeature = () => {
                             <input
                                 type="checkbox"
                                 id="isActive"
-                                {...register('isActive')}
-                                defaultChecked={true}
+                                checked={isActive}
+                                onChange={(e) => setIsActive(e.target.checked)}
                                 className="w-4 h-4"
                             />
                             <Label htmlFor="isActive">Active</Label>

@@ -24,6 +24,9 @@ const EditFeature = () => {
     const params = useParams()
     const [isLoading, setIsLoading] = useState(false)
     const [featureData, setFeatureData] = useState(null)
+    const [icon, setIcon] = useState('')
+    const [color, setColor] = useState('')
+    const [isActive, setIsActive] = useState(true)
     const { register, handleSubmit, setValue, formState: { errors } } = useForm()
 
     useEffect(() => {
@@ -33,15 +36,15 @@ const EditFeature = () => {
                 const result = await response.json()
                 if (result.success) {
                     setFeatureData(result.data)
+                    setIcon(result.data.icon)
+                    setColor(result.data.color)
+                    setIsActive(result.data.isActive)
                     // Set form values
                     setValue('title', result.data.title)
                     setValue('description', result.data.description)
-                    setValue('icon', result.data.icon)
-                    setValue('color', result.data.color)
                     setValue('link', result.data.link)
                     setValue('buttonText', result.data.buttonText)
                     setValue('order', result.data.order)
-                    setValue('isActive', result.data.isActive)
                 }
             } catch (error) {
                 showToast('error', 'Failed to fetch feature data')
@@ -53,10 +56,18 @@ const EditFeature = () => {
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
+            const payload = {
+                ...data,
+                icon,
+                color,
+                isActive,
+                order: data.order || 0
+            }
+
             const response = await fetch(`/api/admin/features/${params.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             })
 
             const result = await response.json()
@@ -102,7 +113,7 @@ const EditFeature = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="icon">Icon *</Label>
-                                <Select onValueChange={(value) => setValue('icon', value)} defaultValue={featureData.icon}>
+                                <Select onValueChange={setIcon} value={icon}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select icon" />
                                     </SelectTrigger>
@@ -113,12 +124,12 @@ const EditFeature = () => {
                                         <SelectItem value="TbRosetteDiscountFilled">TbRosetteDiscountFilled</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.icon && <p className="text-red-500 text-sm">{errors.icon.message}</p>}
+                                {!icon && <p className="text-red-500 text-sm">Icon is required</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="color">Color *</Label>
-                                <Select onValueChange={(value) => setValue('color', value)} defaultValue={featureData.color}>
+                                <Select onValueChange={setColor} value={color}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select color" />
                                     </SelectTrigger>
@@ -133,7 +144,7 @@ const EditFeature = () => {
                                         <SelectItem value="teal">Teal</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.color && <p className="text-red-500 text-sm">{errors.color.message}</p>}
+                                {!color && <p className="text-red-500 text-sm">Color is required</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -188,8 +199,8 @@ const EditFeature = () => {
                             <input
                                 type="checkbox"
                                 id="isActive"
-                                {...register('isActive')}
-                                defaultChecked={featureData.isActive}
+                                checked={isActive}
+                                onChange={(e) => setIsActive(e.target.checked)}
                                 className="w-4 h-4"
                             />
                             <Label htmlFor="isActive">Active</Label>
