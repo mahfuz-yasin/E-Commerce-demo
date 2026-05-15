@@ -30,6 +30,11 @@ const FacebookBusinessManager = () => {
     businessManagerId: '',
     adAccountId: '',
     businessManagerStatus: 'inactive',
+    capiMethod: 'DIRECT_GRAPH_API',
+    capiGatewayUrl: '',
+    enableLDU: false,
+    offlineSyncEnabled: true,
+    variantTracking: true,
   })
 
   useEffect(() => {
@@ -168,14 +173,35 @@ const FacebookBusinessManager = () => {
     </div>
   )
 
-  const renderSwitch = (label, field) => (
+  const renderSwitch = (label, field, description = '') => (
     <div className="flex items-center justify-between space-x-2">
-      <Label htmlFor={field}>{label}</Label>
+      <div className="flex-1">
+        <Label htmlFor={field}>{label}</Label>
+        {description && <p className="text-sm text-gray-600">{description}</p>}
+      </div>
       <Switch
         id={field}
-        checked={formData[field] === 'active'}
-        onCheckedChange={(checked) => handleInputChange(field, checked ? 'active' : 'inactive')}
+        checked={formData[field] === 'active' || formData[field] === true}
+        onCheckedChange={(checked) => handleInputChange(field, checked)}
       />
+    </div>
+  )
+
+  const renderSelect = (label, field, options) => (
+    <div className="space-y-2">
+      <Label htmlFor={field}>{label}</Label>
+      <select
+        id={field}
+        value={formData[field]}
+        onChange={(e) => handleInputChange(field, e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </div>
   )
 
@@ -280,6 +306,22 @@ const FacebookBusinessManager = () => {
             
             <div className="space-y-4 pt-4 border-t">
               {renderSwitch('Enable Business Manager', 'businessManagerStatus')}
+            </div>
+
+            {/* 2026 Enterprise Settings */}
+            <div className="space-y-6 pt-6 border-t border-blue-200 bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-blue-900">2026 Enterprise Settings</h3>
+              
+              {renderSelect('CAPI Method', 'capiMethod', [
+                { value: 'DIRECT_GRAPH_API', label: 'Direct Graph API (Default)' },
+                { value: 'CAPI_GATEWAY', label: 'CAPI Gateway (AWS/Stape.io)' }
+              ])}
+              
+              {formData.capiMethod === 'CAPI_GATEWAY' && renderField('CAPI Gateway URL', 'capiGatewayUrl', 'Enter CAPI Gateway URL')}
+              
+              {renderSwitch('Enable Limited Data Use (LDU)', 'enableLDU', 'Automatically restrict data for privacy-compliant regions')}
+              {renderSwitch('Offline Event Sync', 'offlineSyncEnabled', 'Sync order status changes to Facebook for real ROAS')}
+              {renderSwitch('Variant Tracking', 'variantTracking', 'Track specific product variants (SKU, size, color)')}
             </div>
           </div>
 

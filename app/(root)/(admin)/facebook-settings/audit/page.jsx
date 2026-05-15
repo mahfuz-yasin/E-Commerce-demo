@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Facebook, CheckCircle2, XCircle, AlertCircle, RefreshCw, Activity, Database, Globe, ShoppingBag } from 'lucide-react'
+import { Facebook, CheckCircle2, XCircle, AlertCircle, RefreshCw, Activity, Database, Globe, ShoppingBag, PlayCircle, Zap } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -18,6 +18,8 @@ const breadcrumbData = [
 const FacebookAudit = () => {
   const [loading, setLoading] = useState(false)
   const [diagnosing, setDiagnosing] = useState(false)
+  const [testing, setTesting] = useState(false)
+  const [testResults, setTestResults] = useState(null)
   const [statusData, setStatusData] = useState({
     pixel: { status: 'unknown', message: 'Not checked' },
     capi: { status: 'unknown', message: 'Not checked' },
@@ -46,6 +48,23 @@ const FacebookAudit = () => {
       showToast('error', error.response?.data?.message || 'Failed to run diagnostics')
     } finally {
       setDiagnosing(false)
+    }
+  }
+
+  const runTestEventSimulator = async () => {
+    try {
+      setTesting(true)
+      const { data } = await axios.post('/api/facebook/audit/test-events')
+      if (data.success) {
+        setTestResults(data.data)
+        showToast('success', 'Test events sent successfully')
+      } else {
+        showToast('error', data.message)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to send test events')
+    } finally {
+      setTesting(false)
     }
   }
 
@@ -107,10 +126,83 @@ const FacebookAudit = () => {
                 onClick={runDiagnostics}
                 icon={<RefreshCw className="h-4 w-4 mr-2" />}
               />
+              <ButtonLoading
+                loading={testing}
+                text="Test Event Simulator"
+                className="cursor-pointer"
+                onClick={runTestEventSimulator}
+                icon={<PlayCircle className="h-4 w-4 mr-2" />}
+              />
             </div>
           </div>
         </CardHeader>
       </Card>
+
+      {testResults && (
+        <Card className="mb-6 border-2 border-blue-500">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Zap className="h-6 w-6 text-blue-600" />
+              <CardTitle className="text-lg">Test Event Results</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Browser Pixel Event</p>
+                  <p className="text-sm text-gray-600">PageView</p>
+                </div>
+                {testResults.browserPixel ? (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-green-600 font-medium">Success</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-5 w-5 text-red-600" />
+                    <span className="text-red-600 font-medium">Failed</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Server CAPI Event</p>
+                  <p className="text-sm text-gray-600">Purchase</p>
+                </div>
+                {testResults.serverCAPI ? (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-green-600 font-medium">Success</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-5 w-5 text-red-600" />
+                    <span className="text-red-600 font-medium">Failed</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Deduplication Check</p>
+                  <p className="text-sm text-gray-600">Event ID matching</p>
+                </div>
+                {testResults.deduplication ? (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-green-600 font-medium">100% Match</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-orange-600" />
+                    <span className="text-orange-600 font-medium">Check Failed</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Pixel Status */}

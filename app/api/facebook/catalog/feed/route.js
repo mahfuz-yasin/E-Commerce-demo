@@ -16,6 +16,50 @@ const FEED_TOKEN = process.env.FACEBOOK_FEED_TOKEN || null
 // Cache duration in seconds
 const CACHE_DURATION = 3600
 
+// Exchange rates (can be updated from API or database)
+const EXCHANGE_RATES = {
+    BDT: 1,
+    USD: 0.0091,
+    EUR: 0.0084,
+    GBP: 0.0072
+}
+
+/**
+ * Clean description by removing HTML tags and formatting for Meta Catalog SEO
+ * @param {string} description - Raw description
+ * @returns {string} Cleaned description
+ */
+function cleanDescription(description) {
+    if (!description) return ''
+    
+    // Remove HTML tags
+    let cleaned = description.replace(/<[^>]*>/g, '')
+    
+    // Remove extra whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim()
+    
+    // Limit to 5000 characters (Meta limit)
+    if (cleaned.length > 5000) {
+        cleaned = cleaned.substring(0, 4997) + '...'
+    }
+    
+    return cleaned
+}
+
+/**
+ * Get multi-currency pricing
+ * @param {number} priceBDT - Price in BDT
+ * @returns {object} Multi-currency pricing
+ */
+function getMultiCurrencyPricing(priceBDT) {
+    return {
+        BDT: priceBDT,
+        USD: (priceBDT * EXCHANGE_RATES.USD).toFixed(2),
+        EUR: (priceBDT * EXCHANGE_RATES.EUR).toFixed(2),
+        GBP: (priceBDT * EXCHANGE_RATES.GBP).toFixed(2)
+    }
+}
+
 export async function GET(request) {
     try {
         // Apply rate limiting
@@ -103,20 +147,27 @@ export async function GET(request) {
 
             // Main product item (if no variants or for the parent)
             if (productVariants.length === 0) {
+                const pricing = getMultiCurrencyPricing(product.sellingPrice)
                 feedData.items.push({
                     id: product._id.toString(),
                     title: product.name,
-                    description: product.shortDescription || '',
+                    description: cleanDescription(product.shortDescription || product.description || ''),
                     link: `${baseUrl}/product/${product.slug}`,
                     image_link: primaryImageUrl,
                     additional_image_link: additionalImages,
-                    price: `${product.sellingPrice} BDT`,
+                    price: `${pricing.BDT} BDT`,
+                    // Multi-currency override tags
+                    price_usd: `${pricing.USD} USD`,
+                    price_eur: `${pricing.EUR} EUR`,
+                    price_gbp: `${pricing.GBP} GBP`,
                     sale_price: product.discountPercentage > 0 ? `${product.sellingPrice} BDT` : undefined,
                     availability: 'in stock',
                     brand: 'Al Hilal Panjabi',
                     condition: 'new',
                     google_product_category: 'Apparel & Accessories > Clothing',
                     product_type: product.category?.name || 'Panjabi',
+                    // Variant parameters for DPA
+                    gender: 'male',
                     item_group_id: undefined
                 })
             }
@@ -138,20 +189,38 @@ export async function GET(request) {
                     }
                 }
 
+                // Extract variant parameters
+                const variantParams = {
+                    size: variant.size || undefined,
+                    color: variant.color || undefined,
+                    material: variant.material || undefined
+                }
+
+                const pricing = getMultiCurrencyPricing(variant.sellingPrice)
+
                 feedData.items.push({
                     id: variant._id.toString(),
                     title: `${product.name} - ${variant.name}`,
-                    description: product.shortDescription || '',
+                    description: cleanDescription(product.shortDescription || product.description || ''),
                     link: `${baseUrl}/product/${product.slug}?variant=${variant._id}`,
                     image_link: variantImageUrl,
                     additional_image_link: variantAdditionalImages,
-                    price: `${variant.sellingPrice} BDT`,
+                    price: `${pricing.BDT} BDT`,
+                    // Multi-currency override tags
+                    price_usd: `${pricing.USD} USD`,
+                    price_eur: `${pricing.EUR} EUR`,
+                    price_gbp: `${pricing.GBP} GBP`,
                     sale_price: variant.discountPercentage > 0 ? `${variant.sellingPrice} BDT` : undefined,
                     availability: 'in stock',
                     brand: 'Al Hilal Panjabi',
                     condition: 'new',
                     google_product_category: 'Apparel & Accessories > Clothing',
                     product_type: product.category?.name || 'Panjabi',
+                    // Variant parameters for DPA
+                    gender: 'male',
+                    size: variantParams.size,
+                    color: variantParams.color,
+                    material: variantParams.material,
                     item_group_id: product._id.toString()
                 })
             }
@@ -199,6 +268,38 @@ function generateXMLFeed(items) {
       <g:price>${escapeXML(item.price)}</g:price>
       <g:google_product_category>${escapeXML(item.google_product_category)}</g:google_product_category>
       <g:product_type>${escapeXML(item.product_type)}</g:product_type>`
+
+        // Multi-currency override tags
+        if (item.price_usd) {
+            xml += `
+      <g:price_usd>${escapeXML(item.price_usd)}</g:price_usd>`
+        }
+        if (item.price_eur) {
+            xml += `
+      <g:price_eur>${escapeXML(item.price_eur)}</g:price_eur>`
+        }
+        if (item.price_gbp) {
+            xml += `
+      <g:price_gbp>${escapeXML(item.price_gbp)}</g:price_gbp>`
+        }
+
+        // Variant parameters for DPA
+        if (item.gender) {
+            xml += `
+      <g:gender>${escapeXML(item.gender)}</g:gender>`
+        }
+        if (item.size) {
+            xml += `
+      <g:size>${escapeXML(item.size)}</g:size>`
+        }
+        if (item.color) {
+            xml += `
+      <g:color>${escapeXML(item.color)}</g:color>`
+        }
+        if (item.material) {
+            xml += `
+      <g:material>${escapeXML(item.material)}</g:material>`
+        }
 
         if (item.item_group_id) {
             xml += `

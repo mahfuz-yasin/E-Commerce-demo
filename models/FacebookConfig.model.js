@@ -48,6 +48,33 @@ const FacebookConfigSchema = new mongoose.Schema({
     enum: ['active', 'inactive'],
     default: 'inactive'
   },
+  // 2026 Enterprise Upgrade: CAPI Method
+  capiMethod: {
+    type: String,
+    enum: ['DIRECT_GRAPH_API', 'CAPI_GATEWAY'],
+    default: 'DIRECT_GRAPH_API'
+  },
+  capiGatewayUrl: {
+    type: String,
+    required: false,
+    set: (value) => encrypt(value),
+    get: (value) => decrypt(value)
+  },
+  // 2026 Enterprise Upgrade: Limited Data Use for international compliance
+  enableLDU: {
+    type: Boolean,
+    default: false
+  },
+  // 2026 Enterprise Upgrade: Offline event syncing
+  offlineSyncEnabled: {
+    type: Boolean,
+    default: true
+  },
+  // 2026 Enterprise Upgrade: Variant tracking
+  variantTracking: {
+    type: Boolean,
+    default: true
+  },
 
   // Business Manager Settings
   businessManagerId: {
