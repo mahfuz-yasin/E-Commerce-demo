@@ -54,12 +54,6 @@ const Settings = () => {
             description: 'Create new landing page',
             icon: '🚀',
             link: '/settings/landing-pages/create'
-        },
-        {
-            title: 'Facebook Settings',
-            description: 'Manage Facebook Pixel, CAPI, and integrations',
-            icon: '📘',
-            link: '/settings/facebook'
         }
     ]
 

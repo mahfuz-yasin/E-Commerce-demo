@@ -58,3 +58,11 @@ export const ADMIN_FEATURES_EDIT = (id) => id ? `/features/edit/${id}` : ''
 
 // Settings routes
 export const ADMIN_SETTINGS = '/settings'
+
+// Facebook Settings routes
+export const ADMIN_FACEBOOK_SETTINGS = '/facebook-settings'
+export const ADMIN_FACEBOOK_PIXEL = '/facebook-settings/pixel-capi'
+export const ADMIN_FACEBOOK_BUSINESS = '/facebook-settings/business-manager'
+export const ADMIN_FACEBOOK_CATALOG = '/facebook-settings/catalog'
+export const ADMIN_FACEBOOK_MESSENGER = '/facebook-settings/messenger'
+export const ADMIN_FACEBOOK_ADVANCED = '/facebook-settings/advanced'

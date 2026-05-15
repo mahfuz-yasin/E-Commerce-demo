@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-import { Button } from '@/components/ui/button'
+import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW, ADMIN_FACEBOOK_SETTINGS } from '@/routes/AdminPanelRoute'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,8 +14,7 @@ import { Check, X, Eye, EyeOff, RefreshCw, Facebook } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
-  { href: '/settings', label: 'Settings' },
-  { href: '', label: 'Facebook Settings' },
+  { href: ADMIN_FACEBOOK_SETTINGS, label: 'Facebook Settings' },
 ]
 
 const tabs = [
