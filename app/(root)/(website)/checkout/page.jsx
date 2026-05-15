@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea'
 import Script from 'next/script'
 import { useRouter } from 'next/navigation'
 import { trackInitiateCheckout } from '@/components/FacebookPixel'
+import { trackTikTokInitiateCheckout, generateTikTokEventId } from '@/components/TikTokPixel'
 
 import loading from '@/public/assets/images/loading.svg'
 const breadCrumb = {
@@ -86,10 +87,20 @@ const Checkout = () => {
     // Track InitiateCheckout event when cart has items
     useEffect(() => {
         if (cart.count > 0 && totalAmount > 0) {
+            // Facebook Pixel tracking
             trackInitiateCheckout(
                 totalAmount,
                 'BDT',
                 cart.count
+            )
+            
+            // TikTok Pixel tracking (with same event_id for deduplication)
+            const eventId = generateTikTokEventId()
+            trackTikTokInitiateCheckout(
+                totalAmount,
+                'BDT',
+                cart.count,
+                eventId
             )
         }
     }, [cart.count, totalAmount])

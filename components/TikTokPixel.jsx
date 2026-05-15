@@ -1,0 +1,158 @@
+'use client'
+
+import { useEffect } from 'react'
+
+/**
+ * TikTok Pixel Client Component
+ * Initializes TikTok Pixel and tracks standard events
+ */
+const TikTokPixel = () => {
+  useEffect(() => {
+    const initializeTikTokPixel = async () => {
+      try {
+        // Fetch pixel ID from server
+        const response = await fetch('/api/tiktok/pixel-config')
+        const data = await response.json()
+
+        if (data.success && data.pixelId) {
+          // Initialize TikTok Pixel
+          window.ttq = window.ttq || []
+          window.ttq.load(data.pixelId)
+          window.ttq.page()
+
+          console.log('TikTok Pixel initialized with ID:', data.pixelId)
+        }
+      } catch (error) {
+        console.error('Failed to initialize TikTok Pixel:', error)
+      }
+    }
+
+    initializeTikTokPixel()
+  }, [])
+
+  return null
+}
+
+export default TikTokPixel
+
+/**
+ * Generate UUID v4 for event deduplication
+ * @returns {string} UUID
+ */
+export function generateTikTokEventId() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
+/**
+ * Track TikTok event from client-side
+ * @param {string} eventName - Event name (ViewContent, AddToCart, etc.)
+ * @param {object} eventData - Event data
+ * @param {string} eventId - Unique event ID for deduplication
+ */
+export function trackTikTokEvent(eventName, eventData = {}, eventId = null) {
+  if (!window.ttq) {
+    console.warn('TikTok Pixel not initialized')
+    return
+  }
+
+  const finalEventId = eventId || generateTikTokEventId()
+
+  window.ttq.track(eventName, {
+    ...eventData,
+    event_id: finalEventId
+  })
+
+  return finalEventId
+}
+
+/**
+ * Track PageView event
+ */
+export function trackTikTokPageView() {
+  if (!window.ttq) return
+  window.ttq.page()
+}
+
+/**
+ * Track ViewContent event
+ * @param {string} contentId - Product ID
+ * @param {string} contentType - Content type (product)
+ * @param {string} contentName - Product name
+ * @param {number} value - Product value
+ * @param {string} currency - Currency code
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokViewContent(contentId, contentType = 'product', contentName, value, currency = 'BDT', eventId = null) {
+  return trackTikTokEvent('ViewContent', {
+    content_id: contentId,
+    content_type: contentType,
+    content_name: contentName,
+    value: value,
+    currency: currency
+  }, eventId)
+}
+
+/**
+ * Track AddToCart event
+ * @param {string} contentId - Product ID
+ * @param {string} contentType - Content type (product)
+ * @param {string} contentName - Product name
+ * @param {number} value - Product value
+ * @param {number} quantity - Quantity
+ * @param {string} currency - Currency code
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokAddToCart(contentId, contentType = 'product', contentName, value, quantity = 1, currency = 'BDT', eventId = null) {
+  return trackTikTokEvent('AddToCart', {
+    content_id: contentId,
+    content_type: contentType,
+    content_name: contentName,
+    value: value * quantity,
+    currency: currency,
+    quantity: quantity
+  }, eventId)
+}
+
+/**
+ * Track InitiateCheckout event
+ * @param {number} value - Total value
+ * @param {string} currency - Currency code
+ * @param {number} numItems - Number of items
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokInitiateCheckout(value, currency = 'BDT', numItems = 0, eventId = null) {
+  return trackTikTokEvent('InitiateCheckout', {
+    value: value,
+    currency: currency,
+    num_items: numItems
+  }, eventId)
+}
+
+/**
+ * Track Purchase event
+ * @param {string} orderId - Order ID
+ * @param {number} value - Total value
+ * @param {string} currency - Currency code
+ * @param {array} contentIds - Product IDs
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokPurchase(orderId, value, currency = 'BDT', contentIds = [], eventId = null) {
+  return trackTikTokEvent('Purchase', {
+    content_id: contentIds,
+    transaction_id: orderId,
+    value: value,
+    currency: currency
+  }, eventId)
+}
+
+/**
+ * Track CompleteRegistration event
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokCompleteRegistration(eventId = null) {
+  return trackTikTokEvent('CompleteRegistration', {}, eventId)
+}

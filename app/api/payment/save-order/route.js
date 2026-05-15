@@ -7,6 +7,7 @@ import OrderModel from "@/models/Order.model";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
 import { z } from "zod";
 import { trackPurchase } from "@/lib/facebook-capi";
+import { trackTikTokPurchase, generateTikTokEventId } from "@/lib/tiktok-events-api";
 
 export async function POST(request) {
     try {
@@ -76,9 +77,14 @@ export async function POST(request) {
             status: paymentVerification ? 'pending' : 'unverified'
         })
 
-        // Track Purchase event with Facebook CAPI
+        // Track Purchase event with Facebook CAPI and TikTok Events API
         try {
             const productIds = validatedData.products.map(p => p.productId)
+            
+            // Generate same event_id for both platforms for deduplication
+            const eventId = generateTikTokEventId()
+            
+            // Facebook CAPI tracking
             await trackPurchase(
                 newOrder._id.toString(),
                 validatedData.totalAmount,
@@ -93,7 +99,27 @@ export async function POST(request) {
                     state: validatedData.state,
                     zipCode: validatedData.pincode,
                     country: validatedData.country
-                }
+                },
+                eventId
+            )
+            
+            // TikTok Events API tracking
+            await trackTikTokPurchase(
+                validatedData.razorpay_order_id,
+                validatedData.totalAmount,
+                'BDT',
+                productIds,
+                {
+                    email: validatedData.email,
+                    phone: validatedData.phone,
+                    firstName: validatedData.name.split(' ')[0],
+                    lastName: validatedData.name.split(' ').slice(1).join(' '),
+                    city: validatedData.city,
+                    state: validatedData.state,
+                    zipCode: validatedData.pincode,
+                    country: validatedData.country
+                },
+                eventId
             )
         } catch (error) {
             console.error('Error tracking Purchase event:', error)

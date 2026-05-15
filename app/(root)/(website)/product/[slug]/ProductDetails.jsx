@@ -27,7 +27,8 @@ import DirectOrderModal from "@/components/Application/Website/DirectOrderModal"
 import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import ImageZoom from "@/components/ui/ImageZoom";
-import { trackViewContent, trackAddToCart } from "@/components/FacebookPixel";
+import { trackViewContent, trackAddToCart } from "@/components/FacebookPixel"
+import { trackTikTokViewContent, trackTikTokAddToCart, generateTikTokEventId } from "@/components/TikTokPixel";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
@@ -49,11 +50,23 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
     // Track ViewContent event
     useEffect(() => {
         if (product && variant) {
+            // Facebook Pixel tracking
             trackViewContent(
                 product._id,
                 product.name,
                 variant.sellingPrice || product.sellingPrice,
                 'BDT'
+            )
+            
+            // TikTok Pixel tracking (with same event_id for deduplication)
+            const eventId = generateTikTokEventId()
+            trackTikTokViewContent(
+                product._id,
+                'product',
+                product.name,
+                variant.sellingPrice || product.sellingPrice,
+                'BDT',
+                eventId
             )
         }
     }, [product, variant])
@@ -115,12 +128,25 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
         // Track AddToCart event (track once for the first size)
         if (selectedSizes.length > 0) {
+            // Facebook Pixel tracking
             trackAddToCart(
                 product._id,
                 product.name,
                 variant.sellingPrice,
                 qty,
                 'BDT'
+            )
+            
+            // TikTok Pixel tracking (with same event_id for deduplication)
+            const eventId = generateTikTokEventId()
+            trackTikTokAddToCart(
+                product._id,
+                'product',
+                product.name,
+                variant.sellingPrice,
+                qty,
+                'BDT',
+                eventId
             )
         }
 
