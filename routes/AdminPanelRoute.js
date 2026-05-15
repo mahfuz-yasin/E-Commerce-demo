@@ -73,6 +73,7 @@ export const ADMIN_FACEBOOK_LEAD_ADS = '/facebook-settings/lead-ads'
 // TikTok Settings routes
 export const ADMIN_TIKTOK_SETTINGS = '/tiktoksettings'
 export const ADMIN_TIKTOK_ADS_DASHBOARD = '/tiktoksettings/ads-dashboard'
+export const ADMIN_TIKTOK_AUDIENCES = '/tiktoksettings/audiences'
 
 export const ADMIN_FACEBOOK_PROMOTIONS = '/facebook-settings/promotions'
 export const ADMIN_FACEBOOK_CUSTOM_CONVERSIONS = '/facebook-settings/custom-conversions'
