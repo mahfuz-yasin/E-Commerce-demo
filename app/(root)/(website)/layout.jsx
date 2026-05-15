@@ -1,6 +1,7 @@
 import Footer from '@/components/Application/Website/Footer'
 import Header from '@/components/Application/Website/Header'
 import FacebookPixel from '@/components/FacebookPixel'
+import MessengerChat from '@/components/MessengerChat'
 import React from 'react'
 import { Kumbh_Sans } from 'next/font/google'
 
@@ -19,6 +20,7 @@ const layout = ({ children }) => {
                 {children}
             </main>
             <Footer />
+            <MessengerChat />
         </div>
     )
 }

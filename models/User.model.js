@@ -46,6 +46,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
+    facebookId: {
+        type: String,
+        trim: true,
+        sparse: true,
+        unique: true
+    },
+    facebookAccessToken: {
+        type: String,
+        trim: true
+    },
+    facebookPicture: {
+        type: String,
+        trim: true
+    },
     deletedAt: {
         type: Date,
         default: null,
