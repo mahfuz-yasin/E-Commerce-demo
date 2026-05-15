@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 import { maskSensitiveData } from "@/lib/encryption"
+import { validatePattern } from "@/lib/validation"
 
 export async function GET(request) {
     try {
@@ -43,6 +44,29 @@ export async function POST(request) {
 
         const config = await FacebookConfigModel.getConfig()
 
+        // Validate inputs
+        if (payload.appId && !validatePattern(payload.appId, 'appId')) {
+            return response(false, 400, 'Invalid App ID format')
+        }
+        if (payload.pixelId && !validatePattern(payload.pixelId, 'pixelId')) {
+            return response(false, 400, 'Invalid Pixel ID format')
+        }
+        if (payload.pageId && !validatePattern(payload.pageId, 'pageId')) {
+            return response(false, 400, 'Invalid Page ID format')
+        }
+        if (payload.businessManagerId && !validatePattern(payload.businessManagerId, 'businessManagerId')) {
+            return response(false, 400, 'Invalid Business Manager ID format')
+        }
+        if (payload.adAccountId && !validatePattern(payload.adAccountId, 'adAccountId')) {
+            return response(false, 400, 'Invalid Ad Account ID format')
+        }
+        if (payload.catalogId && !validatePattern(payload.catalogId, 'catalogId')) {
+            return response(false, 400, 'Invalid Catalog ID format')
+        }
+        if (payload.accessToken && !validatePattern(payload.accessToken, 'accessToken')) {
+            return response(false, 400, 'Invalid Access Token format')
+        }
+
         // Update fields
         const updatableFields = [
             'appId', 'appSecret', 'apiVersion',
@@ -52,7 +76,10 @@ export async function POST(request) {
             'catalogId', 'catalogStatus',
             'instagramBusinessId', 'instagramStatus',
             'whatsappBusinessId', 'whatsappStatus',
-            'domainVerificationCode', 'clientToken', 'systemUserId'
+            'domainVerificationCode', 'clientToken', 'systemUserId',
+            'leadAdsStatus', 'autoReplyStatus', 'autoReplyMessage',
+            'promotionStatus', 'promotionBannerText', 'promotionDiscountPercentage',
+            'promotionDiscountCode', 'promotionCookieExpiration'
         ]
 
         updatableFields.forEach(field => {

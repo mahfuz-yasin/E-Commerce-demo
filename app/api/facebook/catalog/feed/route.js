@@ -5,6 +5,10 @@ import ProductVariantModel from "@/models/ProductVariant.model"
 import MediaModel from "@/models/Media.model"
 import CategoryModel from "@/models/Category.model"
 import crypto from 'crypto'
+import { rateLimit } from "@/lib/rateLimiter"
+
+// Rate limiter: 50 requests per minute for feed
+const limiter = rateLimit(50, 60000, 'facebook-feed')
 
 // Optional security token - set in environment variable
 const FEED_TOKEN = process.env.FACEBOOK_FEED_TOKEN || null
@@ -14,6 +18,12 @@ const CACHE_DURATION = 3600
 
 export async function GET(request) {
     try {
+        // Apply rate limiting
+        const rateLimitResult = await limiter(request)
+        if (!rateLimitResult.success) {
+            return response(false, 429, 'Rate limit exceeded')
+        }
+
         const { searchParams } = new URL(request.url)
         const format = searchParams.get('format') || 'json'
         const limit = parseInt(searchParams.get('limit') || '100')
@@ -65,11 +75,12 @@ export async function GET(request) {
         })
 
         // Generate feed data
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alhilalpanjabi.com'
         const feedData = {
-            id: `https://alhilalpanjabi.com`,
+            id: baseUrl,
             title: 'Al Hilal Panjabi Product Catalog',
             description: 'Complete product catalog for Al Hilal Panjabi',
-            link: 'https://alhilalpanjabi.com',
+            link: baseUrl,
             updated_at: new Date().toISOString(),
             items: []
         }
@@ -96,7 +107,7 @@ export async function GET(request) {
                     id: product._id.toString(),
                     title: product.name,
                     description: product.shortDescription || '',
-                    link: `https://alhilalpanjabi.com/product/${product.slug}`,
+                    link: `${baseUrl}/product/${product.slug}`,
                     image_link: primaryImageUrl,
                     additional_image_link: additionalImages,
                     price: `${product.sellingPrice} BDT`,
@@ -129,14 +140,14 @@ export async function GET(request) {
 
                 feedData.items.push({
                     id: variant._id.toString(),
-                    title: `${product.name} - ${variant.colors?.map(c => c.name).join(', ') || ''}`,
+                    title: `${product.name} - ${variant.name}`,
                     description: product.shortDescription || '',
-                    link: `https://alhilalpanjabi.com/product/${product.slug}`,
+                    link: `${baseUrl}/product/${product.slug}?variant=${variant._id}`,
                     image_link: variantImageUrl,
-                    additional_image_link: variantAdditionalImages.length > 0 ? variantAdditionalImages : undefined,
+                    additional_image_link: variantAdditionalImages,
                     price: `${variant.sellingPrice} BDT`,
                     sale_price: variant.discountPercentage > 0 ? `${variant.sellingPrice} BDT` : undefined,
-                    availability: variant.stock > 0 ? 'in stock' : 'out of stock',
+                    availability: 'in stock',
                     brand: 'Al Hilal Panjabi',
                     condition: 'new',
                     google_product_category: 'Apparel & Accessories > Clothing',
@@ -146,32 +157,16 @@ export async function GET(request) {
             }
         }
 
-        // Generate ETag
-        const etag = crypto.createHash('md5').update(JSON.stringify(feedData)).digest('hex')
-        const lastModified = new Date().toUTCString()
-
+        const headers = new Headers()
+        headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600')
+        
         if (format === 'json') {
-            return new Response(JSON.stringify(feedData), {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': `public, max-age=${CACHE_DURATION}`,
-                    'ETag': etag,
-                    'Last-Modified': lastModified
-                }
-            })
+            headers.set('Content-Type', 'application/json')
+            return new Response(JSON.stringify(feedData), { headers })
         } else {
-            // Generate XML (RSS 2.0 format)
-            const xml = generateXMLFeed(feedData)
-            return new Response(xml, {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/xml; charset=utf-8',
-                    'Cache-Control': `public, max-age=${CACHE_DURATION}`,
-                    'ETag': etag,
-                    'Last-Modified': lastModified
-                }
-            })
+            headers.set('Content-Type', 'application/xml')
+            const xml = generateXMLFeed(feedData.items)
+            return new Response(xml, { headers })
         }
 
     } catch (error) {
@@ -179,43 +174,29 @@ export async function GET(request) {
     }
 }
 
-function generateXMLFeed(feedData) {
+function generateXMLFeed(items) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alhilalpanjabi.com'
+    
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>${escapeXML(feedData.title)}</title>
-    <link>${escapeXML(feedData.link)}</link>
-    <description>${escapeXML(feedData.description)}</description>
-    <lastBuildDate>${feedData.updated_at}</lastBuildDate>
+    <title>Al Hilal Panjabi Products</title>
+    <link>${baseUrl}</link>
+    <description>Product catalog for Facebook</description>
 `
 
-    for (const item of feedData.items) {
-        xml += `    <item>
+    items.forEach(item => {
+        xml += `
+    <item>
       <g:id>${escapeXML(item.id)}</g:id>
       <g:title>${escapeXML(item.title)}</g:title>
-      <g:description>${escapeXML(item.description)}</g:description>
+      <g:description>${escapeXML(item.description || '')}</g:description>
       <g:link>${escapeXML(item.link)}</g:link>
-      <g:image_link>${escapeXML(item.image_link)}</g:link>`
-
-        if (item.additional_image_link && item.additional_image_link.length > 0) {
-            item.additional_image_link.forEach(img => {
-                xml += `
-      <g:additional_image_link>${escapeXML(img)}</g:additional_image_link>`
-            })
-        }
-
-        xml += `
-      <g:price>${escapeXML(item.price)}</g:price>`
-
-        if (item.sale_price) {
-            xml += `
-      <g:sale_price>${escapeXML(item.sale_price)}</g:sale_price>`
-        }
-
-        xml += `
+      <g:image_link>${escapeXML(item.image_link)}</g:image_link>
+      <g:brand>Al Hilal Panjabi</g:brand>
+      <g:condition>new</g:condition>
       <g:availability>${escapeXML(item.availability)}</g:availability>
-      <g:brand>${escapeXML(item.brand)}</g:brand>
-      <g:condition>${escapeXML(item.condition)}</g:condition>
+      <g:price>${escapeXML(item.price)}</g:price>
       <g:google_product_category>${escapeXML(item.google_product_category)}</g:google_product_category>
       <g:product_type>${escapeXML(item.product_type)}</g:product_type>`
 
@@ -224,12 +205,17 @@ function generateXMLFeed(feedData) {
       <g:item_group_id>${escapeXML(item.item_group_id)}</g:item_group_id>`
         }
 
-        xml += `
-    </item>
-`
-    }
+        if (item.sale_price) {
+            xml += `
+      <g:sale_price>${escapeXML(item.sale_price)}</g:sale_price>`
+        }
 
-    xml += `  </channel>
+        xml += `
+    </item>`
+    })
+
+    xml += `
+  </channel>
 </rss>`
 
     return xml

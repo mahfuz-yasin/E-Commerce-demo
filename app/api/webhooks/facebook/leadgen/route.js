@@ -4,6 +4,10 @@ import LeadModel from "@/models/Lead.model"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
+import { rateLimit } from "@/lib/rateLimiter"
+
+// Rate limiter: 100 requests per minute for webhook
+const limiter = rateLimit(100, 60000, 'facebook-webhook')
 
 // Verify webhook signature
 function verifyWebhookSignature(payload, signature, appSecret) {
@@ -75,6 +79,12 @@ async function sendLeadNotification(lead) {
 
 export async function POST(request) {
     try {
+        // Apply rate limiting
+        const rateLimitResult = await limiter(request)
+        if (!rateLimitResult.success) {
+            return response(false, 429, 'Rate limit exceeded')
+        }
+
         const payload = await request.text()
         const signature = request.headers.get('x-hub-signature')?.replace('sha1=', '')
 
