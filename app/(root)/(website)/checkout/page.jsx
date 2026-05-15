@@ -23,6 +23,7 @@ import { BsCashCoin, BsCreditCard, BsPhone, BsCheckCircleFill } from "react-icon
 import { Textarea } from '@/components/ui/textarea'
 import Script from 'next/script'
 import { useRouter } from 'next/navigation'
+import { trackInitiateCheckout } from '@/components/FacebookPixel'
 
 import loading from '@/public/assets/images/loading.svg'
 const breadCrumb = {
@@ -81,6 +82,17 @@ const Checkout = () => {
         couponForm.setValue('minShoppingAmount', subTotalAmount)
 
     }, [cart])
+
+    // Track InitiateCheckout event when cart has items
+    useEffect(() => {
+        if (cart.count > 0 && totalAmount > 0) {
+            trackInitiateCheckout(
+                totalAmount,
+                'BDT',
+                cart.count
+            )
+        }
+    }, [cart.count, totalAmount])
 
 
 

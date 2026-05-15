@@ -27,6 +27,7 @@ import DirectOrderModal from "@/components/Application/Website/DirectOrderModal"
 import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import ImageZoom from "@/components/ui/ImageZoom";
+import { trackViewContent, trackAddToCart } from "@/components/FacebookPixel";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
     const dispatch = useDispatch()
@@ -44,6 +45,18 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
         // Don't auto-select sizes - let user choose manually
         setSelectedSizes([])
     }, [variant])
+
+    // Track ViewContent event
+    useEffect(() => {
+        if (product && variant) {
+            trackViewContent(
+                product._id,
+                product.name,
+                variant.sellingPrice || product.sellingPrice,
+                'BDT'
+            )
+        }
+    }, [product, variant])
 
     useEffect(() => {
         if (cartStore.count > 0) {
@@ -98,6 +111,17 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
     const handleAddToCart = () => {
         if (selectedSizes.length === 0) {
             return showToast('error', 'Please select at least one size.')
+        }
+
+        // Track AddToCart event (track once for the first size)
+        if (selectedSizes.length > 0) {
+            trackAddToCart(
+                product._id,
+                product.name,
+                variant.sellingPrice,
+                qty,
+                'BDT'
+            )
         }
 
         // Add each selected size as a separate cart item

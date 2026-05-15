@@ -6,6 +6,7 @@ import { zSchema } from "@/lib/zodSchema";
 import OrderModel from "@/models/Order.model";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
 import { z } from "zod";
+import { trackPurchase } from "@/lib/facebook-capi";
 
 export async function POST(request) {
     try {
@@ -74,6 +75,30 @@ export async function POST(request) {
             order_id: validatedData.razorpay_order_id,
             status: paymentVerification ? 'pending' : 'unverified'
         })
+
+        // Track Purchase event with Facebook CAPI
+        try {
+            const productIds = validatedData.products.map(p => p.productId)
+            await trackPurchase(
+                newOrder._id.toString(),
+                validatedData.totalAmount,
+                'BDT',
+                productIds,
+                {
+                    email: validatedData.email,
+                    phone: validatedData.phone,
+                    firstName: validatedData.name.split(' ')[0],
+                    lastName: validatedData.name.split(' ').slice(1).join(' '),
+                    city: validatedData.city,
+                    state: validatedData.state,
+                    zipCode: validatedData.pincode,
+                    country: validatedData.country
+                }
+            )
+        } catch (error) {
+            console.error('Error tracking Purchase event:', error)
+            // Don't fail the order if tracking fails
+        }
 
         try {
             const mailData = {

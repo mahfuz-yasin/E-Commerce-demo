@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
 import OrderModel from "@/models/Order.model";
 import { z } from "zod";
+import { trackPurchase } from "@/lib/facebook-capi";
 
 export async function POST(request) {
     try {
@@ -72,6 +73,25 @@ export async function POST(request) {
             paymentMethod: validatedData.paymentMethod,
             paymentDetails: validatedData.paymentDetails || null
         })
+
+        // Track Purchase event with Facebook CAPI
+        try {
+            const productIds = validatedData.products.map(p => p.productId)
+            await trackPurchase(
+                newOrder._id.toString(),
+                validatedData.totalAmount,
+                'BDT',
+                productIds,
+                {
+                    phone: validatedData.phone,
+                    firstName: validatedData.name.split(' ')[0],
+                    lastName: validatedData.name.split(' ').slice(1).join(' ')
+                }
+            )
+        } catch (error) {
+            console.error('Error tracking Purchase event:', error)
+            // Don't fail the order if tracking fails
+        }
 
         console.log('Order created successfully:', newOrder)
 
