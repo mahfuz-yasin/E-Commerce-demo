@@ -76,6 +76,30 @@ const FacebookConfigSchema = new mongoose.Schema({
     default: true
   },
 
+  // Ad Campaign Manager Settings
+  adCampaignManagerEnabled: {
+    type: Boolean,
+    default: false
+  },
+  adAccountAccessToken: {
+    type: String,
+    required: false,
+    set: (value) => encrypt(value),
+    get: (value) => decrypt(value)
+  },
+  adRulesEnabled: {
+    type: Boolean,
+    default: false
+  },
+  adRulesCheckInterval: {
+    type: Number,
+    default: 3 // hours
+  },
+  advantageCreativeSync: {
+    type: Boolean,
+    default: false
+  },
+
   // Business Manager Settings
   businessManagerId: {
     type: String,

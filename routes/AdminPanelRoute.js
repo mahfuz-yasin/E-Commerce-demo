@@ -72,6 +72,7 @@ export const ADMIN_FACEBOOK_LEAD_ADS = '/facebook-settings/lead-ads'
 export const ADMIN_FACEBOOK_PROMOTIONS = '/facebook-settings/promotions'
 export const ADMIN_FACEBOOK_CUSTOM_CONVERSIONS = '/facebook-settings/custom-conversions'
 export const ADMIN_FACEBOOK_AUDIT = '/facebook-settings/audit'
+export const ADMIN_FACEBOOK_CAMPAIGN_MANAGER = '/facebook-settings/campaign-manager'
 
 // Leads routes
 export const ADMIN_LEADS_DASHBOARD = '/leads'
