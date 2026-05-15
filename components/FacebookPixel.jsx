@@ -1,9 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Script from 'next/script'
-import useSWR from 'swr'
-
-const fetcher = (url) => fetch(url).then((res) => res.json())
+import useFetch from '@/hooks/useFetch'
 
 // Generate UUID v4
 function generateUUID() {
@@ -53,7 +51,7 @@ function isEventSent(eventId) {
 }
 
 const FacebookPixel = () => {
-  const { data: settings, error } = useSWR('/api/admin/facebook-settings', fetcher)
+  const { data: settings, error } = useFetch('/api/admin/facebook-settings')
   const [isInitialized, setIsInitialized] = useState(false)
   const pixelId = settings?.data?.pixelId
   const pixelStatus = settings?.data?.pixelStatus
