@@ -104,6 +104,10 @@ const FacebookConfigSchema = new mongoose.Schema({
     enum: ['active', 'inactive'],
     default: 'inactive'
   },
+  lastCatalogSync: {
+    type: Date,
+    default: null
+  },
 
   // Instagram Settings
   instagramBusinessId: {

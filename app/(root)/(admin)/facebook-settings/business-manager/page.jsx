@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Check, X, Facebook } from 'lucide-react'
+import { Check, X, Facebook, RefreshCw } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -20,7 +20,9 @@ const breadcrumbData = [
 
 const FacebookBusinessManager = () => {
   const [loading, setLoading] = useState(false)
+  const [fetchingAccounts, setFetchingAccounts] = useState(false)
   const [validation, setValidation] = useState({})
+  const [adAccounts, setAdAccounts] = useState([])
   
   const [formData, setFormData] = useState({
     businessManagerId: '',
@@ -46,6 +48,23 @@ const FacebookBusinessManager = () => {
     }
   }
 
+  const fetchAdAccounts = async () => {
+    try {
+      setFetchingAccounts(true)
+      const { data } = await axios.get('/api/facebook/business-manager/ads-accounts')
+      if (data.success) {
+        setAdAccounts(data.data)
+        showToast('success', `Found ${data.data.length} ad accounts`)
+      } else {
+        showToast('error', data.message)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch ad accounts')
+    } finally {
+      setFetchingAccounts(false)
+    }
+  }
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     validateField(field, value)
@@ -56,7 +75,7 @@ const FacebookBusinessManager = () => {
     if (field === 'businessManagerId' && value) {
       isValid = /^\d+$/.test(value)
     } else if (field === 'adAccountId' && value) {
-      isValid = /^\d+$/.test(value)
+      isValid = /^act_\d+$/.test(value) || /^\d+$/.test(value)
     }
     setValidation(prev => ({ ...prev, [field]: isValid }))
   }
@@ -120,11 +139,63 @@ const FacebookBusinessManager = () => {
         </CardHeader>
       </Card>
 
+      {/* Ad Accounts Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Ad Accounts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <ButtonLoading
+                loading={fetchingAccounts}
+                text="Fetch Ad Accounts"
+                className="cursor-pointer"
+                onClick={fetchAdAccounts}
+                icon={<RefreshCw className="h-4 w-4 mr-2" />}
+              />
+            </div>
+
+            {adAccounts.length > 0 && (
+              <div className="space-y-2">
+                <Label>Select Ad Account</Label>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {adAccounts.map(account => (
+                    <div
+                      key={account.id}
+                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                        formData.adAccountId === account.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => handleInputChange('adAccountId', account.id)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{account.name}</p>
+                          <p className="text-sm text-gray-600">{account.id}</p>
+                        </div>
+                        <div className="text-right text-sm">
+                          <p className="text-gray-600">{account.currency}</p>
+                          <p className={`text-xs ${account.account_status === 1 ? 'text-green-600' : 'text-red-600'}`}>
+                            {account.account_status === 1 ? 'Active' : 'Inactive'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardContent className="pt-6">
           <div className="space-y-6">
             {renderField('Business Manager ID', 'businessManagerId', 'Enter Business Manager ID')}
-            {renderField('Ad Account ID', 'adAccountId', 'Enter Ad Account ID')}
+            {renderField('Ad Account ID', 'adAccountId', 'Enter Ad Account ID (e.g., act_123456789)')}
             
             <div className="space-y-4 pt-4 border-t">
               {renderSwitch('Enable Business Manager', 'businessManagerStatus')}

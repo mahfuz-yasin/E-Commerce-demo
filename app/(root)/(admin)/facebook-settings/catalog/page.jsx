@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Check, X, Facebook } from 'lucide-react'
+import { Check, X, Facebook, RefreshCw, Copy, ExternalLink } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -20,7 +20,12 @@ const breadcrumbData = [
 
 const FacebookCatalog = () => {
   const [loading, setLoading] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const [validation, setValidation] = useState({})
+  const [syncStatus, setSyncStatus] = useState({
+    lastSync: null,
+    productCount: 0
+  })
   
   const [formData, setFormData] = useState({
     catalogId: '',
@@ -29,6 +34,7 @@ const FacebookCatalog = () => {
 
   useEffect(() => {
     fetchSettings()
+    fetchSyncStatus()
   }, [])
 
   const fetchSettings = async () => {
@@ -42,6 +48,17 @@ const FacebookCatalog = () => {
       showToast('error', error.response?.data?.message || 'Failed to fetch settings')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchSyncStatus = async () => {
+    try {
+      const { data } = await axios.get('/api/facebook/catalog/sync-status')
+      if (data.success) {
+        setSyncStatus(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch sync status:', error)
     }
   }
 
@@ -70,6 +87,29 @@ const FacebookCatalog = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSync = async () => {
+    try {
+      setSyncing(true)
+      const { data } = await axios.post('/api/facebook/catalog/sync')
+      if (data.success) {
+        showToast('success', data.message)
+        await fetchSyncStatus()
+      } else {
+        showToast('error', data.message)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to sync catalog')
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  const copyFeedUrl = () => {
+    const feedUrl = `${window.location.origin}/api/facebook/catalog/feed?format=json`
+    navigator.clipboard.writeText(feedUrl)
+    showToast('success', 'Feed URL copied to clipboard')
   }
 
   const renderField = (label, field, placeholder = '') => (
@@ -104,6 +144,8 @@ const FacebookCatalog = () => {
     </div>
   )
 
+  const feedUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://alhilalpanjabi.com'}/api/facebook/catalog/feed?format=json`
+
   return (
     <div>
       <BreadCrumb breadcrumbData={breadcrumbData} />
@@ -115,6 +157,57 @@ const FacebookCatalog = () => {
             <CardTitle>Catalog Settings</CardTitle>
           </div>
         </CardHeader>
+      </Card>
+
+      {/* Sync Status Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Catalog Sync Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Last Sync</p>
+              <p className="text-lg font-semibold">
+                {syncStatus.lastSync ? new Date(syncStatus.lastSync).toLocaleString() : 'Never'}
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Product Count</p>
+              <p className="text-lg font-semibold">{syncStatus.productCount}</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Status</p>
+              <p className={`text-lg font-semibold ${formData.catalogStatus === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+                {formData.catalogStatus === 'active' ? 'Active' : 'Inactive'}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-lg">
+              <p className="flex-1 text-sm font-mono text-gray-700 truncate">{feedUrl}</p>
+              <Button variant="outline" size="sm" onClick={copyFeedUrl}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <a href={feedUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Test
+                </a>
+              </Button>
+            </div>
+
+            <ButtonLoading
+              loading={syncing}
+              text="Sync Catalog Now"
+              className="cursor-pointer"
+              onClick={handleSync}
+              icon={<RefreshCw className="h-4 w-4 mr-2" />}
+            />
+          </div>
+        </CardContent>
       </Card>
 
       <Card>
