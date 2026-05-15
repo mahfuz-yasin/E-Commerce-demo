@@ -4,6 +4,7 @@ import OrderModel from "@/models/Order.model";
 import { z } from "zod";
 import { trackPurchase } from "@/lib/facebook-capi";
 import { trackTikTokPurchase, generateTikTokEventId } from "@/lib/tiktok-events-api";
+import axios from "axios";
 
 export async function POST(request) {
     try {
@@ -109,6 +110,28 @@ export async function POST(request) {
                 },
                 eventId
             )
+
+            // TikTok Offline Events API tracking
+            try {
+                await axios.post('/api/tiktok/offline-events', {
+                    eventType: 'Purchase',
+                    identifiers: {
+                        phone: validatedData.phone,
+                        email: validatedData.email,
+                        external_id: newOrder._id.toString()
+                    },
+                    eventTime: new Date().toISOString(),
+                    value: validatedData.totalAmount,
+                    currency: 'BDT',
+                    customData: {
+                        order_id: order_id,
+                        product_ids: productIds
+                    }
+                })
+            } catch (offlineError) {
+                console.error('Error sending TikTok offline event:', offlineError)
+                // Don't fail the order if offline tracking fails
+            }
         } catch (error) {
             console.error('Error tracking Purchase event:', error)
             // Don't fail the order if tracking fails
