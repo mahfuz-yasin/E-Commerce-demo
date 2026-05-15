@@ -151,6 +151,22 @@ const FacebookConfigSchema = new mongoose.Schema({
     required: false,
     set: (value) => encrypt(value),
     get: (value) => decrypt(value)
+  },
+
+  // Lead Ads Settings
+  leadAdsStatus: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive'
+  },
+  autoReplyStatus: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive'
+  },
+  autoReplyMessage: {
+    type: String,
+    required: false
   }
 }, {
   timestamps: true,
