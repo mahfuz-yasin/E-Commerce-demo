@@ -167,6 +167,29 @@ const FacebookConfigSchema = new mongoose.Schema({
   autoReplyMessage: {
     type: String,
     required: false
+  },
+
+  // Promotions Settings
+  promotionStatus: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive'
+  },
+  promotionBannerText: {
+    type: String,
+    required: false
+  },
+  promotionDiscountPercentage: {
+    type: Number,
+    default: 10
+  },
+  promotionDiscountCode: {
+    type: String,
+    required: false
+  },
+  promotionCookieExpiration: {
+    type: Number,
+    default: 7 // days
   }
 }, {
   timestamps: true,

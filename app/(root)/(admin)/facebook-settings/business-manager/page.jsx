@@ -23,6 +23,8 @@ const FacebookBusinessManager = () => {
   const [fetchingAccounts, setFetchingAccounts] = useState(false)
   const [validation, setValidation] = useState({})
   const [adAccounts, setAdAccounts] = useState([])
+  const [tokenExpiry, setTokenExpiry] = useState(null)
+  const [tokenWarning, setTokenWarning] = useState(null)
   
   const [formData, setFormData] = useState({
     businessManagerId: '',
@@ -40,11 +42,45 @@ const FacebookBusinessManager = () => {
       const { data } = await axios.get('/api/admin/facebook-settings')
       if (data.success) {
         setFormData(data.data)
+        
+        // Check token expiration if capiAccessToken exists
+        if (data.data.capiAccessToken) {
+          const tokenData = parseJWT(data.data.capiAccessToken)
+          if (tokenData && tokenData.exp) {
+            const expiryDate = new Date(tokenData.exp * 1000)
+            const now = new Date()
+            const daysUntilExpiry = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24))
+            
+            setTokenExpiry(expiryDate)
+            
+            if (daysUntilExpiry <= 7) {
+              setTokenWarning({
+                days: daysUntilExpiry,
+                expiryDate: expiryDate
+              })
+            } else {
+              setTokenWarning(null)
+            }
+          }
+        }
       }
     } catch (error) {
       showToast('error', error.response?.data?.message || 'Failed to fetch settings')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const parseJWT = (token) => {
+    try {
+      const base64Url = token.split('.')[1]
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      }).join(''))
+      return JSON.parse(jsonPayload)
+    } catch (error) {
+      return null
     }
   }
 
@@ -78,6 +114,23 @@ const FacebookBusinessManager = () => {
       isValid = /^act_\d+$/.test(value) || /^\d+$/.test(value)
     }
     setValidation(prev => ({ ...prev, [field]: isValid }))
+  }
+
+  const handleRefreshToken = async () => {
+    try {
+      setLoading(true)
+      const { data } = await axios.post('/api/facebook/refresh-token')
+      if (data.success) {
+        showToast('success', data.message)
+        await fetchSettings()
+      } else {
+        showToast('error', data.message)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to refresh token')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSave = async () => {
@@ -138,6 +191,34 @@ const FacebookBusinessManager = () => {
           </div>
         </CardHeader>
       </Card>
+
+      {tokenWarning && (
+        <Card className="mb-6 border-2 border-orange-500 bg-orange-50">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <RefreshCw className="h-6 w-6 text-orange-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-orange-900 mb-2">Token Expiration Warning</h3>
+                <p className="text-sm text-orange-800 mb-2">
+                  Your Facebook CAPI access token will expire in {tokenWarning.days} day{tokenWarning.days !== 1 ? 's' : ''} ({tokenWarning.expiryDate.toLocaleDateString()}).
+                </p>
+                <p className="text-sm text-orange-700">
+                  Please refresh your token to ensure uninterrupted tracking. Go to Facebook Business Manager to generate a new long-lived token.
+                </p>
+                <div className="mt-3">
+                  <ButtonLoading
+                    loading={loading}
+                    text="Refresh Token"
+                    className="cursor-pointer"
+                    onClick={handleRefreshToken}
+                    icon={<RefreshCw className="h-4 w-4 mr-2" />}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Ad Accounts Card */}
       <Card className="mb-6">

@@ -6,14 +6,40 @@ import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute"
 export async function middleware(request) {
     try {
         const pathname = request.nextUrl.pathname
+        const url = request.nextUrl
         const hasToken = request.cookies.has('access_token')
 
+        // Capture UTM parameters and fbclid
+        const utmParams = {
+            utm_source: url.searchParams.get('utm_source'),
+            utm_medium: url.searchParams.get('utm_medium'),
+            utm_campaign: url.searchParams.get('utm_campaign'),
+            utm_term: url.searchParams.get('utm_term'),
+            utm_content: url.searchParams.get('utm_content'),
+            fbclid: url.searchParams.get('fbclid')
+        }
+
+        // Store UTM parameters in cookies if they exist
+        const response = NextResponse.next()
+        
+        Object.entries(utmParams).forEach(([key, value]) => {
+            if (value && !request.cookies.has(key)) {
+                response.cookies.set(key, value, {
+                    httpOnly: false,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: 7 * 24 * 60 * 60 // 7 days
+                })
+            }
+        })
+
+        // Check for protected routes
         if (!hasToken) {
             // if the user is not loggedin and trying to access a protected route, redirect to login page. 
             if (!pathname.startsWith('/auth')) {
                 return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
             }
-            return NextResponse.next() // Allow access to auth routes if not logged in. 
+            return response // Allow access to auth routes if not logged in. 
         }
 
         // verify token 
@@ -42,7 +68,7 @@ export async function middleware(request) {
             return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
         }
 
-        return NextResponse.next()
+        return response
 
     } catch (error) {
         console.log(error)
