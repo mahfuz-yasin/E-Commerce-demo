@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const ViewAction = ({ href }) => {
+    if (!href) return null
     return (
         <MenuItem key="view"  >
             <Link className='flex items-center' href={href}>

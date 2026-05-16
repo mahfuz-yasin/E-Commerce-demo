@@ -16,14 +16,18 @@ const BreadCrumb = ({ breadcrumbData }) => {
                             ?
                             <div key={index} className="flex items-center">
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href={data.href}>{data.label}</BreadcrumbLink>
+                                    {data.href ? (
+                                        <BreadcrumbLink href={data.href}>{data.label}</BreadcrumbLink>
+                                    ) : (
+                                        <BreadcrumbPage>{data.label}</BreadcrumbPage>
+                                    )}
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="ms-2 mt-1" />
                             </div>
                             :
                             <div key={index} className="flex items-center">
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink className="font-semibold" href={data.href}>{data.label}</BreadcrumbLink>
+                                    <BreadcrumbPage className="font-semibold">{data.label}</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </div>
                     )
