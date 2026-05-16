@@ -8,7 +8,14 @@ import { store, persistor } from '@/store/client-store'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 const GlobalProvider = ({ children }) => {
     return (
