@@ -34,6 +34,14 @@ const TikTokSettings = () => {
   const [loadingCreatives, setLoadingCreatives] = useState(false)
   const [testEventResult, setTestEventResult] = useState(null)
   const [runningTestEvent, setRunningTestEvent] = useState(false)
+  const [sparkAuthCode, setSparkAuthCode] = useState('')
+  const [validatingSparkCode, setValidatingSparkCode] = useState(false)
+  const [commercialAudios, setCommercialAudios] = useState([])
+  const [loadingAudios, setLoadingAudios] = useState(false)
+  const [spcAction, setSpcAction] = useState({ campaignId: '', action: 'deploy', budget: '' })
+  const [runningSpcAction, setRunningSpcAction] = useState(false)
+  const [interactiveAnalytics, setInteractiveAnalytics] = useState(null)
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false)
   const [formData, setFormData] = useState({
     // General
     apiVersion: 'v1.3',
@@ -64,6 +72,7 @@ const TikTokSettings = () => {
     { id: 'pixel', label: 'Pixel & Events API', icon: Globe },
     { id: 'catalog', label: 'Catalog', icon: Database },
     { id: 'ads', label: 'Ads Manager', icon: ShoppingBag },
+    { id: 'optimizer', label: 'Campaign Optimizer', icon: RefreshCw },
     { id: 'creatives', label: 'Ad Creatives', icon: RefreshCw },
     { id: 'offline', label: 'Offline Events', icon: Database },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
@@ -267,6 +276,65 @@ const TikTokSettings = () => {
       showToast('error', error.response?.data?.message || 'Failed to run test event')
     } finally {
       setRunningTestEvent(false)
+    }
+  }
+
+  const handleValidateSparkCode = async () => {
+    try {
+      setValidatingSparkCode(true)
+      const { data } = await axios.post('/api/tiktok/spark-ads/validate', {
+        authCode: sparkAuthCode
+      })
+      if (data.success) {
+        showToast('success', 'Spark Ads code validated successfully')
+        setSparkAuthCode('')
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to validate code')
+    } finally {
+      setValidatingSparkCode(false)
+    }
+  }
+
+  const handleFetchCommercialAudios = async () => {
+    try {
+      setLoadingAudios(true)
+      const { data } = await axios.get('/api/tiktok/commercial-audio?region=BD&limit=10')
+      if (data.success) {
+        setCommercialAudios(data.data.tracks || [])
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch commercial audios')
+    } finally {
+      setLoadingAudios(false)
+    }
+  }
+
+  const handleSpcAction = async () => {
+    try {
+      setRunningSpcAction(true)
+      const { data } = await axios.post('/api/tiktok/spc/actions', spcAction)
+      if (data.success) {
+        showToast('success', `Campaign ${spcAction.action} successful`)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to perform action')
+    } finally {
+      setRunningSpcAction(false)
+    }
+  }
+
+  const handleFetchInteractiveAnalytics = async () => {
+    try {
+      setLoadingAnalytics(true)
+      const { data } = await axios.get('/api/tiktok/interactive-analytics')
+      if (data.success) {
+        setInteractiveAnalytics(data.data)
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch analytics')
+    } finally {
+      setLoadingAnalytics(false)
     }
   }
 
@@ -503,6 +571,225 @@ const TikTokSettings = () => {
                   Test Connection
                 </Button>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'optimizer' && (
+            <div className="space-y-6">
+              {/* Spark Ads & Creator Code Sync */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Spark Ads & Creator Code Sync</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="sparkAuthCode">TikTok Video Authorization Code</Label>
+                      <Input
+                        id="sparkAuthCode"
+                        type="text"
+                        placeholder="Enter Spark Ads authorization code"
+                        value={sparkAuthCode}
+                        onChange={(e) => setSparkAuthCode(e.target.value)}
+                        className="mt-2"
+                      />
+                      <p className="text-sm text-gray-600 mt-1">
+                        Get authorization code from TikTok Creator Center to link organic videos
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleValidateSparkCode}
+                      disabled={!sparkAuthCode || validatingSparkCode}
+                      className="cursor-pointer"
+                    >
+                      {validatingSparkCode ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Validating...</>
+                      ) : (
+                        <><RefreshCw className="h-4 w-4 mr-2" /> Validate & Link Video</>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* TikTok Commercial Audio Finder */}
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">TikTok Commercial Audio Library</CardTitle>
+                    <Button
+                      size="sm"
+                      onClick={handleFetchCommercialAudios}
+                      disabled={loadingAudios}
+                      className="cursor-pointer"
+                    >
+                      {loadingAudios ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Loading...</>
+                      ) : (
+                        <><RefreshCw className="h-4 w-4 mr-2" /> Refresh</>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {commercialAudios.length > 0 ? (
+                    <div className="space-y-3">
+                      {commercialAudios.map((audio, index) => (
+                        <div key={audio.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="font-semibold">{audio.name || 'Unknown Track'}</p>
+                            <p className="text-sm text-gray-600">{audio.artist || 'Unknown Artist'}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium">{audio.duration || '0:00'}</p>
+                            <p className="text-xs text-gray-500">#{index + 1} Trending</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Music className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-gray-600 mb-4">No commercial audios loaded. Click Refresh to fetch trending tracks.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Smart Plus Campaign (SPC) Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Smart Plus Campaign Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="campaignId">Campaign ID</Label>
+                      <Input
+                        id="campaignId"
+                        type="text"
+                        placeholder="Enter SPC Campaign ID"
+                        value={spcAction.campaignId}
+                        onChange={(e) => setSpcAction({ ...spcAction, campaignId: e.target.value })}
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="action">Action</Label>
+                      <select
+                        id="action"
+                        value={spcAction.action}
+                        onChange={(e) => setSpcAction({ ...spcAction, action: e.target.value })}
+                        className="mt-2 w-full p-2 border rounded-md"
+                      >
+                        <option value="deploy">Deploy Campaign</option>
+                        <option value="pause">Pause Campaign</option>
+                        <option value="budget">Adjust Budget</option>
+                      </select>
+                    </div>
+                    {spcAction.action === 'budget' && (
+                      <div>
+                        <Label htmlFor="budget">Budget Amount</Label>
+                        <Input
+                          id="budget"
+                          type="number"
+                          placeholder="Enter budget amount"
+                          value={spcAction.budget}
+                          onChange={(e) => setSpcAction({ ...spcAction, budget: e.target.value })}
+                          className="mt-2"
+                        />
+                      </div>
+                    )}
+                    <Button
+                      onClick={handleSpcAction}
+                      disabled={!spcAction.campaignId || runningSpcAction}
+                      className="cursor-pointer"
+                    >
+                      {runningSpcAction ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Processing...</>
+                      ) : (
+                        <><Activity className="h-4 w-4 mr-2" /> Execute Action</>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Interactive Component Analytics */}
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">Interactive Component Analytics</CardTitle>
+                    <Button
+                      size="sm"
+                      onClick={handleFetchInteractiveAnalytics}
+                      disabled={loadingAnalytics}
+                      className="cursor-pointer"
+                    >
+                      {loadingAnalytics ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Loading...</>
+                      ) : (
+                        <><RefreshCw className="h-4 w-4 mr-2" /> Refresh</>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {interactiveAnalytics ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                          <p className="text-sm text-gray-600">Total Orders</p>
+                          <p className="text-2xl font-bold">{interactiveAnalytics.totalOrders}</p>
+                        </div>
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                          <p className="text-sm text-gray-600">Total Revenue</p>
+                          <p className="text-2xl font-bold">৳{interactiveAnalytics.totalRevenue?.toFixed(2)}</p>
+                        </div>
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                          <p className="text-sm text-gray-600">Top Component</p>
+                          <p className="text-lg font-bold">{interactiveAnalytics.topComponent?.componentId || 'N/A'}</p>
+                        </div>
+                      </div>
+
+                      {interactiveAnalytics.componentAnalytics && interactiveAnalytics.componentAnalytics.length > 0 ? (
+                        <div>
+                          <h4 className="font-semibold mb-3">Component Performance</h4>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-4">Component ID</th>
+                                  <th className="text-left py-2 px-4">Orders</th>
+                                  <th className="text-left py-2 px-4">Revenue</th>
+                                  <th className="text-left py-2 px-4">ROAS</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {interactiveAnalytics.componentAnalytics.map((component) => (
+                                  <tr key={component.componentId} className="border-b">
+                                    <td className="py-2 px-4">{component.componentId}</td>
+                                    <td className="py-2 px-4">{component.orderCount}</td>
+                                    <td className="py-2 px-4">৳{component.revenue?.toFixed(2)}</td>
+                                    <td className="py-2 px-4">{component.roas.toFixed(2)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 text-center py-4">No component data available</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Activity className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-gray-600 mb-4">No analytics data loaded. Click Refresh to fetch interactive component analytics.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           )}
 
