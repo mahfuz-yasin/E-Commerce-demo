@@ -22,6 +22,8 @@ const GoogleSettings = () => {
   const [activeTab, setActiveTab] = useState('ga4')
   const [testingConnection, setTestingConnection] = useState(null)
   const [tokenWarning, setTokenWarning] = useState(null)
+  const [conversionActions, setConversionActions] = useState([])
+  const [loadingConversions, setLoadingConversions] = useState(false)
   
   const [formData, setFormData] = useState({
     // GA4
@@ -35,6 +37,13 @@ const GoogleSettings = () => {
     googleAdsClientId: '',
     googleAdsClientSecret: '',
     googleAdsTokenExpiry: null,
+    googleAdsConversions: {
+      purchase: '',
+      add_to_cart: '',
+      begin_checkout: '',
+      view_item: '',
+      lead: ''
+    },
     // Merchant Center
     merchantCenterId: '',
     merchantCenterFeedId: '',
@@ -123,6 +132,21 @@ const GoogleSettings = () => {
       showToast('error', `${section} connection test failed`)
     } finally {
       setTestingConnection(null)
+    }
+  }
+
+  const handleFetchConversionActions = async () => {
+    try {
+      setLoadingConversions(true)
+      const { data } = await axios.get('/api/google/conversion-actions')
+      if (data.success) {
+        setConversionActions(data.data || [])
+        showToast('success', 'Conversion actions fetched successfully')
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch conversion actions')
+    } finally {
+      setLoadingConversions(false)
     }
   }
 
@@ -263,6 +287,79 @@ const GoogleSettings = () => {
                   Authorize Google Ads
                 </Button>
               </div>
+              
+              {/* Conversion Actions */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex justify-between items-center mb-3">
+                  <Label>Conversion Actions</Label>
+                  <Button
+                    size="sm"
+                    onClick={handleFetchConversionActions}
+                    disabled={loadingConversions}
+                    className="cursor-pointer"
+                  >
+                    {loadingConversions ? (
+                      <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Loading...</>
+                    ) : (
+                      <><RefreshCw className="h-4 w-4 mr-2" /> Fetch Actions</>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600 mb-3">
+                  Map conversion actions to track events
+                </p>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="conversion-purchase">Purchase</Label>
+                    <select
+                      id="conversion-purchase"
+                      value={formData.googleAdsConversions?.purchase || ''}
+                      onChange={(e) => handleInputChange('googleAdsConversions', { ...formData.googleAdsConversions, purchase: e.target.value })}
+                      className="mt-2 w-full p-2 border rounded-md"
+                    >
+                      <option value="">Select conversion action</option>
+                      {conversionActions.map(action => (
+                        <option key={action.conversionAction.id} value={action.conversionAction.id}>
+                          {action.conversionAction.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="conversion-add-to-cart">Add to Cart</Label>
+                    <select
+                      id="conversion-add-to-cart"
+                      value={formData.googleAdsConversions?.add_to_cart || ''}
+                      onChange={(e) => handleInputChange('googleAdsConversions', { ...formData.googleAdsConversions, add_to_cart: e.target.value })}
+                      className="mt-2 w-full p-2 border rounded-md"
+                    >
+                      <option value="">Select conversion action</option>
+                      {conversionActions.map(action => (
+                        <option key={action.conversionAction.id} value={action.conversionAction.id}>
+                          {action.conversionAction.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="conversion-begin-checkout">Begin Checkout</Label>
+                    <select
+                      id="conversion-begin-checkout"
+                      value={formData.googleAdsConversions?.begin_checkout || ''}
+                      onChange={(e) => handleInputChange('googleAdsConversions', { ...formData.googleAdsConversions, begin_checkout: e.target.value })}
+                      className="mt-2 w-full p-2 border rounded-md"
+                    >
+                      <option value="">Select conversion action</option>
+                      {conversionActions.map(action => (
+                        <option key={action.conversionAction.id} value={action.conversionAction.id}>
+                          {action.conversionAction.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
               {renderSwitch('Enable Google Ads', 'isGoogleAdsActive', 'Track ad conversions')}
               <div className="pt-4 border-t">
                 <Button

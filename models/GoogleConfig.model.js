@@ -92,6 +92,18 @@ const googleConfigSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
+  // Google Ads Conversion Actions
+  googleAdsConversions: {
+    type: Map,
+    of: String,
+    default: new Map([
+      ['purchase', ''],
+      ['add_to_cart', ''],
+      ['begin_checkout', ''],
+      ['view_item', ''],
+      ['lead', '']
+    ])
+  },
   
   // Merchant Center
   merchantCenterId: {

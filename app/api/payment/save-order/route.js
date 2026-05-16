@@ -9,6 +9,8 @@ import { z } from "zod";
 import { trackPurchase } from "@/lib/facebook-capi";
 import { trackTikTokPurchase, generateTikTokEventId } from "@/lib/tiktok-events-api";
 import { trackGA4Purchase } from "@/lib/ga4-server";
+import { sendOfflineConversion } from "@/lib/google-ads";
+import { cookies } from 'next/headers'
 
 export async function POST(request) {
     try {
@@ -140,6 +142,29 @@ export async function POST(request) {
                     phone: validatedData.phone
                 }
             )
+
+            // Google Ads offline conversion tracking
+            const cookieStore = await cookies()
+            const gclid = cookieStore.get('gclid')?.value
+
+            try {
+                await sendOfflineConversion(
+                    null, // customerId will be fetched from config
+                    'purchase', // conversionType
+                    validatedData.totalAmount,
+                    gclid,
+                    {
+                        email: validatedData.email,
+                        phone: validatedData.phone,
+                        firstName: validatedData.name.split(' ')[0],
+                        lastName: validatedData.name.split(' ').slice(1).join(' '),
+                        country: validatedData.country,
+                        zipCode: validatedData.pincode
+                    }
+                )
+            } catch (error) {
+                console.error('Google Ads offline conversion tracking failed:', error)
+            }
         } catch (error) {
             console.error('Error tracking Purchase event:', error)
             // Don't fail the order if tracking fails
