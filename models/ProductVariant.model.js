@@ -66,5 +66,5 @@ const ProductVariantSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const ProductVariantModel = mongoose.models.ProductVariant || mongoose.model('ProductVariant', ProductVariantSchema, 'productvariants')
+const ProductVariantModel = (mongoose.models && mongoose.models.ProductVariant) || mongoose.model('ProductVariant', ProductVariantSchema, 'productvariants')
 export default ProductVariantModel

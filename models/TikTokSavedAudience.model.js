@@ -45,6 +45,6 @@ const tikTokSavedAudienceSchema = new mongoose.Schema({
 tikTokSavedAudienceSchema.index({ type: 1 })
 tikTokSavedAudienceSchema.index({ status: 1 })
 
-const TikTokSavedAudienceModel = mongoose.models.TikTokSavedAudience || mongoose.model('TikTokSavedAudience', tikTokSavedAudienceSchema)
+const TikTokSavedAudienceModel = (mongoose.models && mongoose.models.TikTokSavedAudience) || mongoose.model('TikTokSavedAudience', tikTokSavedAudienceSchema)
 
 export default TikTokSavedAudienceModel

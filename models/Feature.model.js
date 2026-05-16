@@ -43,6 +43,6 @@ const FeatureSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const FeatureModel = mongoose.models.Feature || mongoose.model('Feature', FeatureSchema);
+const FeatureModel = (mongoose.models && mongoose.models.Feature) || mongoose.model('Feature', FeatureSchema);
 
 export default FeatureModel;

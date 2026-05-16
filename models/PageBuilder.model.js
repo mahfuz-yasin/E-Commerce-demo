@@ -107,6 +107,6 @@ const PageBuilderSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const PageBuilderModel = mongoose.models.PageBuilder || mongoose.model('PageBuilder', PageBuilderSchema);
+const PageBuilderModel = (mongoose.models && mongoose.models.PageBuilder) || mongoose.model('PageBuilder', PageBuilderSchema);
 
 export default PageBuilderModel;

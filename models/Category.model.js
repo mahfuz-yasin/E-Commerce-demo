@@ -23,5 +23,5 @@ const categorySchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const CategoryModel = mongoose.models.Category || mongoose.model('Category', categorySchema, 'categories')
+const CategoryModel = (mongoose.models && mongoose.models.Category) || mongoose.model('Category', categorySchema, 'categories')
 export default CategoryModel

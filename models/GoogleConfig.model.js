@@ -170,5 +170,5 @@ googleConfigSchema.statics.getConfig = async function() {
   return config
 }
 
-const GoogleConfigModel = mongoose.models.GoogleConfig || mongoose.model('GoogleConfig', googleConfigSchema)
+const GoogleConfigModel = (mongoose.models && mongoose.models.GoogleConfig) || mongoose.model('GoogleConfig', googleConfigSchema)
 export default GoogleConfigModel

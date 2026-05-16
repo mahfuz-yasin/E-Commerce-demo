@@ -196,5 +196,5 @@ tikTokConfigSchema.statics.getConfig = async function() {
     return config
 }
 
-const TikTokConfigModel = mongoose.models.TikTokConfig || mongoose.model('TikTokConfig', tikTokConfigSchema)
+const TikTokConfigModel = (mongoose.models && mongoose.models.TikTokConfig) || mongoose.model('TikTokConfig', tikTokConfigSchema)
 export default TikTokConfigModel

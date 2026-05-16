@@ -81,5 +81,5 @@ userSchema.methods = {
     }
 }
 
-const UserModel = mongoose.models.User || mongoose.model('User', userSchema, 'users')
+const UserModel = (mongoose.models && mongoose.models.User) || mongoose.model('User', userSchema, 'users')
 export default UserModel

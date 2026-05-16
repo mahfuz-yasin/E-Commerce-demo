@@ -42,5 +42,5 @@ const facebookLogSchema = new mongoose.Schema({
 facebookLogSchema.index({ eventType: 1, createdAt: -1 })
 facebookLogSchema.index({ status: 1, createdAt: -1 })
 
-const FacebookLogModel = mongoose.models.FacebookLog || mongoose.model('FacebookLog', facebookLogSchema, 'facebookLogs')
+const FacebookLogModel = (mongoose.models && mongoose.models.FacebookLog) || mongoose.model('FacebookLog', facebookLogSchema, 'facebookLogs')
 export default FacebookLogModel

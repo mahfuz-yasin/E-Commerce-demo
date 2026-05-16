@@ -258,6 +258,6 @@ FacebookConfigSchema.statics.getConfig = async function() {
   return config
 }
 
-const FacebookConfigModel = mongoose.models.FacebookConfig || mongoose.model('FacebookConfig', FacebookConfigSchema)
+const FacebookConfigModel = (mongoose.models && mongoose.models.FacebookConfig) || mongoose.model('FacebookConfig', FacebookConfigSchema)
 
 export default FacebookConfigModel

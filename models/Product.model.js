@@ -85,5 +85,5 @@ const productSchema = new mongoose.Schema({
 
 
 productSchema.index({ category: 1 })
-const ProductModel = mongoose.models.Product || mongoose.model('Product', productSchema, 'products')
+const ProductModel = (mongoose.models && mongoose.models.Product) || mongoose.model('Product', productSchema, 'products')
 export default ProductModel

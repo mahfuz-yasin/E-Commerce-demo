@@ -91,5 +91,5 @@ const orderSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 
-const OrderModel = mongoose.models.Order || mongoose.model('Order', orderSchema, 'orders')
+const OrderModel = (mongoose.models && mongoose.models.Order) || mongoose.model('Order', orderSchema, 'orders')
 export default OrderModel

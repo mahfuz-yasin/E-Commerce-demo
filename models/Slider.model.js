@@ -47,5 +47,5 @@ const sliderSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 
-const SliderModel = mongoose.models.Slider || mongoose.model('Slider', sliderSchema, 'sliders')
+const SliderModel = (mongoose.models && mongoose.models.Slider) || mongoose.model('Slider', sliderSchema, 'sliders')
 export default SliderModel

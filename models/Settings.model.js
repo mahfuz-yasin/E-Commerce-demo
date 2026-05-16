@@ -34,6 +34,6 @@ const SettingsSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const SettingsModel = mongoose.models.Settings || mongoose.model('Settings', SettingsSchema);
+const SettingsModel = (mongoose.models && mongoose.models.Settings) || mongoose.model('Settings', SettingsSchema);
 
 export default SettingsModel;

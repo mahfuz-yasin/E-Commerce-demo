@@ -37,6 +37,6 @@ tikTokWebhookLogSchema.index({ verified: 1 })
 tikTokWebhookLogSchema.index({ processed: 1 })
 tikTokWebhookLogSchema.index({ createdAt: -1 })
 
-const TikTokWebhookLogModel = mongoose.models.TikTokWebhookLog || mongoose.model('TikTokWebhookLog', tikTokWebhookLogSchema)
+const TikTokWebhookLogModel = (mongoose.models && mongoose.models.TikTokWebhookLog) || mongoose.model('TikTokWebhookLog', tikTokWebhookLogSchema)
 
 export default TikTokWebhookLogModel

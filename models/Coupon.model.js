@@ -30,5 +30,5 @@ const couponSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const CouponModel = mongoose.models.Coupon || mongoose.model('Coupon', couponSchema, 'coupons')
+const CouponModel = (mongoose.models && mongoose.models.Coupon) || mongoose.model('Coupon', couponSchema, 'coupons')
 export default CouponModel

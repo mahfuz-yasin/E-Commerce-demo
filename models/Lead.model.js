@@ -65,5 +65,5 @@ leadSchema.index({ facebookLeadId: 1 })
 leadSchema.index({ status: 1 })
 leadSchema.index({ createdAt: -1 })
 
-const LeadModel = mongoose.models.Lead || mongoose.model('Lead', leadSchema, 'leads')
+const LeadModel = (mongoose.models && mongoose.models.Lead) || mongoose.model('Lead', leadSchema, 'leads')
 export default LeadModel

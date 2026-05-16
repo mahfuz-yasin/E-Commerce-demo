@@ -39,5 +39,5 @@ const customConversionSchema = new mongoose.Schema({
 customConversionSchema.index({ status: 1 })
 customConversionSchema.index({ ruleType: 1 })
 
-const CustomConversionModel = mongoose.models.CustomConversion || mongoose.model('CustomConversion', customConversionSchema, 'customConversions')
+const CustomConversionModel = (mongoose.models && mongoose.models.CustomConversion) || mongoose.model('CustomConversion', customConversionSchema, 'customConversions')
 export default CustomConversionModel
