@@ -64,15 +64,27 @@ const Settings = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {settingsSections.map((section, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
-                        <Link href={section.link}>
-                            <CardHeader>
-                                <div className="text-4xl mb-2">{section.icon}</div>
-                                <CardTitle className="text-xl">{section.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-gray-600">{section.description}</p>
-                            </CardContent>
-                        </Link>
+                        {section.link ? (
+                            <Link href={section.link}>
+                                <CardHeader>
+                                    <div className="text-4xl mb-2">{section.icon}</div>
+                                    <CardTitle className="text-xl">{section.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-gray-600">{section.description}</p>
+                                </CardContent>
+                            </Link>
+                        ) : (
+                            <>
+                                <CardHeader>
+                                    <div className="text-4xl mb-2">{section.icon}</div>
+                                    <CardTitle className="text-xl">{section.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-gray-600">{section.description}</p>
+                                </CardContent>
+                            </>
+                        )}
                     </Card>
                 ))}
             </div>

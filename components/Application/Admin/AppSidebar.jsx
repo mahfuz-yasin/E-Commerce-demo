@@ -43,14 +43,25 @@ const AppSidebar = () => {
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton asChild className="font-semibold px-2 py-5">
-                                        <Link href={menu?.url}>
-                                            <menu.icon />
-                                            {menu.title}
+                                        {menu?.url ? (
+                                            <Link href={menu.url}>
+                                                <menu.icon />
+                                                {menu.title}
 
-                                            {menu.submenu && menu.submenu.length > 0 &&
-                                                <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                            }
-                                        </Link>
+                                                {menu.submenu && menu.submenu.length > 0 &&
+                                                    <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                }
+                                            </Link>
+                                        ) : (
+                                            <div className="flex items-center w-full">
+                                                <menu.icon />
+                                                {menu.title}
+
+                                                {menu.submenu && menu.submenu.length > 0 &&
+                                                    <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                }
+                                            </div>
+                                        )}
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
 
@@ -61,9 +72,13 @@ const AppSidebar = () => {
                                             {menu.submenu.map((submenuItem, subMenuIndex) => (
                                                 <SidebarMenuSubItem key={subMenuIndex}>
                                                     <SidebarMenuSubButton asChild className="px-2 py-5">
-                                                        <Link href={submenuItem.url}>
-                                                            {submenuItem.title}
-                                                        </Link>
+                                                        {submenuItem.url ? (
+                                                            <Link href={submenuItem.url}>
+                                                                {submenuItem.title}
+                                                            </Link>
+                                                        ) : (
+                                                            <span>{submenuItem.title}</span>
+                                                        )}
                                                     </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>
                                             ))}
