@@ -81,7 +81,7 @@ const handler = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id
         session.user.role = token.role
         session.user.facebookId = token.facebookId
