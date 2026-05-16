@@ -9,7 +9,7 @@ export const cartReducer = createSlice({
     initialState,
     reducers: {
         addIntoCart: (state, action) => {
-            const payload = action.payload
+            const payload = action.payload || {}
             const existingProduct = state.products.findIndex(
                 (product) => product.productId === payload.productId && product.variantId === payload.variantId && product.size === payload.size
             )
@@ -22,7 +22,8 @@ export const cartReducer = createSlice({
             }
         },
         increaseQuantity: (state, action) => {
-            const { productId, variantId, size } = action.payload
+            const payload = action.payload || {}
+            const { productId, variantId, size } = payload
             const existingProduct = state.products.findIndex(
                 (product) => product.productId === productId && product.variantId === variantId && product.size === size
             )
@@ -32,7 +33,8 @@ export const cartReducer = createSlice({
             }
         },
         decreaseQuantity: (state, action) => {
-            const { productId, variantId, size } = action.payload
+            const payload = action.payload || {}
+            const { productId, variantId, size } = payload
             const existingProduct = state.products.findIndex(
                 (product) => product.productId === productId && product.variantId === variantId && product.size === size
             )
@@ -44,7 +46,8 @@ export const cartReducer = createSlice({
             }
         },
         removeFromCart: (state, action) => {
-            const { productId, variantId, size } = action.payload
+            const payload = action.payload || {}
+            const { productId, variantId, size } = payload
 
             state.products = state.products.filter((product) => !(product.productId === productId && product.variantId === variantId && product.size === size))
 
