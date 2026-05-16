@@ -39,12 +39,10 @@ const ShowCategory = () => {
             <Card className="py-0 rounded shadow-sm gap-0">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
                     <div className="flex justify-between items-center">
-                        <h4 className='text-xl font-semibold'>Show Category</h4>
-                        <Button>
-                            <FiPlus />
+                        <h4 className='text-xl font-semibold'>Manage Category</h4>
+                        <Button asChild>
                             <Link href={ADMIN_CATEGORY_ADD}>New Category</Link>
                         </Button>
-
                     </div>
                 </CardHeader>
                 <CardContent className="px-0 pt-0">

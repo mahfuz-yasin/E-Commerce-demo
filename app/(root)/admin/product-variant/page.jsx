@@ -39,9 +39,8 @@ const ShowProductVariant = () => {
             <Card className="py-0 rounded shadow-sm gap-0">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
                     <div className="flex justify-between items-center">
-                        <h4 className='text-xl font-semibold'>Show Product Variants</h4>
-                        <Button>
-                            <FiPlus />
+                        <h4 className='text-xl font-semibold'>Manage Product Variant</h4>
+                        <Button asChild>
                             <Link href={ADMIN_PRODUCT_VARIANT_ADD}>New Variant</Link>
                         </Button>
                     </div>
