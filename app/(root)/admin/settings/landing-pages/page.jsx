@@ -12,7 +12,7 @@ import { FiPlus } from "react-icons/fi"
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
-    { href: '/settings', label: 'Settings' },
+    { href: '/admin/settings', label: 'Settings' },
     { href: '', label: 'All Landing Pages' },
 ]
 
@@ -55,7 +55,7 @@ const ShowLandingPages = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        const editHref = `/settings/landing-pages/create/builder?edit=${row.original._id}`
+        const editHref = `/admin/settings/landing-pages/create/builder?edit=${row.original._id}`
         if (editHref) {
             actionMenu.push(<EditAction key="edit" href={editHref} />)
         }
@@ -72,7 +72,7 @@ const ShowLandingPages = () => {
                     <div className="flex justify-between items-center">
                         <h4 className='text-xl font-semibold'>All Landing Pages</h4>
                         <Button asChild>
-                            <Link href="/settings/landing-pages/create/builder">
+                            <Link href="/admin/settings/landing-pages/create/builder">
                                 <FiPlus />
                                 Create Landing Page
                             </Link>
