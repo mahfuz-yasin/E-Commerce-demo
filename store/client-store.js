@@ -24,3 +24,8 @@ export const persistor = {
     pause: () => {},
     resume: () => {},
 }
+
+// Add error boundary for store access
+if (typeof window !== 'undefined') {
+    window.store = store
+}
