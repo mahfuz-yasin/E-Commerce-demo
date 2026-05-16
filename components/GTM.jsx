@@ -3,64 +3,59 @@ import { useEffect, useState } from 'react'
 import Script from 'next/script'
 import axios from 'axios'
 
-const GTM = ({ previewMode = false }) => {
+const GTM = () => {
   const [gtmConfig, setGtmConfig] = useState(null)
-  const [isConfigured, setIsConfigured] = useState(false)
+  const [isProduction, setIsProduction] = useState(false)
 
   useEffect(() => {
-    fetchGTMConfig()
-  }, [])
+    setIsProduction(process.env.NODE_ENV === 'production')
+    
+    // Only fetch GTM config in production
+    if (isProduction) {
+      fetchGTMConfig()
+    }
+  }, [isProduction])
 
   const fetchGTMConfig = async () => {
     try {
-      const { data } = await axios.get('/api/admin/google-settings')
-      if (data.success && data.data.isGTMActive === 'active') {
+      const { data } = await axios.get('/api/google/gtm/config')
+      if (data.success) {
         setGtmConfig(data.data)
-        setIsConfigured(true)
       }
     } catch (error) {
-      console.error('Failed to fetch GTM config:', error)
+      console.error('Error fetching GTM config:', error)
     }
   }
 
-  if (!isConfigured || !gtmConfig?.gtmContainerId) {
+  if (!gtmConfig || !gtmConfig.gtmContainerId || !isProduction) {
     return null
   }
 
-  const containerId = gtmConfig.gtmContainerId
-  const auth = gtmConfig.gtmAuth || ''
-  const preview = gtmConfig.gtmPreview || ''
+  const gtmContainerId = gtmConfig.gtmContainerId
+  const gtmAuth = gtmConfig.gtmAuth
+  const gtmPreview = gtmConfig.gtmPreview
 
-  // Initialize DataLayer
-  if (typeof window !== 'undefined') {
+  // Initialize dataLayer
+  useEffect(() => {
     window.dataLayer = window.dataLayer || []
-  }
+    window.dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      event: 'gtm.js'
+    })
+  }, [])
 
   return (
     <>
       {/* GTM Head Script */}
       <Script
-        id="gtm-head"
+        src={`https://www.googletagmanager.com/gtm.js?id=${gtmContainerId}${gtmAuth ? `&gtm_auth=${gtmAuth}` : ''}${gtmPreview ? `&gtm_preview=${gtmPreview}` : ''}`}
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function(w,d,s,l,i){
-              w[l]=w[l]||[];
-              w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-              var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
-              j.async=true;
-              j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl+'${auth ? '&gtm_auth='+auth : ''}${preview ? '&gtm_preview='+preview+'&gtm_cookies_win=x' : ''}';
-              f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${containerId}');
-          `
-        }}
       />
 
       {/* GTM NoScript */}
       <noscript>
         <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${containerId}`}
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmContainerId}`}
           height="0"
           width="0"
           style={{ display: 'none', visibility: 'hidden' }}
