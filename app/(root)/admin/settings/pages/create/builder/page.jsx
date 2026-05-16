@@ -24,38 +24,52 @@ const breadcrumbData = [
 
 const componentLibrary = [
     {
-        id: 'hero',
-        name: 'Hero Section',
-        icon: '🎯',
-        description: 'Large hero banner with title and CTA',
-        color: 'from-blue-500 to-purple-600'
+        id: 'heading',
+        name: 'Heading',
+        icon: '📝',
+        description: 'Custom heading with animation',
+        color: 'from-blue-500 to-blue-600'
     },
     {
-        id: 'text',
-        name: 'Text Block',
-        icon: '📝',
-        description: 'Rich text content block',
-        color: 'from-green-500 to-teal-600'
+        id: 'paragraph',
+        name: 'Paragraph',
+        icon: '�',
+        description: 'Text paragraph with styling',
+        color: 'from-green-500 to-green-600'
     },
     {
         id: 'image',
         name: 'Image',
         icon: '🖼️',
-        description: 'Image with optional caption',
+        description: 'Image with animation and caption',
         color: 'from-pink-500 to-rose-600'
+    },
+    {
+        id: 'divider',
+        name: 'Divider',
+        icon: '➖',
+        description: 'Horizontal line with style',
+        color: 'from-slate-500 to-slate-600'
+    },
+    {
+        id: 'link',
+        name: 'Link',
+        icon: '🔗',
+        description: 'Clickable link with animation',
+        color: 'from-orange-500 to-red-600'
+    },
+    {
+        id: 'color',
+        name: 'Color Block',
+        icon: '🎨',
+        description: 'Colored section with animation',
+        color: 'from-purple-500 to-purple-600'
     },
     {
         id: 'button',
         name: 'Button',
-        icon: '🔘',
-        description: 'Call-to-action button',
-        color: 'from-orange-500 to-red-600'
-    },
-    {
-        id: 'section',
-        name: 'Section',
-        icon: '📦',
-        description: 'Container section with background',
+        icon: '�',
+        description: 'Call-to-action button with animation',
         color: 'from-cyan-500 to-blue-600'
     },
     {
@@ -66,32 +80,32 @@ const componentLibrary = [
         color: 'from-gray-500 to-gray-600'
     },
     {
-        id: 'divider',
-        name: 'Divider',
-        icon: '➖',
-        description: 'Horizontal line separator',
-        color: 'from-slate-500 to-slate-600'
+        id: 'hero',
+        name: 'Hero Section',
+        icon: '🎯',
+        description: 'Large hero banner with animation',
+        color: 'from-blue-500 to-purple-600'
+    },
+    {
+        id: 'text',
+        name: 'Text Block',
+        icon: '📝',
+        description: 'Rich text content block',
+        color: 'from-green-500 to-teal-600'
+    },
+    {
+        id: 'section',
+        name: 'Section',
+        icon: '�',
+        description: 'Container section with background',
+        color: 'from-cyan-500 to-blue-600'
     },
     {
         id: 'video',
         name: 'Video',
         icon: '🎬',
-        description: 'Video embed or upload',
+        description: 'Video embed with animation',
         color: 'from-red-500 to-pink-600'
-    },
-    {
-        id: 'gallery',
-        name: 'Gallery',
-        icon: '🖼️',
-        description: 'Image grid gallery',
-        color: 'from-violet-500 to-purple-600'
-    },
-    {
-        id: 'form',
-        name: 'Form',
-        icon: '📋',
-        description: 'Contact or lead generation form',
-        color: 'from-amber-500 to-orange-600'
     }
 ]
 
@@ -103,6 +117,9 @@ const PageBuilder = () => {
     const [pageSlug, setPageSlug] = useState('')
     const [pageDescription, setPageDescription] = useState('')
     const [featuredImage, setFeaturedImage] = useState('')
+    const [metaTitle, setMetaTitle] = useState('')
+    const [metaDescription, setMetaDescription] = useState('')
+    const [metaKeywords, setMetaKeywords] = useState('')
     const [components, setComponents] = useState([])
     const [selectedComponent, setSelectedComponent] = useState(null)
     const [selectedCategories, setSelectedCategories] = useState([])
@@ -248,26 +265,96 @@ const PageBuilder = () => {
 
     const getDefaultContent = (type) => {
         switch (type) {
-            case 'hero':
-                return { title: 'Welcome to Our Page', subtitle: 'Your subtitle here', buttonText: 'Get Started', buttonLink: '/' }
-            case 'text':
-                return { text: 'Your text content here...' }
+            case 'heading':
+                return { 
+                    text: 'Heading Text', 
+                    level: 'h2',
+                    align: 'left',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'paragraph':
+                return { 
+                    text: 'Your paragraph text here...', 
+                    align: 'left',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
             case 'image':
-                return { url: '', alt: 'Image description', caption: '' }
-            case 'button':
-                return { text: 'Click Me', link: '/', variant: 'primary' }
-            case 'section':
-                return { backgroundColor: '#ffffff', padding: '40px' }
-            case 'spacer':
-                return { height: '40px' }
+                return { 
+                    url: '', 
+                    alt: 'Image description', 
+                    caption: '',
+                    animation: 'none',
+                    animationDelay: '0s',
+                    rounded: false
+                }
             case 'divider':
-                return { color: '#e5e7eb', thickness: '1px' }
+                return { 
+                    color: '#e5e7eb', 
+                    thickness: '1px',
+                    style: 'solid',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'link':
+                return { 
+                    text: 'Link Text', 
+                    url: '/',
+                    openInNewTab: false,
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'color':
+                return { 
+                    backgroundColor: '#3b82f6',
+                    height: '100px',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'button':
+                return { 
+                    text: 'Click Me', 
+                    link: '/', 
+                    variant: 'primary',
+                    size: 'medium',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'spacer':
+                return { 
+                    height: '40px',
+                    animation: 'none'
+                }
+            case 'hero':
+                return { 
+                    title: 'Welcome to Our Page', 
+                    subtitle: 'Your subtitle here', 
+                    buttonText: 'Get Started', 
+                    buttonLink: '/',
+                    animation: 'fade-in',
+                    animationDelay: '0s'
+                }
+            case 'text':
+                return { 
+                    text: 'Your text content here...',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
+            case 'section':
+                return { 
+                    backgroundColor: '#ffffff', 
+                    padding: '40px',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
             case 'video':
-                return { url: '', type: 'embed' }
-            case 'gallery':
-                return { images: [] }
-            case 'form':
-                return { fields: [] }
+                return { 
+                    url: '', 
+                    type: 'embed',
+                    animation: 'none',
+                    animationDelay: '0s'
+                }
             default:
                 return {}
         }
@@ -304,6 +391,9 @@ const PageBuilder = () => {
                     relatedCategories: relatedCategories,
                     relatedProducts: relatedProducts,
                     styles: pageStyles,
+                    metaTitle: metaTitle,
+                    metaDescription: metaDescription,
+                    metaKeywords: metaKeywords,
                     isActive: true,
                     isPublished: false
                 })
@@ -328,8 +418,8 @@ const PageBuilder = () => {
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Component Library */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
+                {/* Component Library - Collapsible on mobile */}
                 <Card className="lg:col-span-1 bg-gradient-to-br from-slate-50 to-slate-100 border-0 shadow-xl">
                     <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
                         <div className="flex items-center gap-2">
@@ -337,20 +427,20 @@ const PageBuilder = () => {
                             <h4 className='text-lg font-semibold'>Components</h4>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-4 space-y-3">
+                    <CardContent className="p-3 lg:p-4 space-y-2 lg:space-y-3 max-h-[60vh] overflow-y-auto">
                         {componentLibrary.map((component) => (
                             <Button
                                 key={component.id}
                                 variant="outline"
-                                className="w-full justify-start h-auto py-4 px-4 hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-400 group"
+                                className="w-full justify-start h-auto py-2 lg:py-4 px-3 lg:px-4 hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-400 group text-sm lg:text-base"
                                 onClick={() => addComponent(component.id)}
                             >
-                                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${component.color} flex items-center justify-center mr-3 shadow-md group-hover:scale-110 transition-transform`}>
-                                    <span className="text-2xl">{component.icon}</span>
+                                <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-br ${component.color} flex items-center justify-center mr-2 lg:mr-3 shadow-md group-hover:scale-110 transition-transform`}>
+                                    <span className="text-xl lg:text-2xl">{component.icon}</span>
                                 </div>
-                                <div className="text-left">
-                                    <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{component.name}</div>
-                                    <div className="text-xs text-gray-500">{component.description}</div>
+                                <div className="text-left flex-1">
+                                    <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-xs lg:text-sm">{component.name}</div>
+                                    <div className="text-xs text-gray-500 hidden lg:block">{component.description}</div>
                                 </div>
                                 <FaPlus className="ml-auto text-gray-400 group-hover:text-blue-600 transition-colors" />
                             </Button>
@@ -363,7 +453,7 @@ const PageBuilder = () => {
                     {/* Page Settings */}
                     <Card className="shadow-xl border-2 border-blue-100">
                         <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-2">
                                     <IoMdSettings className="text-xl" />
                                     <h4 className='text-lg font-semibold'>Page Settings</h4>
@@ -373,15 +463,15 @@ const PageBuilder = () => {
                                     variant="outline" 
                                     onClick={handleAIGenerate}
                                     disabled={isGenerating}
-                                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 hover:from-pink-600 hover:to-rose-600 shadow-lg"
+                                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 hover:from-pink-600 hover:to-rose-600 shadow-lg text-sm"
                                 >
                                     <FaRobot className="mr-2" />
                                     {isGenerating ? 'Generating...' : 'AI Generate'}
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-slate-50">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-5 bg-gradient-to-b from-white to-slate-50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="pageTitle" className="text-sm font-semibold text-gray-700">Page Title *</Label>
                                     <Input
@@ -456,6 +546,45 @@ const PageBuilder = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {/* SEO Section */}
+                            <div className="space-y-4 pt-4 border-t-2 border-gray-200">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <FaRobot className="text-purple-600" />
+                                    <h5 className="text-lg font-semibold text-gray-800">SEO Settings</h5>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="metaTitle" className="text-sm font-semibold text-gray-700">Meta Title</Label>
+                                    <Input
+                                        id="metaTitle"
+                                        value={metaTitle}
+                                        onChange={(e) => setMetaTitle(e.target.value)}
+                                        placeholder="SEO meta title"
+                                        className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="metaDescription" className="text-sm font-semibold text-gray-700">Meta Description</Label>
+                                    <Textarea
+                                        id="metaDescription"
+                                        value={metaDescription}
+                                        onChange={(e) => setMetaDescription(e.target.value)}
+                                        placeholder="SEO meta description"
+                                        rows={3}
+                                        className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="metaKeywords" className="text-sm font-semibold text-gray-700">Meta Keywords</Label>
+                                    <Input
+                                        id="metaKeywords"
+                                        value={metaKeywords}
+                                        onChange={(e) => setMetaKeywords(e.target.value)}
+                                        placeholder="keyword1, keyword2, keyword3"
+                                        className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                    />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -467,8 +596,8 @@ const PageBuilder = () => {
                                 <h4 className='text-lg font-semibold'>Page Styles</h4>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-purple-50">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-5 bg-gradient-to-b from-white to-purple-50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="animation" className="text-sm font-semibold text-gray-700">Animation</Label>
                                     <Select
@@ -659,7 +788,7 @@ const PageBuilder = () => {
                     {/* Canvas */}
                     <Card className="shadow-xl border-2 border-indigo-100">
                         <CardHeader className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-lg">
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-2">
                                     <FaEdit className="text-xl" />
                                     <h4 className='text-lg font-semibold'>Page Canvas</h4>
@@ -669,7 +798,7 @@ const PageBuilder = () => {
                                 ) : (
                                     <Button 
                                         onClick={handleSave}
-                                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 shadow-lg"
+                                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 shadow-lg w-full sm:w-auto"
                                     >
                                         <FaSave className="mr-2" />
                                         Save Page
@@ -677,7 +806,7 @@ const PageBuilder = () => {
                                 )}
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 bg-gradient-to-b from-white to-indigo-50">
+                        <CardContent className="p-4 lg:p-6 bg-gradient-to-b from-white to-indigo-50">
                             {components.length === 0 ? (
                                 <div className="text-center py-16 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border-2 border-dashed border-indigo-200">
                                     <div className="mb-4">
@@ -782,6 +911,198 @@ const ComponentEditor = ({ component, onUpdate }) => {
 
     const renderEditor = () => {
         switch (component.type) {
+            case 'heading':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Heading Text</Label>
+                            <Input
+                                value={component.content.text || ''}
+                                onChange={(e) => onUpdate('content', { ...component.content, text: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Heading Level</Label>
+                            <Select
+                                value={component.content.level || 'h2'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, level: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="h1">H1</SelectItem>
+                                    <SelectItem value="h2">H2</SelectItem>
+                                    <SelectItem value="h3">H3</SelectItem>
+                                    <SelectItem value="h4">H4</SelectItem>
+                                    <SelectItem value="h5">H5</SelectItem>
+                                    <SelectItem value="h6">H6</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label>Alignment</Label>
+                            <Select
+                                value={component.content.align || 'left'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, align: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="left">Left</SelectItem>
+                                    <SelectItem value="center">Center</SelectItem>
+                                    <SelectItem value="right">Right</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
+            case 'paragraph':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Paragraph Text</Label>
+                            <Textarea
+                                value={component.content.text || ''}
+                                onChange={(e) => onUpdate('content', { ...component.content, text: e.target.value })}
+                                rows={5}
+                            />
+                        </div>
+                        <div>
+                            <Label>Alignment</Label>
+                            <Select
+                                value={component.content.align || 'left'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, align: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="left">Left</SelectItem>
+                                    <SelectItem value="center">Center</SelectItem>
+                                    <SelectItem value="right">Right</SelectItem>
+                                    <SelectItem value="justify">Justify</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
+            case 'divider':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Color</Label>
+                            <Input
+                                type="color"
+                                value={component.content.color || '#e5e7eb'}
+                                onChange={(e) => onUpdate('content', { ...component.content, color: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Thickness</Label>
+                            <Input
+                                type="number"
+                                value={component.content.thickness || '1'}
+                                onChange={(e) => onUpdate('content', { ...component.content, thickness: e.target.value + 'px' })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Style</Label>
+                            <Select
+                                value={component.content.style || 'solid'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, style: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="solid">Solid</SelectItem>
+                                    <SelectItem value="dashed">Dashed</SelectItem>
+                                    <SelectItem value="dotted">Dotted</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
+            case 'link':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Link Text</Label>
+                            <Input
+                                value={component.content.text || ''}
+                                onChange={(e) => onUpdate('content', { ...component.content, text: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>URL</Label>
+                            <Input
+                                value={component.content.url || ''}
+                                onChange={(e) => onUpdate('content', { ...component.content, url: e.target.value })}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={component.content.openInNewTab || false}
+                                onChange={(e) => onUpdate('content', { ...component.content, openInNewTab: e.target.checked })}
+                            />
+                            <Label>Open in new tab</Label>
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
+            case 'color':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Background Color</Label>
+                            <Input
+                                type="color"
+                                value={component.content.backgroundColor || '#3b82f6'}
+                                onChange={(e) => onUpdate('content', { ...component.content, backgroundColor: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Height (px)</Label>
+                            <Input
+                                type="number"
+                                value={component.content.height || '100'}
+                                onChange={(e) => onUpdate('content', { ...component.content, height: e.target.value + 'px' })}
+                            />
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
             case 'hero':
                 return (
                     <div className="space-y-3">
@@ -813,6 +1134,12 @@ const ComponentEditor = ({ component, onUpdate }) => {
                                 onChange={(e) => onUpdate('content', { ...component.content, buttonLink: e.target.value })}
                             />
                         </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
                     </div>
                 )
             case 'text':
@@ -826,6 +1153,12 @@ const ComponentEditor = ({ component, onUpdate }) => {
                                 rows={5}
                             />
                         </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
                     </div>
                 )
             case 'image':
@@ -865,13 +1198,20 @@ const ComponentEditor = ({ component, onUpdate }) => {
                                 onChange={(e) => onUpdate('content', { ...component.content, alt: e.target.value })}
                             />
                         </div>
-                        <div>
-                            <Label>Caption</Label>
-                            <Input
-                                value={component.content.caption || ''}
-                                onChange={(e) => onUpdate('content', { ...component.content, caption: e.target.value })}
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={component.content.rounded || false}
+                                onChange={(e) => onUpdate('content', { ...component.content, rounded: e.target.checked })}
                             />
+                            <Label>Rounded corners</Label>
                         </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
                     </div>
                 )
             case 'button':
@@ -891,6 +1231,45 @@ const ComponentEditor = ({ component, onUpdate }) => {
                                 onChange={(e) => onUpdate('content', { ...component.content, link: e.target.value })}
                             />
                         </div>
+                        <div>
+                            <Label>Variant</Label>
+                            <Select
+                                value={component.content.variant || 'primary'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, variant: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="primary">Primary</SelectItem>
+                                    <SelectItem value="secondary">Secondary</SelectItem>
+                                    <SelectItem value="outline">Outline</SelectItem>
+                                    <SelectItem value="ghost">Ghost</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label>Size</Label>
+                            <Select
+                                value={component.content.size || 'medium'}
+                                onValueChange={(value) => onUpdate('content', { ...component.content, size: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="small">Small</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="large">Large</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
                     </div>
                 )
             case 'spacer':
@@ -899,16 +1278,102 @@ const ComponentEditor = ({ component, onUpdate }) => {
                         <div>
                             <Label>Height (px)</Label>
                             <Input
-                                value={component.content.height || ''}
-                                onChange={(e) => onUpdate('content', { ...component.content, height: e.target.value })}
+                                type="number"
+                                value={component.content.height || '40'}
+                                onChange={(e) => onUpdate('content', { ...component.content, height: e.target.value + 'px' })}
                             />
                         </div>
+                    </div>
+                )
+            case 'section':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Background Color</Label>
+                            <Input
+                                type="color"
+                                value={component.content.backgroundColor || '#ffffff'}
+                                onChange={(e) => onUpdate('content', { ...component.content, backgroundColor: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Padding (px)</Label>
+                            <Input
+                                type="number"
+                                value={component.content.padding || '40'}
+                                onChange={(e) => onUpdate('content', { ...component.content, padding: e.target.value + 'px' })}
+                            />
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
+                    </div>
+                )
+            case 'video':
+                return (
+                    <div className="space-y-3">
+                        <div>
+                            <Label>Video URL</Label>
+                            <Input
+                                value={component.content.url || ''}
+                                onChange={(e) => onUpdate('content', { ...component.content, url: e.target.value })}
+                                placeholder="YouTube or Vimeo URL"
+                            />
+                        </div>
+                        <AnimationSelector
+                            animation={component.content.animation || 'none'}
+                            delay={component.content.animationDelay || '0s'}
+                            onAnimationChange={(animation) => onUpdate('content', { ...component.content, animation })}
+                            onDelayChange={(animationDelay) => onUpdate('content', { ...component.content, animationDelay })}
+                        />
                     </div>
                 )
             default:
                 return <p className="text-gray-500">No editor available for this component type</p>
         }
     }
+
+    const AnimationSelector = ({ animation, delay, onAnimationChange, onDelayChange }) => (
+        <div className="space-y-2 pt-2 border-t border-gray-200">
+            <div>
+                <Label>Animation</Label>
+                <Select value={animation} onValueChange={onAnimationChange}>
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="fade-in">Fade In</SelectItem>
+                        <SelectItem value="slide-up">Slide Up</SelectItem>
+                        <SelectItem value="slide-down">Slide Down</SelectItem>
+                        <SelectItem value="slide-left">Slide Left</SelectItem>
+                        <SelectItem value="slide-right">Slide Right</SelectItem>
+                        <SelectItem value="zoom-in">Zoom In</SelectItem>
+                        <SelectItem value="zoom-out">Zoom Out</SelectItem>
+                        <SelectItem value="bounce">Bounce</SelectItem>
+                        <SelectItem value="rotate">Rotate</SelectItem>
+                        <SelectItem value="flip">Flip</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            {animation !== 'none' && (
+                <div>
+                    <Label>Animation Delay</Label>
+                    <Input
+                        type="number"
+                        value={delay}
+                        onChange={(e) => onDelayChange(e.target.value + 's')}
+                        placeholder="0"
+                        min="0"
+                        step="0.1"
+                    />
+                </div>
+            )}
+        </div>
+    )
 
     return renderEditor()
 }
