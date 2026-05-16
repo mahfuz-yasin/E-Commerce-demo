@@ -1,26 +1,44 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 /**
  * TikTok Pixel Client Component
  * Initializes TikTok Pixel and tracks standard events
+ * Lazy loads the TikTok Pixel script only when needed
  */
-const TikTokPixel = ({ productData }) => {
+const TikTokPixel = ({ productData, shouldLoad = true }) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+
   useEffect(() => {
+    if (!shouldLoad || isLoaded) return
+
     const initializeTikTokPixel = async () => {
       try {
+        // Check if TikTok Pixel is already loaded
+        if (window.ttq) {
+          setIsLoaded(true)
+          return
+        }
+
         // Fetch pixel ID from server
         const response = await fetch('/api/tiktok/pixel-config')
         const data = await response.json()
 
         if (data.success && data.pixelId) {
-          // Initialize TikTok Pixel
-          window.ttq = window.ttq || []
-          window.ttq.load(data.pixelId)
-          window.ttq.page()
-
-          console.log('TikTok Pixel initialized with ID:', data.pixelId)
+          // Dynamically load TikTok Pixel script
+          const script = document.createElement('script')
+          script.src = 'https://analytics.tiktok.com/i18n/pixel/events.js'
+          script.async = true
+          script.onload = () => {
+            // Initialize TikTok Pixel
+            window.ttq = window.ttq || []
+            window.ttq.load(data.pixelId)
+            window.ttq.page()
+            setIsLoaded(true)
+            console.log('TikTok Pixel initialized with ID:', data.pixelId)
+          }
+          document.head.appendChild(script)
         }
       } catch (error) {
         console.error('Failed to initialize TikTok Pixel:', error)
@@ -28,7 +46,7 @@ const TikTokPixel = ({ productData }) => {
     }
 
     initializeTikTokPixel()
-  }, [])
+  }, [shouldLoad, isLoaded])
 
   return null
 }

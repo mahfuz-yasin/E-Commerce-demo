@@ -3,6 +3,7 @@ import { response } from "@/lib/helperFunction"
 import TikTokConfigModel from "@/models/TikTokConfig.model"
 import TikTokWebhookLogModel from "@/models/TikTokWebhookLog.model"
 import crypto from 'crypto'
+import { checkRateLimit } from "@/lib/rate-limiter"
 
 /**
  * Verify TikTok webhook signature
@@ -31,6 +32,14 @@ function verifyWebhookSignature(payload, signature, secret) {
 
 export async function POST(request) {
   try {
+    // Rate limiting: 100 requests per minute per IP
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    const isAllowed = await checkRateLimit(`webhook:${ip}`, 100, 60000)
+    
+    if (!isAllowed) {
+      return response(false, 429, 'Too many requests')
+    }
+
     await connectDB()
 
     const signature = request.headers.get('x-tiktok-signature') || request.headers.get('X-TikTok-Signature')

@@ -41,7 +41,12 @@ const tikTokConfigSchema = new mongoose.Schema({
   pixelId: {
     type: String,
     required: false,
-    set: (value) => encrypt(value),
+    set: (value) => {
+      if (value && !/^[0-9]{15,20}$/.test(value)) {
+        throw new Error('Invalid Pixel ID format. Must be 15-20 digits.')
+      }
+      return encrypt(value)
+    },
     get: (value) => decrypt(value)
   },
   accessToken: {

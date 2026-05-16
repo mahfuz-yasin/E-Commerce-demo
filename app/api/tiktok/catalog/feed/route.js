@@ -39,37 +39,32 @@ function cleanDescription(description) {
 }
 
 /**
- * Get Cloudinary optimized image URL
+ * Optimize image URL using Cloudinary transformations
  * @param {string} imageUrl - Original image URL
- * @returns {string} Optimized Cloudinary URL
+ * @returns {string} Optimized image URL
  */
-function getOptimizedImageUrl(imageUrl) {
-    if (!imageUrl || !imageUrl.includes('cloudinary.com')) {
-        return imageUrl
+function optimizeImageUrl(imageUrl) {
+  if (!imageUrl) return ''
+
+  try {
+    // Check if already a Cloudinary URL
+    if (imageUrl.includes('cloudinary.com')) {
+      // Add transformations: 800x800, webp, quality auto
+      const transformations = 'w_800,h_800,c_fill,f_webp,q_auto'
+      
+      // Insert transformations before the file extension
+      if (imageUrl.includes('/upload/')) {
+        return imageUrl.replace('/upload/', `/upload/${transformations}/`)
+      }
+      return imageUrl
     }
-    
-    // Extract Cloudinary public ID and apply transformations
-    try {
-        const url = new URL(imageUrl)
-        const pathParts = url.pathname.split('/')
-        const uploadIndex = pathParts.indexOf('upload')
-        
-        if (uploadIndex === -1) return imageUrl
-        
-        // Insert transformations after /upload/
-        const transformations = 'w_800,h_800,c_fill,f_auto,q_auto'
-        const newPath = [
-            ...pathParts.slice(0, uploadIndex + 1),
-            transformations,
-            ...pathParts.slice(uploadIndex + 1)
-        ].join('/')
-        
-        url.pathname = newPath
-        return url.toString()
-    } catch (error) {
-        console.error('Error optimizing image URL:', error)
-        return imageUrl
-    }
+
+    // For non-Cloudinary images, return as-is (or implement CDN transformation)
+    return imageUrl
+  } catch (error) {
+    console.error('Error optimizing image URL:', error)
+    return imageUrl
+  }
 }
 
 export async function GET(request) {

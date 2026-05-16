@@ -28,6 +28,8 @@ const TikTokSettings = () => {
     lastSyncTime: null,
     syncStatus: 'idle'
   })
+  const [diagnosticResults, setDiagnosticResults] = useState(null)
+  const [runningDiagnostic, setRunningDiagnostic] = useState(false)
   const [formData, setFormData] = useState({
     // General
     apiVersion: 'v1.3',
@@ -59,7 +61,8 @@ const TikTokSettings = () => {
     { id: 'catalog', label: 'Catalog', icon: Database },
     { id: 'ads', label: 'Ads Manager', icon: ShoppingBag },
     { id: 'offline', label: 'Offline Events', icon: Database },
-    { id: 'webhooks', label: 'Webhooks', icon: Webhook }
+    { id: 'webhooks', label: 'Webhooks', icon: Webhook },
+    { id: 'audit', label: 'Audit', icon: CheckCircle2 }
   ]
 
   useEffect(() => {
@@ -146,17 +149,61 @@ const TikTokSettings = () => {
       await new Promise(resolve => setTimeout(resolve, 3000))
       
       setCatalogStatus({
-        productCount: Math.floor(Math.random() * 100) + 50,
+        productCount: Math.floor(Math.random() * 1000),
         lastSyncTime: new Date(),
         syncStatus: 'success'
       })
-      
       showToast('success', 'Catalog synced successfully')
     } catch (error) {
       setCatalogStatus(prev => ({ ...prev, syncStatus: 'error' }))
       showToast('error', 'Failed to sync catalog')
     } finally {
       setSyncingCatalog(false)
+    }
+  }
+
+  const handleRunDiagnostic = async () => {
+    try {
+      setRunningDiagnostic(true)
+      const { data } = await axios.get('/api/tiktok/diagnostic')
+      if (data.success) {
+        setDiagnosticResults(data.data)
+        showToast('success', 'Diagnostic completed successfully')
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to run diagnostic')
+    } finally {
+      setRunningDiagnostic(false)
+    }
+  }
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'valid':
+        return <CheckCircle2 className="h-5 w-5 text-green-600" />
+      case 'error':
+        return <XCircle className="h-5 w-5 text-red-600" />
+      case 'warning':
+        return <AlertCircle className="h-5 w-5 text-yellow-600" />
+      case 'not_configured':
+        return <AlertCircle className="h-5 w-5 text-gray-400" />
+      default:
+        return <Activity className="h-5 w-5 text-gray-400" />
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'valid':
+        return 'bg-green-100 text-green-800'
+      case 'error':
+        return 'bg-red-100 text-red-800'
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'not_configured':
+        return 'bg-gray-100 text-gray-600'
+      default:
+        return 'bg-gray-100 text-gray-600'
     }
   }
 
@@ -436,6 +483,156 @@ const TikTokSettings = () => {
                   Test Connection
                 </Button>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'audit' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-lg">System Status Dashboard</h3>
+                <Button
+                  onClick={handleRunDiagnostic}
+                  disabled={runningDiagnostic}
+                  className="cursor-pointer"
+                >
+                  {runningDiagnostic ? (
+                    <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Running...</>
+                  ) : (
+                    <><Activity className="h-4 w-4 mr-2" /> Run Full Diagnostic</>
+                  )}
+                </Button>
+              </div>
+
+              {diagnosticResults ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pixel Status */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-5 w-5" />
+                        <CardTitle className="text-base">Pixel Status</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(diagnosticResults.pixel.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(diagnosticResults.pixel.status)}`}>
+                          {diagnosticResults.pixel.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{diagnosticResults.pixel.message}</p>
+                      {diagnosticResults.pixel.lastEventTime && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Last event: {new Date(diagnosticResults.pixel.lastEventTime).toLocaleString()}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Events API Status */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <Database className="h-5 w-5" />
+                        <CardTitle className="text-base">Events API</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(diagnosticResults.eventsApi.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(diagnosticResults.eventsApi.status)}`}>
+                          {diagnosticResults.eventsApi.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{diagnosticResults.eventsApi.message}</p>
+                      {diagnosticResults.eventsApi.lastEventTime && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Last event: {new Date(diagnosticResults.eventsApi.lastEventTime).toLocaleString()}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Catalog Status */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <ShoppingBag className="h-5 w-5" />
+                        <CardTitle className="text-base">Catalog</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(diagnosticResults.catalog.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(diagnosticResults.catalog.status)}`}>
+                          {diagnosticResults.catalog.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{diagnosticResults.catalog.message}</p>
+                      {diagnosticResults.catalog.lastSyncTime && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Last sync: {new Date(diagnosticResults.catalog.lastSyncTime).toLocaleString()}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Webhook Status */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <Webhook className="h-5 w-5" />
+                        <CardTitle className="text-base">Webhook</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(diagnosticResults.webhook.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(diagnosticResults.webhook.status)}`}>
+                          {diagnosticResults.webhook.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{diagnosticResults.webhook.message}</p>
+                      {diagnosticResults.webhook.lastEventTime && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Last event: {new Date(diagnosticResults.webhook.lastEventTime).toLocaleString()}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Access Token Status */}
+                  <Card className="md:col-span-2">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-5 w-5" />
+                        <CardTitle className="text-base">Access Token</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(diagnosticResults.accessToken.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(diagnosticResults.accessToken.status)}`}>
+                          {diagnosticResults.accessToken.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{diagnosticResults.accessToken.message}</p>
+                      {diagnosticResults.accessToken.expiryDate && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Expires: {new Date(diagnosticResults.accessToken.expiryDate).toLocaleString()}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="pt-6 text-center">
+                    <Activity className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-600 mb-4">Run a diagnostic to check all TikTok integrations</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
 
