@@ -151,6 +151,45 @@ const PageRenderer = ({ page }) => {
                     </div>
                 )
 
+            case 'heading':
+                return (
+                    <div key={index} style={componentStyle}>
+                        {content.level === 'h1' && <h1 className={`text-${content.size || '4xl'} font-bold ${content.align || 'left'}`}>{content.text}</h1>}
+                        {content.level === 'h2' && <h2 className={`text-${content.size || '3xl'} font-bold ${content.align || 'left'}`}>{content.text}</h2>}
+                        {content.level === 'h3' && <h3 className={`text-${content.size || '2xl'} font-bold ${content.align || 'left'}`}>{content.text}</h3>}
+                        {content.level === 'h4' && <h4 className={`text-${content.size || 'xl'} font-bold ${content.align || 'left'}`}>{content.text}</h4>}
+                        {content.level === 'h5' && <h5 className={`text-${content.size || 'lg'} font-bold ${content.align || 'left'}`}>{content.text}</h5>}
+                        {content.level === 'h6' && <h6 className={`text-${content.size || 'md'} font-bold ${content.align || 'left'}`}>{content.text}</h6>}
+                        {!content.level && <h2 className="text-3xl font-bold">{content.text}</h2>}
+                    </div>
+                )
+
+            case 'paragraph':
+                return (
+                    <div key={index} style={componentStyle} className="prose max-w-none">
+                        <p className={content.align || 'left'}>{content.text}</p>
+                    </div>
+                )
+
+            case 'link':
+                return (
+                    <div key={index} style={componentStyle}>
+                        <a 
+                            href={content.url} 
+                            target={content.openInNewTab ? '_blank' : '_self'}
+                            rel={content.openInNewTab ? 'noopener noreferrer' : ''}
+                            className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                            {content.text}
+                        </a>
+                    </div>
+                )
+
+            case 'color':
+                return (
+                    <div key={index} style={{ ...componentStyle, backgroundColor: content.backgroundColor || '#3b82f6', height: content.height || '100px' }} />
+                )
+
             default:
                 return <div key={index} style={componentStyle}>Unknown component type: {type}</div>
         }
