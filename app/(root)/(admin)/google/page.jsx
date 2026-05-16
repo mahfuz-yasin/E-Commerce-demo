@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Search, RefreshCw, CheckCircle2, XCircle, Activity, Database, Globe, ShoppingBag, Webhook, AlertCircle } from 'lucide-react'
+import { RefreshCw, Globe, Activity, CheckCircle, XCircle, AlertCircle, Play } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -31,6 +31,9 @@ const GoogleSettings = () => {
   const [gtmVariables, setGtmVariables] = useState([])
   const [customTags, setCustomTags] = useState([])
   const [previewModeActive, setPreviewModeActive] = useState(false)
+  const [showAuditPanel, setShowAuditPanel] = useState(false)
+  const [auditResults, setAuditResults] = useState(null)
+  const [loadingAudit, setLoadingAudit] = useState(false)
   
   const [formData, setFormData] = useState({
     // GA4
@@ -203,12 +206,30 @@ const GoogleSettings = () => {
     setCustomTags([...customTags, { id: Date.now(), name: '', type: 'html', content: '', position: 'head' }])
   }
 
-  const removeCustomTag = (id) => {
-    setCustomTags(customTags.filter(t => t.id !== id))
+  const updateCustomTag = (index, field, value) => {
+    const updated = [...customTags]
+    updated[index][field] = value
+    setCustomTags(updated)
   }
 
-  const updateCustomTag = (id, field, value) => {
-    setCustomTags(customTags.map(t => t.id === id ? { ...t, [field]: value } : t))
+  const removeCustomTag = (index) => {
+    setCustomTags(customTags.filter((_, i) => i !== index))
+  }
+
+  const handleRunAudit = async () => {
+    try {
+      setLoadingAudit(true)
+      const { data } = await axios.post('/api/admin/google/audit')
+      if (data.success) {
+        setAuditResults(data.data)
+        setShowAuditPanel(true)
+      }
+    } catch (error) {
+      showToast('error', 'Failed to run audit')
+      console.error('Audit error:', error)
+    } finally {
+      setLoadingAudit(false)
+    }
   }
 
   const handleOAuthFlow = async () => {
@@ -348,7 +369,15 @@ const GoogleSettings = () => {
                   Authorize Google Ads
                 </Button>
               </div>
-              
+              <div className="flex gap-2">
+                <Button onClick={() => setShowAuditPanel(!showAuditPanel)} variant="outline" className="cursor-pointer">
+                  <Activity className="h-4 w-4 mr-2" />
+                  System Audit
+                </Button>
+                <Button onClick={handleSave} disabled={loading} className="cursor-pointer">
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
               {/* Conversion Actions */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex justify-between items-center mb-3">
