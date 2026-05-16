@@ -9,17 +9,18 @@ export async function middleware(request) {
         const url = request.nextUrl
         const hasToken = request.cookies.has('access_token')
 
-        // Capture UTM parameters and fbclid
+        // Capture UTM parameters, fbclid, and ttclid
         const utmParams = {
             utm_source: url.searchParams.get('utm_source'),
             utm_medium: url.searchParams.get('utm_medium'),
             utm_campaign: url.searchParams.get('utm_campaign'),
             utm_term: url.searchParams.get('utm_term'),
             utm_content: url.searchParams.get('utm_content'),
-            fbclid: url.searchParams.get('fbclid')
+            fbclid: url.searchParams.get('fbclid'),
+            ttclid: url.searchParams.get('ttclid')
         }
 
-        // Store UTM parameters in cookies if they exist
+        // Store UTM parameters in cookies if they exist (30 days)
         const response = NextResponse.next()
         
         Object.entries(utmParams).forEach(([key, value]) => {
@@ -28,7 +29,7 @@ export async function middleware(request) {
                     httpOnly: false,
                     secure: process.env.NODE_ENV === 'production',
                     sameSite: 'lax',
-                    maxAge: 7 * 24 * 60 * 60 // 7 days
+                    maxAge: 30 * 24 * 60 * 60 // 30 days
                 })
             }
         })

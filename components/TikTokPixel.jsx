@@ -6,7 +6,7 @@ import { useEffect } from 'react'
  * TikTok Pixel Client Component
  * Initializes TikTok Pixel and tracks standard events
  */
-const TikTokPixel = () => {
+const TikTokPixel = ({ productData }) => {
   useEffect(() => {
     const initializeTikTokPixel = async () => {
       try {
@@ -80,40 +80,47 @@ export function trackTikTokPageView() {
 /**
  * Track ViewContent event
  * @param {string} contentId - Product ID
- * @param {string} contentType - Content type (product)
+ * @param {string} contentType - Content type (product/product_group)
  * @param {string} contentName - Product name
  * @param {number} value - Product value
  * @param {string} currency - Currency code
  * @param {string} eventId - Event ID (optional)
+ * @param {object} customData - Custom parameters (content_category, quantity, description)
  */
-export function trackTikTokViewContent(contentId, contentType = 'product', contentName, value, currency = 'BDT', eventId = null) {
+export function trackTikTokViewContent(contentId, contentType = 'product', contentName, value, currency = 'BDT', eventId = null, customData = {}) {
   return trackTikTokEvent('ViewContent', {
     content_id: contentId,
     content_type: contentType,
     content_name: contentName,
+    content_category: customData.content_category,
     value: value,
-    currency: currency
+    currency: currency,
+    quantity: customData.quantity,
+    description: customData.description
   }, eventId)
 }
 
 /**
  * Track AddToCart event
  * @param {string} contentId - Product ID
- * @param {string} contentType - Content type (product)
+ * @param {string} contentType - Content type (product/product_group)
  * @param {string} contentName - Product name
  * @param {number} value - Product value
  * @param {number} quantity - Quantity
  * @param {string} currency - Currency code
  * @param {string} eventId - Event ID (optional)
+ * @param {object} customData - Custom parameters (content_category, description)
  */
-export function trackTikTokAddToCart(contentId, contentType = 'product', contentName, value, quantity = 1, currency = 'BDT', eventId = null) {
+export function trackTikTokAddToCart(contentId, contentType = 'product', contentName, value, quantity = 1, currency = 'BDT', eventId = null, customData = {}) {
   return trackTikTokEvent('AddToCart', {
     content_id: contentId,
     content_type: contentType,
     content_name: contentName,
+    content_category: customData.content_category,
     value: value * quantity,
     currency: currency,
-    quantity: quantity
+    quantity: quantity,
+    description: customData.description
   }, eventId)
 }
 
@@ -123,12 +130,15 @@ export function trackTikTokAddToCart(contentId, contentType = 'product', content
  * @param {string} currency - Currency code
  * @param {number} numItems - Number of items
  * @param {string} eventId - Event ID (optional)
+ * @param {array} contentIds - Product IDs for dynamic retargeting
  */
-export function trackTikTokInitiateCheckout(value, currency = 'BDT', numItems = 0, eventId = null) {
+export function trackTikTokInitiateCheckout(value, currency = 'BDT', numItems = 0, eventId = null, contentIds = []) {
   return trackTikTokEvent('InitiateCheckout', {
     value: value,
     currency: currency,
-    num_items: numItems
+    num_items: numItems,
+    content_id: contentIds.length > 0 ? contentIds : undefined,
+    content_type: contentIds.length > 0 ? 'product_group' : undefined
   }, eventId)
 }
 
@@ -139,13 +149,27 @@ export function trackTikTokInitiateCheckout(value, currency = 'BDT', numItems = 
  * @param {string} currency - Currency code
  * @param {array} contentIds - Product IDs
  * @param {string} eventId - Event ID (optional)
+ * @param {object} customData - Custom parameters (num_items, content_type)
  */
-export function trackTikTokPurchase(orderId, value, currency = 'BDT', contentIds = [], eventId = null) {
+export function trackTikTokPurchase(orderId, value, currency = 'BDT', contentIds = [], eventId = null, customData = {}) {
   return trackTikTokEvent('Purchase', {
     content_id: contentIds,
     transaction_id: orderId,
     value: value,
-    currency: currency
+    currency: currency,
+    num_items: customData.num_items,
+    content_type: customData.content_type || 'product_group'
+  }, eventId)
+}
+
+/**
+ * Track Search event
+ * @param {string} searchString - Search query
+ * @param {string} eventId - Event ID (optional)
+ */
+export function trackTikTokSearch(searchString, eventId = null) {
+  return trackTikTokEvent('Search', {
+    search_string: searchString
   }, eventId)
 }
 

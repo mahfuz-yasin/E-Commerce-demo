@@ -119,6 +119,18 @@ const tikTokConfigSchema = new mongoose.Schema({
     get: (value) => decrypt(value)
   },
   
+  // Spark Ads
+  sparkPostIds: {
+    type: [String],
+    default: []
+  },
+  
+  // Test event code for debugging
+  testEventCode: {
+    type: String,
+    required: false
+  },
+  
   // Status flags
   isPixelActive: {
     type: String,
