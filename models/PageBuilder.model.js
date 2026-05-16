@@ -4,7 +4,7 @@ const PageComponentSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['hero', 'text', 'image', 'button', 'section', 'spacer', 'divider', 'video', 'gallery', 'form', 'html']
+        enum: ['hero', 'text', 'image', 'button', 'section', 'spacer', 'divider', 'video', 'gallery', 'form', 'html', 'heading', 'paragraph', 'link', 'color']
     },
     content: {
         type: mongoose.Schema.Types.Mixed,
@@ -97,6 +97,9 @@ const PageBuilderSchema = new mongoose.Schema({
         type: String
     },
     metaDescription: {
+        type: String
+    },
+    metaKeywords: {
         type: String
     },
     isActive: {
