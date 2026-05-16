@@ -13,16 +13,32 @@ const DynamicPage = ({ params }) => {
         if (pageData && pageData.success) {
             setPage(pageData.data)
             
-            // Fetch related category products if the page has a related category
-            if (pageData.data.relatedCategory) {
-                fetch(`/api/shop?category=${pageData.data.relatedCategory}&limit=100`)
+            // Fetch related category products if the page has related categories
+            const relatedCategories = pageData.data.relatedCategory
+            if (relatedCategories && relatedCategories.length > 0) {
+                // Fetch category data to get slugs
+                fetch('/api/category?start=0&size=100&deleteType=SD')
                     .then(res => res.json())
                     .then(data => {
                         if (data.success && data.data) {
-                            setRelatedCategoryProducts(data.data)
+                            // Find categories by IDs and get their slugs
+                            const categories = data.data.filter(cat => relatedCategories.includes(cat._id))
+                            const categorySlugs = categories.map(cat => cat.slug).join(',')
+                            
+                            if (categorySlugs) {
+                                // Fetch products from all related categories using slugs
+                                fetch(`/api/shop?category=${categorySlugs}&limit=100`)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success && data.data) {
+                                            setRelatedCategoryProducts(data.data.products || [])
+                                        }
+                                    })
+                                    .catch(err => console.error('Error fetching related category products:', err))
+                            }
                         }
                     })
-                    .catch(err => console.error('Error fetching related category products:', err))
+                    .catch(err => console.error('Error fetching categories:', err))
             }
         }
     }, [pageData])

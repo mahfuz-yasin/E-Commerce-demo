@@ -96,7 +96,7 @@ const LandingPageBuilder = () => {
     const [metaTitle, setMetaTitle] = useState('')
     const [metaDescription, setMetaDescription] = useState('')
     const [metaKeywords, setMetaKeywords] = useState('')
-    const [relatedCategory, setRelatedCategory] = useState('')
+    const [relatedCategories, setRelatedCategories] = useState([])
     const [components, setComponents] = useState([])
     const [selectedComponent, setSelectedComponent] = useState(null)
     const [pageStyles, setPageStyles] = useState({
@@ -347,7 +347,7 @@ const LandingPageBuilder = () => {
                     featuredImage: featuredImage,
                     pageType: 'landing_page',
                     components: components,
-                    relatedCategory: relatedCategory,
+                    relatedCategory: relatedCategories,
                     styles: pageStyles,
                     metaTitle: metaTitle,
                     metaDescription: metaDescription,
@@ -499,26 +499,40 @@ Remove
                                 )}
                             </div>
 
-                            {/* Related Category Section */}
-                            <div className="space-y-4 pt-4 border-t-2 border-gray-200">
+                            {/* Related Categories Section */}
+                            <div className="space-y-4 pt-4 border-t-2 border-slate-200">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <h5 className="text-lg font-semibold text-slate-800">Related Category</h5>
+                                    <h5 className="text-lg font-semibold text-slate-800">Related Categories</h5>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="relatedCategory" className="text-sm font-semibold text-gray-700">Select Category</Label>
-                                    <Select value={relatedCategory} onValueChange={setRelatedCategory}>
-                                        <SelectTrigger className="border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
-                                            <SelectValue placeholder="Select a category to show products below landing page" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableCategories.map((category) => (
-                                                <SelectItem key={category._id} value={category._id}>
-                                                    {category.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-xs text-gray-500">Products from this category will be displayed below the landing page</p>
+                                    <Label className="text-sm font-semibold text-gray-700">Select Categories</Label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {availableCategories.map((category) => (
+                                            <Button
+                                                key={category._id}
+                                                type="button"
+                                                variant={relatedCategories.includes(category._id) ? "default" : "outline"}
+                                                onClick={() => {
+                                                    setRelatedCategories(prev =>
+                                                        prev.includes(category._id)
+                                                            ? prev.filter(id => id !== category._id)
+                                                            : [...prev, category._id]
+                                                    )
+                                                }}
+                                                className={relatedCategories.includes(category._id)
+                                                    ? "bg-slate-800 text-white border-0 shadow-md hover:bg-slate-700"
+                                                    : "border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-all"}
+                                            >
+                                                {category.name}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    {relatedCategories.length === 0 && (
+                                        <div className="text-center py-6 bg-slate-50 rounded-lg border-2 border-slate-200">
+                                            <p className="text-slate-600 text-sm font-medium">No categories selected</p>
+                                        </div>
+                                    )}
+                                    <p className="text-xs text-gray-500">Products from selected categories will be displayed below the landing page</p>
                                 </div>
                             </div>
 
