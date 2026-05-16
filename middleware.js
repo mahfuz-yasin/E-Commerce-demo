@@ -36,6 +36,19 @@ export async function middleware(request) {
             }
         })
 
+        // Google Conversion Linker: Auto-add gclid to internal links if present
+        const gclidCookie = request.cookies.get('gclid')?.value
+        if (gclidCookie) {
+            const url = request.nextUrl
+            // Don't add gclid to API routes or static assets
+            if (!pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.includes('.')) {
+                if (!url.searchParams.has('gclid')) {
+                    url.searchParams.set('gclid', gclidCookie)
+                    return NextResponse.redirect(url)
+                }
+            }
+        }
+
         // Check for protected routes
         if (!hasToken) {
             // if the user is not loggedin and trying to access a protected route, redirect to login page. 
