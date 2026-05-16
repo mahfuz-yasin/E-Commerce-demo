@@ -29,9 +29,14 @@ export async function POST(request) {
 
         // get user data 
         const getUser = await UserModel.findOne({ deletedAt: null, email }).select("+password")
+        console.log('Login attempt for email:', email)
+        console.log('User found:', !!getUser)
         if (!getUser) {
+            console.log('User not found in database')
             return response(false, 400, 'Invalid login credentials.')
         }
+
+        console.log('User email verified:', getUser.isEmailVerified)
 
         // resend email verification link 
         if (!getUser.isEmailVerified) {
@@ -50,8 +55,10 @@ export async function POST(request) {
 
         // password verification 
         const isPasswordVerified = await getUser.comparePassword(password)
+        console.log('Password verification result:', isPasswordVerified)
 
         if (!isPasswordVerified) {
+            console.log('Password verification failed')
             return response(false, 400, 'Invalid login credentials.')
         }
 
