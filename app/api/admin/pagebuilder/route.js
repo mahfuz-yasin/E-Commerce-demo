@@ -94,7 +94,23 @@ export async function POST(request) {
 
         console.log('Page Builder POST payload:', JSON.stringify(payload, null, 2))
 
-        const page = await PageBuilderModel.create(payload)
+        // Ensure styles object has all required fields with defaults
+        const styles = {
+            animation: payload.styles?.animation || 'none',
+            animationDuration: payload.styles?.animationDuration || '0.3s',
+            primaryColor: payload.styles?.primaryColor || '#3b82f6',
+            secondaryColor: payload.styles?.secondaryColor || '#10b981',
+            shadow: payload.styles?.shadow || 'none',
+            borderRadius: payload.styles?.borderRadius || '0px',
+            fontFamily: payload.styles?.fontFamily || 'default'
+        }
+
+        const pageData = {
+            ...payload,
+            styles
+        }
+
+        const page = await PageBuilderModel.create(pageData)
 
         return response(true, 201, 'Page created successfully', page)
     } catch (error) {
