@@ -136,6 +136,28 @@ const tikTokConfigSchema = new mongoose.Schema({
     required: false
   },
   
+  // 2026 Enterprise Standards
+  syncTikTokShop: {
+    type: Boolean,
+    default: false
+  },
+  liveTrackingEnabled: {
+    type: Boolean,
+    default: false
+  },
+  enableLDU: {
+    type: Boolean,
+    default: false
+  },
+  creativeAutoRefresh: {
+    type: Boolean,
+    default: false
+  },
+  apiSchemaVersion: {
+    type: String,
+    default: 'v1.4'
+  },
+  
   // Status flags
   isPixelActive: {
     type: String,

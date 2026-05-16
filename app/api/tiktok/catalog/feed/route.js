@@ -39,7 +39,8 @@ function cleanDescription(description) {
 }
 
 /**
- * Optimize image URL using Cloudinary transformations
+ * Optimize image URL using Cloudinary transformations (2026 standards)
+ * Ensures 1:1 aspect ratio, auto-format, auto-quality, lightweight images
  * @param {string} imageUrl - Original image URL
  * @returns {string} Optimized image URL
  */
@@ -49,8 +50,9 @@ function optimizeImageUrl(imageUrl) {
   try {
     // Check if already a Cloudinary URL
     if (imageUrl.includes('cloudinary.com')) {
-      // Add transformations: 800x800, webp, quality auto
-      const transformations = 'w_800,h_800,c_fill,f_webp,q_auto'
+      // TikTok 2026 standards: 1:1 aspect ratio, 800x800, auto-format, auto-quality
+      // Use f_auto for WebP/Avif, q_auto for optimal quality, c_fill for 1:1 aspect ratio
+      const transformations = 'w_800,h_800,c_fill,f_auto,q_auto,fl_progressive'
       
       // Insert transformations before the file extension
       if (imageUrl.includes('/upload/')) {
@@ -62,7 +64,6 @@ function optimizeImageUrl(imageUrl) {
     // For non-Cloudinary images, return as-is (or implement CDN transformation)
     return imageUrl
   } catch (error) {
-    console.error('Error optimizing image URL:', error)
     return imageUrl
   }
 }
@@ -167,7 +168,13 @@ export async function GET(request) {
                     brand: 'Al Hilal Panjabi',
                     condition: 'new',
                     product_type: product.category?.name || 'Panjabi',
-                    google_product_category: 'Apparel & Accessories > Clothing'
+                    google_product_category: 'Apparel & Accessories > Clothing',
+                    // TikTok 2026 specific attributes
+                    gender: 'male',
+                    age_group: 'adult',
+                    pattern: 'clothing',
+                    material: product.material || 'cotton',
+                    color: product.color || 'traditional'
                 })
             }
 
@@ -201,7 +208,14 @@ export async function GET(request) {
                     brand: 'Al Hilal Panjabi',
                     condition: 'new',
                     product_type: product.category?.name || 'Panjabi',
-                    google_product_category: 'Apparel & Accessories > Clothing'
+                    google_product_category: 'Apparel & Accessories > Clothing',
+                    // TikTok 2026 specific attributes
+                    gender: 'male',
+                    age_group: 'adult',
+                    pattern: 'clothing',
+                    material: variant.material || product.material || 'cotton',
+                    color: variant.color || product.color || 'traditional',
+                    size: variant.size || 'standard'
                 })
             }
         }

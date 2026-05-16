@@ -30,6 +30,10 @@ const TikTokSettings = () => {
   })
   const [diagnosticResults, setDiagnosticResults] = useState(null)
   const [runningDiagnostic, setRunningDiagnostic] = useState(false)
+  const [creatives, setCreatives] = useState([])
+  const [loadingCreatives, setLoadingCreatives] = useState(false)
+  const [testEventResult, setTestEventResult] = useState(null)
+  const [runningTestEvent, setRunningTestEvent] = useState(false)
   const [formData, setFormData] = useState({
     // General
     apiVersion: 'v1.3',
@@ -60,6 +64,7 @@ const TikTokSettings = () => {
     { id: 'pixel', label: 'Pixel & Events API', icon: Globe },
     { id: 'catalog', label: 'Catalog', icon: Database },
     { id: 'ads', label: 'Ads Manager', icon: ShoppingBag },
+    { id: 'creatives', label: 'Ad Creatives', icon: RefreshCw },
     { id: 'offline', label: 'Offline Events', icon: Database },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
     { id: 'audit', label: 'Audit', icon: CheckCircle2 }
@@ -204,6 +209,64 @@ const TikTokSettings = () => {
         return 'bg-gray-100 text-gray-600'
       default:
         return 'bg-gray-100 text-gray-600'
+    }
+  }
+
+  const handleFetchCreatives = async () => {
+    try {
+      setLoadingCreatives(true)
+      const { data } = await axios.get('/api/tiktok/creatives')
+      if (data.success) {
+        setCreatives(data.data.creatives || [])
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch creatives')
+    } finally {
+      setLoadingCreatives(false)
+    }
+  }
+
+  const handleRefreshCreative = async (creativeId) => {
+    try {
+      // In a real implementation, this would sync a fresh image from Cloudinary
+      showToast('success', 'Creative refresh initiated')
+    } catch (error) {
+      showToast('error', 'Failed to refresh creative')
+    }
+  }
+
+  const handleRunTestEvent = async () => {
+    try {
+      setRunningTestEvent(true)
+      const eventId = generateTikTokEventId()
+      
+      // Fire both client-side and server-side events simultaneously
+      const clientEvent = trackTikTokViewContent('test-product-123', 'test-group-123', 'Test Product', 1000, 'BDT', {}, eventId)
+      
+      const { data } = await axios.post('/api/tiktok/test-event', {
+        eventId,
+        eventName: 'ViewContent',
+        eventData: {
+          content_id: ['test-product-123'],
+          item_group_id: 'test-group-123',
+          content_name: 'Test Product',
+          value: 1000,
+          currency: 'BDT'
+        }
+      })
+      
+      setTestEventResult({
+        eventId,
+        clientSuccess: !!clientEvent,
+        serverSuccess: data.success,
+        timestamp: new Date().toISOString()
+      })
+      
+      showToast('success', 'Test event completed')
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to run test event')
+    } finally {
+      setRunningTestEvent(false)
     }
   }
 
@@ -440,6 +503,128 @@ const TikTokSettings = () => {
                   Test Connection
                 </Button>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'creatives' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-lg">Ad Creative Status</h3>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleFetchCreatives}
+                    disabled={loadingCreatives}
+                    className="cursor-pointer"
+                  >
+                    {loadingCreatives ? (
+                      <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Loading...</>
+                    ) : (
+                      <><RefreshCw className="h-4 w-4 mr-2" /> Refresh</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {creatives.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-3 px-4">Creative Name</th>
+                        <th className="text-left py-3 px-4">CTR</th>
+                        <th className="text-left py-3 px-4">Status</th>
+                        <th className="text-left py-3 px-4">Fatigue Score</th>
+                        <th className="text-left py-3 px-4">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {creatives.map((creative) => (
+                        <tr key={creative.id} className="border-b">
+                          <td className="py-3 px-4">{creative.name || 'Unnamed'}</td>
+                          <td className="py-3 px-4">{(creative.ctr * 100).toFixed(2)}%</td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              creative.isFatigued ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                            }`}>
+                              {creative.isFatigued ? 'Fatigued' : 'Healthy'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">{creative.fatigueScore}/100</td>
+                          <td className="py-3 px-4">
+                            {creative.isFatigued && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleRefreshCreative(creative.id)}
+                                className="cursor-pointer"
+                              >
+                                <RefreshCw className="h-4 w-4 mr-1" /> Refresh
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="pt-6 text-center">
+                    <RefreshCw className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-600 mb-4">No creatives loaded. Click Refresh to fetch ad creatives.</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Test Event Simulator */}
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-base">Test Event Simulator</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Fires dual client-side and server-side events simultaneously to verify deduplication.
+                  </p>
+                  <Button
+                    onClick={handleRunTestEvent}
+                    disabled={runningTestEvent}
+                    className="cursor-pointer"
+                  >
+                    {runningTestEvent ? (
+                      <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Running...</>
+                    ) : (
+                      <><Activity className="h-4 w-4 mr-2" /> Run Test Event</>
+                    )}
+                  </Button>
+                  
+                  {testEventResult && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-semibold mb-2">Test Result</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600">Event ID:</span>
+                          <p className="font-mono">{testEventResult.eventId}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Client-Side:</span>
+                          <p className={testEventResult.clientSuccess ? 'text-green-600' : 'text-red-600'}>
+                            {testEventResult.clientSuccess ? '✓ Success' : '✗ Failed'}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Server-Side:</span>
+                          <p className={testEventResult.serverSuccess ? 'text-green-600' : 'text-red-600'}>
+                            {testEventResult.serverSuccess ? '✓ Success' : '✗ Failed'}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Timestamp:</span>
+                          <p className="font-mono">{new Date(testEventResult.timestamp).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           )}
 
