@@ -15,7 +15,7 @@ const breadCrumbData = {
 }
 const MyAccount = () => {
     const { data: dashboardData } = useFetch('/api/dashboard/user')
-    const cartStore = useSelector(store => store.cartStore)
+    const cartStore = useSelector(store => store?.cartStore || { products: [], count: 0 })
 
     return (
         <div>
