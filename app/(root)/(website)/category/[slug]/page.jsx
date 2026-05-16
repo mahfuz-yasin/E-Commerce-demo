@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import ProductCard from '@/components/Application/Website/ProductCard'
+import ProductBox from '@/components/Application/Website/ProductBox'
 import useFetch from '@/hooks/useFetch'
 import { Loader2 } from 'lucide-react'
 
@@ -36,7 +36,7 @@ const CategoryProducts = () => {
             {products.length > 0 ? (
                 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6'>
                     {products.map((product) => (
-                        <ProductCard key={product._id} product={product} />
+                        <ProductBox key={product._id} product={product} />
                     ))}
                 </div>
             ) : (
