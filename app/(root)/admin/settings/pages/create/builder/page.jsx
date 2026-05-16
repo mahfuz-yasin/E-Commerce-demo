@@ -379,7 +379,7 @@ const PageBuilder = () => {
 
             if (result.success) {
                 showToast('success', 'Page created successfully')
-                window.location.href = '/settings/pages'
+                window.location.href = '/admin/settings/pages'
             } else {
                 showToast('error', result.message || 'Failed to create page')
             }
