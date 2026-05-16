@@ -21,17 +21,17 @@ const useFetch = (url, method = "GET", options = {}) => {
             setLoading(true)
             setError(null)
             try {
-                const { data: response } = await axios({
+                const response = await axios({
                     url,
                     method,
                     ...(requestOptions)
                 })
 
-                if (!response.success) {
-                    throw new Error(response.message)
+                if (!response.data.success) {
+                    throw new Error(response.data.message)
                 }
 
-                setData(response)
+                setData(response.data)
             } catch (error) {
                 setError(error.message)
             } finally {
