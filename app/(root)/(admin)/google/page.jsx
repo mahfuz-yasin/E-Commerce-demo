@@ -24,6 +24,10 @@ const GoogleSettings = () => {
   const [tokenWarning, setTokenWarning] = useState(null)
   const [conversionActions, setConversionActions] = useState([])
   const [loadingConversions, setLoadingConversions] = useState(false)
+  const [merchantFeedStatus, setMerchantFeedStatus] = useState(null)
+  const [loadingMerchantFeed, setLoadingMerchantFeed] = useState(false)
+  const [feedQualityReport, setFeedQualityReport] = useState(null)
+  const [loadingQualityCheck, setLoadingQualityCheck] = useState(false)
   
   const [formData, setFormData] = useState({
     // GA4
@@ -147,6 +151,36 @@ const GoogleSettings = () => {
       showToast('error', error.response?.data?.message || 'Failed to fetch conversion actions')
     } finally {
       setLoadingConversions(false)
+    }
+  }
+
+  const handleFetchMerchantFeedStatus = async () => {
+    try {
+      setLoadingMerchantFeed(true)
+      const { data } = await axios.get('/api/google/merchant/feed-status')
+      if (data.success) {
+        setMerchantFeedStatus(data.data)
+        showToast('success', 'Merchant feed status fetched successfully')
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Failed to fetch merchant feed status')
+    } finally {
+      setLoadingMerchantFeed(false)
+    }
+  }
+
+  const handleQualityCheck = async () => {
+    try {
+      setLoadingQualityCheck(true)
+      const { data } = await axios.get('/api/google/merchant/quality-check')
+      if (data.success) {
+        setFeedQualityReport(data.data)
+        showToast('success', 'Quality check completed')
+      }
+    } catch (error) {
+      showToast('error', error.response?.data?.message || 'Quality check failed')
+    } finally {
+      setLoadingQualityCheck(false)
     }
   }
 
@@ -384,6 +418,114 @@ const GoogleSettings = () => {
               {renderField('Merchant Center ID', 'merchantCenterId', 'text', 'Enter Merchant Center ID')}
               {renderField('Merchant Center Feed ID', 'merchantCenterFeedId', 'text', 'Enter Feed ID')}
               {renderField('Cloudinary Folder', 'cloudinaryFolderForGoogleFeeds', 'text', 'google-catalog')}
+              
+              {/* Feed URL and Status */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold">Product Feed URL</h4>
+                    <Button
+                      size="sm"
+                      onClick={handleFetchMerchantFeedStatus}
+                      disabled={loadingMerchantFeed}
+                      className="cursor-pointer"
+                    >
+                      {loadingMerchantFeed ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Loading...</>
+                      ) : (
+                        <><RefreshCw className="h-4 w-4 mr-2" /> Refresh Status</>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="bg-white p-3 rounded border mb-4">
+                    <code className="text-sm break-all">
+                      {process.env.NEXT_PUBLIC_BASE_URL}/api/google/merchant/feed
+                    </code>
+                  </div>
+                  
+                  {merchantFeedStatus && (
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm text-gray-600">Product Count</p>
+                        <p className="text-xl font-bold">{merchantFeedStatus.productCount || 0}</p>
+                      </div>
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm text-gray-600">Last Sync</p>
+                        <p className="text-sm font-medium">
+                          {merchantFeedStatus.lastSyncTime ? new Date(merchantFeedStatus.lastSyncTime).toLocaleString() : 'Never'}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm text-gray-600">Status</p>
+                        <p className={`text-sm font-medium ${
+                          merchantFeedStatus.status === 'active' ? 'text-green-600' : 'text-gray-600'
+                        }`}>
+                          {merchantFeedStatus.status || 'Unknown'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <Button
+                    onClick={() => window.open(`${process.env.NEXT_PUBLIC_BASE_URL}/api/google/merchant/feed`, '_blank')}
+                    className="cursor-pointer"
+                  >
+                    <Database className="h-4 w-4 mr-2" />
+                    View Feed
+                  </Button>
+                  
+                  {/* Quality Check */}
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold">Feed Quality Check</h4>
+                      <Button
+                        size="sm"
+                        onClick={handleQualityCheck}
+                        disabled={loadingQualityCheck}
+                        className="cursor-pointer"
+                      >
+                        {loadingQualityCheck ? (
+                          <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Checking...</>
+                        ) : (
+                          <><CheckCircle2 className="h-4 w-4 mr-2" /> Run Check</>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    {feedQualityReport && (
+                      <div className="space-y-2">
+                        <div className="p-3 bg-white rounded border">
+                          <p className="text-sm text-gray-600">Total Products</p>
+                          <p className="text-xl font-bold">{feedQualityReport.totalProducts || 0}</p>
+                        </div>
+                        <div className="p-3 bg-white rounded border">
+                          <p className="text-sm text-gray-600">Valid Products</p>
+                          <p className="text-xl font-bold text-green-600">{feedQualityReport.validProducts || 0}</p>
+                        </div>
+                        <div className="p-3 bg-white rounded border">
+                          <p className="text-sm text-gray-600">Products with Issues</p>
+                          <p className="text-xl font-bold text-red-600">{feedQualityReport.issues?.length || 0}</p>
+                        </div>
+                        
+                        {feedQualityReport.issues && feedQualityReport.issues.length > 0 && (
+                          <div className="p-3 bg-red-50 rounded border border-red-200">
+                            <p className="text-sm font-semibold text-red-900 mb-2">Issues:</p>
+                            <ul className="text-sm text-red-800 space-y-1">
+                              {feedQualityReport.issues.slice(0, 5).map((issue, index) => (
+                                <li key={index}>• {issue}</li>
+                              ))}
+                              {feedQualityReport.issues.length > 5 && (
+                                <li>... and {feedQualityReport.issues.length - 5} more</li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              
               {renderSwitch('Enable Merchant Center', 'isMerchantActive', 'Sync product catalog')}
               <div className="pt-4 border-t">
                 <Button
