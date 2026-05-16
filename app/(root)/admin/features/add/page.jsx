@@ -142,7 +142,7 @@ const AddFeature = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="link">Link *</Label>
-                                <Select onValueChange={(value) => setValue('link', value)}>
+                                <Select onValueChange={(value) => setValue('link', value, { shouldValidate: true })}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select page" />
                                     </SelectTrigger>
