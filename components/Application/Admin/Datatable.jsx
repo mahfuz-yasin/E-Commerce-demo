@@ -181,6 +181,7 @@ const Datatable = ({
 
                 {deleteType !== 'PD'
                     &&
+                    trashView &&
                     <Tooltip title="Recycle Bin" >
                         <Link href={trashView}>
                             <IconButton>
