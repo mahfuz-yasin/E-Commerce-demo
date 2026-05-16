@@ -57,7 +57,9 @@ const FacebookPixel = () => {
   const pixelStatus = settings?.data?.pixelStatus
 
   useEffect(() => {
-    cleanupOldEvents()
+    if (typeof window !== 'undefined') {
+      cleanupOldEvents()
+    }
   }, [])
 
   useEffect(() => {
