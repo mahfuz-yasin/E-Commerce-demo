@@ -38,7 +38,7 @@ const Checkout = () => {
     const router = useRouter()
     const dispatch = useDispatch()
     const cart = useSelector(store => store?.cartStore || { products: [], count: 0 })
-    const authStore = useSelector(store => store?.authStore || { auth: null })
+    const authStore = useSelector((store) => store?.authStore || { auth: null })
     const [verifiedCartData, setVerifiedCartData] = useState([])
     
     // Payment Method State
