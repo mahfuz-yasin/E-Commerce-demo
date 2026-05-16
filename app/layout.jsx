@@ -69,7 +69,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && <FacebookPixel />}
+        {/* Temporarily disabled FacebookPixel for debugging */}
+        {/* {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && <FacebookPixel />} */}
       </head>
       <body
         className={`${assistantFont.className} antialiased`}
