@@ -71,9 +71,11 @@ const ShowLandingPages = () => {
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
                     <div className="flex justify-between items-center">
                         <h4 className='text-xl font-semibold'>All Landing Pages</h4>
-                        <Button>
-                            <FiPlus />
-                            <Link href="/settings/landing-pages/create/builder">Create Landing Page</Link>
+                        <Button asChild>
+                            <Link href="/settings/landing-pages/create/builder">
+                                <FiPlus />
+                                Create Landing Page
+                            </Link>
                         </Button>
                     </div>
                 </CardHeader>

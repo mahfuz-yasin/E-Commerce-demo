@@ -71,9 +71,11 @@ const ShowPages = () => {
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
                     <div className="flex justify-between items-center">
                         <h4 className='text-xl font-semibold'>All Pages</h4>
-                        <Button>
-                            <FiPlus />
-                            <Link href="/settings/pages/create/builder">Create Page</Link>
+                        <Button asChild>
+                            <Link href="/settings/pages/create/builder">
+                                <FiPlus />
+                                Create Page
+                            </Link>
                         </Button>
                     </div>
                 </CardHeader>
