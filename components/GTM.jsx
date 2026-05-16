@@ -31,9 +31,9 @@ const GTM = () => {
     return null
   }
 
-  const gtmContainerId = gtmConfig.gtmContainerId
-  const gtmAuth = gtmConfig.gtmAuth
-  const gtmPreview = gtmConfig.gtmPreview
+  const gtmContainerId = gtmConfig.gtmContainerId || ''
+  const gtmAuth = gtmConfig.gtmAuth || ''
+  const gtmPreview = gtmConfig.gtmPreview || ''
 
   // Initialize dataLayer
   useEffect(() => {
