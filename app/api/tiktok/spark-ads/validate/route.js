@@ -12,7 +12,8 @@ export async function POST(request) {
     await connectDB()
 
     const body = await request.json()
-    const { authCode, videoId } = body
+    const authCode = body?.authCode
+    const videoId = body?.videoId
 
     if (!authCode) {
       return response(false, 400, 'Video Authorization Code is required')

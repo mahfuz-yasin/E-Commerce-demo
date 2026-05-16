@@ -13,13 +13,13 @@ const LogoutButton = () => {
     const router = useRouter()
     const handleLogout = async () => {
         try {
-            const { data: logoutResponse } = await axios.post('/api/auth/logout')
-            if (!logoutResponse.success) {
-                throw new Error(logoutResponse.message)
+            const logoutResponse = await axios.post('/api/auth/logout')
+            if (!logoutResponse.data.success) {
+                throw new Error(logoutResponse.data.message)
             }
 
             dispatch(logout())
-            showToast('success', logoutResponse.message)
+            showToast('success', logoutResponse.data.message)
             router.push(WEBSITE_LOGIN)
         } catch (error) {
             showToast('error', error.message)
