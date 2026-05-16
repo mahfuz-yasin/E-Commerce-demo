@@ -95,8 +95,10 @@ export async function GET(request) {
 
         return NextResponse.json({
             success: true,
-            data: pages,
-            meta: { totalRowCount }
+            data: {
+                data: pages,
+                meta: { totalRowCount }
+            }
         })
     } catch (error) {
         console.error('Page Builder GET error:', error)
