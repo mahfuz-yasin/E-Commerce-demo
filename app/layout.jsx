@@ -75,7 +75,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${assistantFont.className} antialiased`}
       >
-        <ScrollProgress />
+        {/* Temporarily disabled ScrollProgress for debugging */}
+        {/* <ScrollProgress /> */}
         <GlobalProvider>
           {children}
         </GlobalProvider>
