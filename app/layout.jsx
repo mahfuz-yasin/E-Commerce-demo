@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <FacebookPixel />
+        {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && <FacebookPixel />}
       </head>
       <body
         className={`${assistantFont.className} antialiased`}
