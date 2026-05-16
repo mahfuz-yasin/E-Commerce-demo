@@ -26,86 +26,62 @@ const componentLibrary = [
     {
         id: 'heading',
         name: 'Heading',
-        icon: '📝',
-        description: 'Custom heading with animation',
-        color: 'from-blue-500 to-blue-600'
+        description: 'Custom heading with animation'
     },
     {
         id: 'paragraph',
         name: 'Paragraph',
-        icon: '�',
-        description: 'Text paragraph with styling',
-        color: 'from-green-500 to-green-600'
+        description: 'Text paragraph with styling'
     },
     {
         id: 'image',
         name: 'Image',
-        icon: '🖼️',
-        description: 'Image with animation and caption',
-        color: 'from-pink-500 to-rose-600'
+        description: 'Image with animation and caption'
     },
     {
         id: 'divider',
         name: 'Divider',
-        icon: '➖',
-        description: 'Horizontal line with style',
-        color: 'from-slate-500 to-slate-600'
+        description: 'Horizontal line with style'
     },
     {
         id: 'link',
         name: 'Link',
-        icon: '🔗',
-        description: 'Clickable link with animation',
-        color: 'from-orange-500 to-red-600'
+        description: 'Clickable link with animation'
     },
     {
         id: 'color',
         name: 'Color Block',
-        icon: '🎨',
-        description: 'Colored section with animation',
-        color: 'from-purple-500 to-purple-600'
+        description: 'Colored section with animation'
     },
     {
         id: 'button',
         name: 'Button',
-        icon: '�',
-        description: 'Call-to-action button with animation',
-        color: 'from-cyan-500 to-blue-600'
+        description: 'Call-to-action button with animation'
     },
     {
         id: 'spacer',
         name: 'Spacer',
-        icon: '↕️',
-        description: 'Vertical space between elements',
-        color: 'from-gray-500 to-gray-600'
+        description: 'Vertical space between elements'
     },
     {
         id: 'hero',
         name: 'Hero Section',
-        icon: '🎯',
-        description: 'Large hero banner with animation',
-        color: 'from-blue-500 to-purple-600'
+        description: 'Large hero banner with animation'
     },
     {
         id: 'text',
         name: 'Text Block',
-        icon: '📝',
-        description: 'Rich text content block',
-        color: 'from-green-500 to-teal-600'
+        description: 'Rich text content block'
     },
     {
         id: 'section',
         name: 'Section',
-        icon: '�',
-        description: 'Container section with background',
-        color: 'from-cyan-500 to-blue-600'
+        description: 'Container section with background'
     },
     {
         id: 'video',
         name: 'Video',
-        icon: '🎬',
-        description: 'Video embed with animation',
-        color: 'from-red-500 to-pink-600'
+        description: 'Video embed with animation'
     }
 ]
 
@@ -420,10 +396,9 @@ const PageBuilder = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
                 {/* Component Library - Collapsible on mobile */}
-                <Card className="lg:col-span-1 bg-gradient-to-br from-slate-50 to-slate-100 border-0 shadow-xl">
-                    <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+                <Card className="lg:col-span-1 bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
+                    <CardHeader className="bg-slate-100/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                         <div className="flex items-center gap-2">
-                            <FaLayerGroup className="text-xl" />
                             <h4 className='text-lg font-semibold'>Components</h4>
                         </div>
                     </CardHeader>
@@ -432,17 +407,14 @@ const PageBuilder = () => {
                             <Button
                                 key={component.id}
                                 variant="outline"
-                                className="w-full justify-start h-auto py-2 lg:py-4 px-3 lg:px-4 hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-400 group text-sm lg:text-base"
+                                className="w-full justify-start h-auto py-2 lg:py-4 px-3 lg:px-4 hover:shadow-lg transition-all duration-300 border-2 hover:border-slate-400 group text-sm lg:text-base bg-white/50 hover:bg-slate-50/50"
                                 onClick={() => addComponent(component.id)}
                             >
-                                <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-br ${component.color} flex items-center justify-center mr-2 lg:mr-3 shadow-md group-hover:scale-110 transition-transform`}>
-                                    <span className="text-xl lg:text-2xl">{component.icon}</span>
-                                </div>
                                 <div className="text-left flex-1">
-                                    <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-xs lg:text-sm">{component.name}</div>
-                                    <div className="text-xs text-gray-500 hidden lg:block">{component.description}</div>
+                                    <div className="font-semibold text-slate-800 group-hover:text-slate-600 transition-colors text-xs lg:text-sm">{component.name}</div>
+                                    <div className="text-xs text-slate-500 hidden lg:block">{component.description}</div>
                                 </div>
-                                <FaPlus className="ml-auto text-gray-400 group-hover:text-blue-600 transition-colors" />
+                                <span className="ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">+</span>
                             </Button>
                         ))}
                     </CardContent>
@@ -451,11 +423,10 @@ const PageBuilder = () => {
                 {/* Page Builder Canvas */}
                 <div className="lg:col-span-3 space-y-6">
                     {/* Page Settings */}
-                    <Card className="shadow-xl border-2 border-blue-100">
-                        <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
+                    <Card className="shadow-xl border border-slate-200/50">
+                        <CardHeader className="bg-slate-100/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-2">
-                                    <IoMdSettings className="text-xl" />
                                     <h4 className='text-lg font-semibold'>Page Settings</h4>
                                 </div>
                                 <Button 
@@ -463,14 +434,13 @@ const PageBuilder = () => {
                                     variant="outline" 
                                     onClick={handleAIGenerate}
                                     disabled={isGenerating}
-                                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 hover:from-pink-600 hover:to-rose-600 shadow-lg text-sm"
+                                    className="bg-slate-800 text-white border-0 hover:bg-slate-700 shadow-lg text-sm"
                                 >
-                                    <FaRobot className="mr-2" />
                                     {isGenerating ? 'Generating...' : 'AI Generate'}
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-5 bg-gradient-to-b from-white to-slate-50">
+                        <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-5 bg-white/50 backdrop-blur-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="pageTitle" className="text-sm font-semibold text-gray-700">Page Title *</Label>
@@ -489,7 +459,7 @@ const PageBuilder = () => {
                                         value={pageSlug}
                                         onChange={(e) => setPageSlug(e.target.value)}
                                         placeholder="page-slug"
-                                        className="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200"
+                                        className="bg-slate-50/80 border-2 border-slate-200"
                                         readOnly
                                     />
                                 </div>
@@ -522,13 +492,13 @@ const PageBuilder = () => {
                                         type="button" 
                                         variant="outline" 
                                         disabled={isUploading}
-                                        className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 hover:from-blue-600 hover:to-indigo-600 shadow-md"
+                                        className="bg-slate-800 text-white border-0 hover:bg-slate-700 shadow-md"
                                     >
-                                        {isUploading ? 'Uploading...' : <FaUpload />}
+                                        {isUploading ? 'Uploading...' : 'Upload'}
                                     </Button>
                                 </div>
                                 {featuredImage && (
-                                    <div className="mt-3 flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                                    <div className="mt-3 flex items-center gap-4 p-4 bg-slate-50/80 rounded-xl border-2 border-slate-200 shadow-sm">
                                         <img src={featuredImage} alt="Featured" className="w-20 h-20 object-contain rounded-lg shadow-md" />
                                         <div className="flex-1">
                                             <p className="text-sm font-semibold text-gray-800">Current Image</p>
@@ -541,17 +511,16 @@ const PageBuilder = () => {
                                             onClick={() => setFeaturedImage('')}
                                             className="rounded-full shadow-md"
                                         >
-                                            <IoMdClose />
+                                            Remove
                                         </Button>
                                     </div>
                                 )}
                             </div>
 
                             {/* SEO Section */}
-                            <div className="space-y-4 pt-4 border-t-2 border-gray-200">
+                            <div className="space-y-4 pt-4 border-t-2 border-slate-200">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <FaRobot className="text-purple-600" />
-                                    <h5 className="text-lg font-semibold text-gray-800">SEO Settings</h5>
+                                    <h5 className="text-lg font-semibold text-slate-800">SEO Settings</h5>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="metaTitle" className="text-sm font-semibold text-gray-700">Meta Title</Label>
@@ -587,16 +556,14 @@ const PageBuilder = () => {
                             </div>
                         </CardContent>
                     </Card>
-
                     {/* Page Styles */}
-                    <Card className="shadow-xl border-2 border-purple-100">
-                        <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                    <Card className="shadow-xl border border-slate-200/50">
+                        <CardHeader className="bg-white/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                             <div className="flex items-center gap-2">
-                                <FaPalette className="text-xl" />
                                 <h4 className='text-lg font-semibold'>Page Styles</h4>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-5 bg-gradient-to-b from-white to-purple-50">
+                        <CardContent className="p-6 space-y-4 bg-white/50 backdrop-blur-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="animation" className="text-sm font-semibold text-gray-700">Animation</Label>
@@ -696,11 +663,11 @@ const PageBuilder = () => {
                     </Card>
 
                     {/* Categories */}
-                    <Card className="shadow-xl border-2 border-amber-100">
-                        <CardHeader className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-t-lg">
+                    <Card className="shadow-xl border border-slate-200/50">
+                        <CardHeader className="bg-slate-100/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                             <h4 className='text-lg font-semibold'>Categories</h4>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-4 bg-gradient-to-b from-white to-amber-50">
+                        <CardContent className="p-6 space-y-4 bg-white/50 backdrop-blur-sm">
                             <div className="flex flex-wrap gap-3">
                                 {availableCategories.map((category) => (
                                     <Button
@@ -709,27 +676,27 @@ const PageBuilder = () => {
                                         variant={selectedCategories.includes(category._id) ? "default" : "outline"}
                                         onClick={() => handleCategoryToggle(category._id)}
                                         className={selectedCategories.includes(category._id) 
-                                            ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0 shadow-md hover:from-amber-600 hover:to-orange-700" 
-                                            : "border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50 transition-all"}
+                                            ? "bg-slate-800 text-white border-0 shadow-md hover:bg-slate-700" 
+                                            : "border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-all"}
                                     >
                                         {category.name}
                                     </Button>
                                 ))}
                             </div>
                             {selectedCategories.length === 0 && (
-                                <div className="text-center py-6 bg-amber-50 rounded-lg border-2 border-amber-200">
-                                    <p className="text-amber-600 text-sm font-medium">No categories selected</p>
+                                <div className="text-center py-6 bg-slate-50 rounded-lg border-2 border-slate-200">
+                                    <p className="text-slate-600 text-sm font-medium">No categories selected</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
 
                     {/* Related Categories & Products */}
-                    <Card className="shadow-xl border-2 border-teal-100">
-                        <CardHeader className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-t-lg">
+                    <Card className="shadow-xl border border-slate-200/50">
+                        <CardHeader className="bg-slate-100/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                             <h4 className='text-lg font-semibold'>Related Categories & Products</h4>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-5 bg-gradient-to-b from-white to-teal-50">
+                        <CardContent className="p-6 space-y-5 bg-white/50 backdrop-blur-sm">
                             <div className="space-y-3">
                                 <Label className="text-sm font-semibold text-gray-700">Related Categories</Label>
                                 <div className="flex flex-wrap gap-3">
@@ -749,8 +716,8 @@ const PageBuilder = () => {
                                                 }}
                                                 size="sm"
                                                 className={relatedCategories.includes(category._id)
-                                                    ? "bg-gradient-to-r from-teal-500 to-cyan-600 text-white border-0 shadow-md"
-                                                    : "border-2 border-teal-200 hover:border-teal-400 hover:bg-teal-50 transition-all"}
+                                                    ? "bg-slate-800 text-white border-0 shadow-md"
+                                                    : "border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-all"}
                                             >
                                                 {category.name}
                                             </Button>
@@ -786,11 +753,10 @@ const PageBuilder = () => {
                     </Card>
 
                     {/* Canvas */}
-                    <Card className="shadow-xl border-2 border-indigo-100">
-                        <CardHeader className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-lg">
+                    <Card className="shadow-xl border border-slate-200/50">
+                        <CardHeader className="bg-slate-100/80 backdrop-blur-sm text-slate-800 rounded-t-lg">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-2">
-                                    <FaEdit className="text-xl" />
                                     <h4 className='text-lg font-semibold'>Page Canvas</h4>
                                 </div>
                                 {isLoading ? (
@@ -798,24 +764,23 @@ const PageBuilder = () => {
                                 ) : (
                                     <Button 
                                         onClick={handleSave}
-                                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 shadow-lg w-full sm:w-auto"
+                                        className="bg-slate-800 text-white border-0 hover:bg-slate-700 shadow-lg w-full sm:w-auto"
                                     >
-                                        <FaSave className="mr-2" />
                                         Save Page
                                     </Button>
                                 )}
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 lg:p-6 bg-gradient-to-b from-white to-indigo-50">
+                        <CardContent className="p-4 lg:p-6 bg-white/50 backdrop-blur-sm">
                             {components.length === 0 ? (
-                                <div className="text-center py-16 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border-2 border-dashed border-indigo-200">
+                                <div className="text-center py-16 bg-slate-50/80 rounded-xl border-2 border-dashed border-slate-200">
                                     <div className="mb-4">
-                                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-100 to-blue-100 rounded-full flex items-center justify-center">
-                                            <FaPlus className="text-3xl text-indigo-500" />
+                                        <div className="w-20 h-20 mx-auto bg-slate-100/80 rounded-full flex items-center justify-center">
+                                            <span className="text-3xl text-slate-400">+</span>
                                         </div>
                                     </div>
-                                    <p className="text-xl font-semibold text-gray-700 mb-2">Start building your page</p>
-                                    <p className="text-gray-500">Drag components from the library or click to add</p>
+                                    <p className="text-xl font-semibold text-slate-700 mb-2">Start building your page</p>
+                                    <p className="text-slate-500">Drag components from the library or click to add</p>
                                 </div>
                             ) : (
                                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -837,13 +802,12 @@ const PageBuilder = () => {
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
-                                                                className="border-2 border-dashed border-indigo-300 rounded-xl p-5 hover:border-indigo-500 hover:shadow-lg transition-all bg-white"
+                                                                className="border-2 border-dashed border-slate-300 rounded-xl p-5 hover:border-slate-500 hover:shadow-lg transition-all bg-white"
                                                             >
                                                                 <div className="flex justify-between items-start mb-4">
                                                                     <div className="flex items-center gap-3">
                                                                         <span className="text-2xl cursor-move text-gray-400 hover:text-indigo-500 transition-colors">⋮⋮</span>
-                                                                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${componentLibrary.find(c => c.id === component.type)?.color || 'from-gray-500 to-gray-600'} flex items-center justify-center shadow-md`}>
-                                                                            <span className="text-xl">{componentLibrary.find(c => c.id === component.type)?.icon || '📦'}</span>
+                                                                        <div className={`w-10 h-10 rounded-lg bg-slate-100/80 flex items-center justify-center shadow-md`}>
                                                                         </div>
                                                                         <span className="font-semibold text-gray-800 capitalize">{component.type}</span>
                                                                     </div>
@@ -853,7 +817,7 @@ const PageBuilder = () => {
                                                                         onClick={() => removeComponent(index)}
                                                                         className="rounded-full shadow-md"
                                                                     >
-                                                                        <FaTrash />
+                                                                        Remove
                                                                     </Button>
                                                                 </div>
                                                                 <ComponentEditor
