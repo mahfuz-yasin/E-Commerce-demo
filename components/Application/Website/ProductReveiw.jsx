@@ -22,7 +22,16 @@ import useFetch from '@/hooks/useFetch'
 
 const ProductReveiw = ({ productId }) => {
     const queryClient = useQueryClient()
-    const auth = useSelector((store) => store?.authStore?.auth || null)
+    const auth = useSelector((store) => {
+        try {
+            const state = store || {}
+            const authStore = state.authStore || {}
+            return authStore.auth || null
+        } catch (error) {
+            console.error('Error accessing auth state in ProductReveiw:', error)
+            return null
+        }
+    })
     const [loading, setLoading] = useState(false)
     const [currentUrl, setCurrentUrl] = useState('')
     const [isReview, setIsReview] = useState(false)

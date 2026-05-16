@@ -22,7 +22,15 @@ const Cart = () => {
     const [subtotal, setSubTotal] = useState(0)
     const [discount, setDiscount] = useState(0)
 
-    const cart = useSelector(store => store?.cartStore || { products: [], count: 0 })
+    const cart = useSelector((store) => {
+        try {
+            const state = store || {}
+            return state.cartStore || { products: [], count: 0 }
+        } catch (error) {
+            console.error('Error accessing cart state in Cart:', error)
+            return { products: [], count: 0 }
+        }
+    })
     const dispatch = useDispatch()
 
     useEffect(() => {

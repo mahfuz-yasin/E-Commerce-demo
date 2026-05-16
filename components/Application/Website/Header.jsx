@@ -15,7 +15,16 @@ import { HiMiniBars3 } from "react-icons/hi2";
 import Search from './Search'
 
 const Header = () => {
-    const auth = useSelector((store) => store?.authStore?.auth || null)
+    const auth = useSelector((store) => {
+        try {
+            const state = store || {}
+            const authStore = state.authStore || {}
+            return authStore.auth || null
+        } catch (error) {
+            console.error('Error accessing auth state in Header:', error)
+            return null
+        }
+    })
     const [isMobileMenu, setIsMobileMenu] = useState(false)
     const [showSearch, setShowSearch] = useState(false)
 

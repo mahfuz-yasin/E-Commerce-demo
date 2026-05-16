@@ -8,10 +8,16 @@ export const authReducer = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
-            state.auth = action.payload || null
+            if (state && action.payload) {
+                state.auth = action.payload
+            } else if (state) {
+                state.auth = null
+            }
         },
-        logout: (state, action) => {
-            state.auth = null
+        logout: (state) => {
+            if (state) {
+                state.auth = null
+            }
         },
     }
 })

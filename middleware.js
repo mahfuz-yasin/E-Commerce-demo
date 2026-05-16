@@ -96,7 +96,9 @@ export async function middleware(request) {
 
 export const config = {
     matcher: [
-        // Admin routes - specific paths to avoid conflicts with website
+        // Admin routes - include /admin prefix
+        '/admin/:path*',
+        // Legacy admin routes for compatibility
         '/dashboard', '/dashboard/:path*',
         '/product', '/product/add', '/product/edit/:path*',
         '/product-variant', '/product-variant/:path*',

@@ -17,7 +17,16 @@ import LogoutButton from "./LogoutButton";
 import { ADMIN_ORDER_SHOW, ADMIN_PRODUCT_ADD } from "@/routes/AdminPanelRoute";
 
 const UserDropdown = () => {
-    const auth = useSelector((store) => store?.authStore?.auth || null)
+    const auth = useSelector((store) => {
+        try {
+            const state = store || {}
+            const authStore = state.authStore || {}
+            return authStore.auth || null
+        } catch (error) {
+            console.error('Error accessing auth state in UserDropdown:', error)
+            return null
+        }
+    })
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
