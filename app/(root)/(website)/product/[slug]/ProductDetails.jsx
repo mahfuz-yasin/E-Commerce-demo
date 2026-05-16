@@ -168,12 +168,10 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
             dispatch(addIntoCart(cartProduct))
 
-            // Track GA4 add_to_cart event
-            try {
-                await trackGA4AddToCart(cartProduct, qty)
-            } catch (error) {
+            // Track GA4 add_to_cart event (fire-and-forget)
+            trackGA4AddToCart(cartProduct, qty).catch(error => {
                 console.error('GA4 add_to_cart tracking failed:', error)
-            }
+            })
         })
 
         setIsAddedIntoCart(true)

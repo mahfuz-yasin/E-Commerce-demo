@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute"
 import { jwtVerify } from "jose"
 import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute"
-import { connectDB } from "./lib/databaseConnection"
-import GoogleConfigModel from "./models/GoogleConfig.model"
 
 export async function middleware(request) {
     try {
@@ -37,26 +35,6 @@ export async function middleware(request) {
                 })
             }
         })
-
-        // Conversion Linker: Auto-add gclid to outbound links if conversionLinkerActive
-        try {
-            await connectDB()
-            const config = await GoogleConfigModel.getConfig()
-            if (config.conversionLinkerActive && utmParams.gclid) {
-                // Store gclid in a cookie for later use in API calls
-                if (!request.cookies.has('gclid')) {
-                    response.cookies.set('gclid', utmParams.gclid, {
-                        httpOnly: false,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'lax',
-                        maxAge: 90 * 24 * 60 * 60 // 90 days
-                    })
-                }
-            }
-        } catch (error) {
-            // Don't fail the middleware if config fetch fails
-            console.error('Error fetching Google config for conversion linker:', error)
-        }
 
         // Check for protected routes
         if (!hasToken) {
