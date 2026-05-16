@@ -1,10 +1,16 @@
 import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
+import { isAuthenticated } from "@/lib/authentication";
 import PageBuilderModel from "@/models/PageBuilder.model";
 
 // GET all pages (admin)
 export async function GET(request) {
     try {
+        const auth = await isAuthenticated('admin')
+        if (!auth.isAuth) {
+            return response(false, 403, 'Unauthorized.')
+        }
+
         await connectDB()
         
         const { searchParams } = new URL(request.url)
@@ -25,6 +31,11 @@ export async function GET(request) {
 // POST create new page (admin)
 export async function POST(request) {
     try {
+        const auth = await isAuthenticated('admin')
+        if (!auth.isAuth) {
+            return response(false, 403, 'Unauthorized.')
+        }
+
         await connectDB()
         const payload = await request.json()
 
