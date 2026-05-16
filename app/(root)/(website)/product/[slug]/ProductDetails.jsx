@@ -19,6 +19,7 @@ import { HiMinus, HiPlus } from "react-icons/hi2";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { useDispatch, useSelector } from "react-redux";
 import { addIntoCart } from "@/store/reducer/cartReducer";
+import { trackGA4AddToCart } from "@/lib/ga4-server";
 import { showToast } from "@/lib/showToast";
 import { Button } from "@/components/ui/button";
 import loadingSvg from '@/public/assets/images/loading.svg'
@@ -166,6 +167,13 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
             }
 
             dispatch(addIntoCart(cartProduct))
+
+            // Track GA4 add_to_cart event
+            try {
+                await trackGA4AddToCart(cartProduct, qty)
+            } catch (error) {
+                console.error('GA4 add_to_cart tracking failed:', error)
+            }
         })
 
         setIsAddedIntoCart(true)

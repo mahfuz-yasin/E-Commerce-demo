@@ -8,6 +8,7 @@ import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils"
 import { z } from "zod";
 import { trackPurchase } from "@/lib/facebook-capi";
 import { trackTikTokPurchase, generateTikTokEventId } from "@/lib/tiktok-events-api";
+import { trackGA4Purchase } from "@/lib/ga4-server";
 
 export async function POST(request) {
     try {
@@ -77,7 +78,7 @@ export async function POST(request) {
             status: paymentVerification ? 'pending' : 'unverified'
         })
 
-        // Track Purchase event with Facebook CAPI and TikTok Events API
+        // Track Purchase event with Facebook CAPI, TikTok Events API, and GA4
         try {
             const productIds = validatedData.products.map(p => p.productId)
             
@@ -120,6 +121,24 @@ export async function POST(request) {
                     country: validatedData.country
                 },
                 eventId
+            )
+
+            // GA4 purchase tracking
+            await trackGA4Purchase(
+                {
+                    order_id: newOrder._id.toString(),
+                    products: validatedData.products,
+                    totalAmount: validatedData.totalAmount,
+                    tax: 0,
+                    shipping: 0,
+                    coupon: ''
+                },
+                null,
+                validatedData.userId,
+                {
+                    email: validatedData.email,
+                    phone: validatedData.phone
+                }
             )
         } catch (error) {
             console.error('Error tracking Purchase event:', error)

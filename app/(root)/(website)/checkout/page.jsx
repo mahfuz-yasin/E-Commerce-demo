@@ -25,6 +25,7 @@ import Script from 'next/script'
 import { useRouter } from 'next/navigation'
 import { trackInitiateCheckout } from '@/components/FacebookPixel'
 import { trackTikTokInitiateCheckout, generateTikTokEventId } from '@/components/TikTokPixel'
+import { trackGA4BeginCheckout } from '@/lib/ga4-server'
 
 import loading from '@/public/assets/images/loading.svg'
 const breadCrumb = {
@@ -102,6 +103,13 @@ const Checkout = () => {
                 cart.count,
                 eventId
             )
+
+            // GA4 begin_checkout tracking
+            try {
+                trackGA4BeginCheckout(cart.products, totalAmount, null, authStore.auth?.userId)
+            } catch (error) {
+                console.error('GA4 begin_checkout tracking failed:', error)
+            }
         }
     }, [cart.count, totalAmount])
 

@@ -2,6 +2,8 @@ import React from 'react'
 import ProductDetails from './ProductDetails'
 import { headers } from 'next/headers'
 import MediaModel from '@/models/Media.model'
+import { trackGA4ViewItem } from '@/lib/ga4-server'
+import { cookies } from 'next/headers'
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -120,19 +122,31 @@ const ProductPage = async ({ params, searchParams }) => {
                 <h1 className='text-4xl font-semibold'>Data not found.</h1>
             </div>
         )
-    } else {
-
-        return (
-            <ProductDetails
-                product={getProduct?.data?.product}
-                variant={getProduct?.data?.variant}
-                colors={getProduct?.data?.colors}
-                sizes={getProduct?.data?.sizes}
-                reviewCount={getProduct?.data?.reviewCount}
-            />
-        )
     }
 
+    // Track GA4 view_item event (server-side)
+    const displayProduct = getProduct?.data?.variant || getProduct?.data?.product
+    if (displayProduct) {
+        const cookieStore = await cookies()
+        const clientId = cookieStore.get('ga4_client_id')?.value
+        const userId = cookieStore.get('user_id')?.value
+
+        try {
+            await trackGA4ViewItem(displayProduct, clientId, userId)
+        } catch (error) {
+            console.error('GA4 view_item tracking failed:', error)
+        }
+    }
+
+    return (
+        <ProductDetails
+            product={getProduct?.data?.product}
+            variant={getProduct?.data?.variant}
+            colors={getProduct?.data?.colors}
+            sizes={getProduct?.data?.sizes}
+            reviewCount={getProduct?.data?.reviewCount}
+        />
+    )
 }
 
 export default ProductPage

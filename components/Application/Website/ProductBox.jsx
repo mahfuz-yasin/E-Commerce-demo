@@ -11,6 +11,7 @@ import DirectOrderModal from './DirectOrderModal'
 import WhatsAppOrderModal from './WhatsAppOrderModal'
 import { useDispatch } from 'react-redux'
 import { addIntoCart } from '@/store/reducer/cartReducer'
+import { trackGA4AddToCart } from "@/lib/ga4-server"
 import { showToast } from '@/lib/showToast'
 import OptimizedImage from '@/components/ui/OptimizedImage'
 
@@ -23,18 +24,27 @@ const ProductBox = ({ product }) => {
     const handleAddToCart = () => {
         const cartProduct = {
             productId: product._id,
-            variantId: product.variantId?._id || product._id,
+            variantId: product.variants && product.variants.length > 0 ? product.variants[0]._id : null,
             name: product.name,
             url: product.slug,
-            size: product.size || 'Default',
-            colors: product.colors || (product.color ? [{ name: product.color }] : [{ name: 'Default' }]),
-            mrp: product.mrp,
+            size: product.variants && product.variants.length > 0 ? product.variants[0].size : null,
+            colors: product.variants && product.variants.length > 0 ? product.variants[0].colors : null,
+            mrp: product.sellingPrice,
             sellingPrice: product.sellingPrice,
-            media: product?.media[0]?.secure_url,
+            media: product.media && product.media.length > 0 ? product.media[0].secure_url : null,
             qty: 1
         }
+
         dispatch(addIntoCart(cartProduct))
-        showToast('success', 'Product added to cart')
+
+        // Track GA4 add_to_cart event
+        try {
+            trackGA4AddToCart(cartProduct, 1)
+        } catch (error) {
+            console.error('GA4 add_to_cart tracking failed:', error)
+        }
+
+        showToast('success', 'Product added into cart.')
     }
 
     const discount = Math.round(((product.mrp - product.sellingPrice) / product.mrp) * 100)
