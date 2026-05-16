@@ -21,7 +21,7 @@ export default function useCustomConversions() {
       const response = await fetch('/api/custom-conversions')
       const data = await response.json()
       
-      if (data.success) {
+      if (data.success && data.data) {
         const activeRules = data.data.filter(rule => rule.status === 'active')
         applyRules(activeRules)
       }
