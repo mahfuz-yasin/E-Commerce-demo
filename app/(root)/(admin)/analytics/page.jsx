@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
 import { ADMIN_ANALYTICS } from '@/routes/AdminPanelRoute'
 import { showToast } from '@/lib/showToast'
-import { RefreshCw, Users, Eye, ShoppingCart, DollarSign, Activity, TrendingUp, Calendar } from 'lucide-react'
+import { RefreshCw, Users, Eye, ShoppingCart, DollarSign, Activity, TrendingUp, Calendar, Plus, Trash2, FileText } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -25,10 +25,27 @@ const Analytics = () => {
   const [topEvents, setTopEvents] = useState([])
   const [realTimeUsers, setRealTimeUsers] = useState(0)
   const [realTimeEvents, setRealTimeEvents] = useState([])
+  const [showCustomReports, setShowCustomReports] = useState(false)
+  const [customReports, setCustomReports] = useState([])
+  const [selectedReport, setSelectedReport] = useState(null)
+  const [showDebugView, setShowDebugView] = useState(false)
+  const [eventFilter, setEventFilter] = useState('')
 
   useEffect(() => {
     fetchAnalyticsData()
+    fetchCustomReports()
   }, [dateRange])
+
+  const fetchCustomReports = async () => {
+    try {
+      const { data } = await axios.get('/api/admin/analytics/custom-reports')
+      if (data.success) {
+        setCustomReports(data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching custom reports:', error)
+    }
+  }
 
   const fetchAnalyticsData = async () => {
     try {
@@ -106,12 +123,112 @@ const Analytics = () => {
             <option value="30daysAgo">Last 30 days</option>
             <option value="90daysAgo">Last 90 days</option>
           </select>
+          <Button onClick={() => setShowCustomReports(!showCustomReports)} variant="outline" className="cursor-pointer">
+            <FileText className="h-4 w-4 mr-2" />
+            Custom Reports
+          </Button>
+          <Button onClick={() => setShowDebugView(!showDebugView)} variant="outline" className="cursor-pointer">
+            <Activity className="h-4 w-4 mr-2" />
+            Debug View
+          </Button>
           <Button onClick={fetchAnalyticsData} disabled={loading} className="cursor-pointer">
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
       </div>
+
+      {/* Custom Reports Section */}
+      {showCustomReports && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Custom Reports</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">Create and manage custom GA4 reports</p>
+                <Button size="sm" className="cursor-pointer">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Report
+                </Button>
+              </div>
+              
+              {customReports.length > 0 ? (
+                <div className="space-y-2">
+                  {customReports.map(report => (
+                    <div key={report._id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                      <div>
+                        <p className="font-medium">{report.name}</p>
+                        <p className="text-sm text-muted-foreground">{report.description || 'No description'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Metrics: {report.metrics.join(', ')} | Dimensions: {report.dimensions.join(', ') || 'None'}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="cursor-pointer">Run</Button>
+                        <Button size="sm" variant="destructive" className="cursor-pointer">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No custom reports yet. Create one to get started.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Debug View Section */}
+      {showDebugView && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Real-time Debug View</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Filter by event name..."
+                  value={eventFilter}
+                  onChange={(e) => setEventFilter(e.target.value)}
+                  className="flex-1 p-2 border rounded"
+                />
+                <Button size="sm" onClick={fetchRealTimeData} className="cursor-pointer">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+              
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {realTimeEvents
+                  .filter(event => !eventFilter || event.eventName?.toLowerCase().includes(eventFilter.toLowerCase()))
+                  .map((event, index) => (
+                    <div key={index} className="p-3 bg-gray-50 rounded border">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium">{event.eventName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {event.minutesAgo} minutes ago
+                          </p>
+                        </div>
+                        <p className="text-sm font-bold">{formatNumber(event.eventCount)} events</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              
+              {realTimeEvents.length === 0 && (
+                <p className="text-sm text-muted-foreground">No real-time events available</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Real-time Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
