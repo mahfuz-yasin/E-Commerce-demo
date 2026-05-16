@@ -37,6 +37,7 @@ export async function POST(request) {
         }
 
         console.log('User email verified:', getUser.isEmailVerified)
+        console.log('User has password field:', !!getUser.password)
 
         // resend email verification link 
         if (!getUser.isEmailVerified) {
