@@ -75,6 +75,9 @@ export const ADMIN_TIKTOK_SETTINGS = '/tiktoksettings'
 export const ADMIN_TIKTOK_ADS_DASHBOARD = '/tiktoksettings/ads-dashboard'
 export const ADMIN_TIKTOK_AUDIENCES = '/tiktoksettings/audiences'
 
+// Google Settings route
+export const ADMIN_GOOGLE_SETTINGS = '/google'
+
 export const ADMIN_FACEBOOK_PROMOTIONS = '/facebook-settings/promotions'
 export const ADMIN_FACEBOOK_CUSTOM_CONVERSIONS = '/facebook-settings/custom-conversions'
 export const ADMIN_FACEBOOK_AUDIT = '/facebook-settings/audit'
