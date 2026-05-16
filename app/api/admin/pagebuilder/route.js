@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
 import { isAuthenticated } from "@/lib/authentication";
+import { NextResponse } from "next/server";
 import PageBuilderModel from "@/models/PageBuilder.model";
 
 // GET all pages (admin)
@@ -16,13 +17,65 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url)
         const pageType = searchParams.get('pageType')
         
-        const query = pageType ? { pageType } : {}
-        
-        const pages = await PageBuilderModel.find(query)
-            .sort({ createdAt: -1 })
-            .lean()
+        // Extract query parameters for pagination, filtering, and sorting
+        const start = parseInt(searchParams.get('start') || 0, 10)
+        const size = parseInt(searchParams.get('size') || 10, 10)
+        const filters = JSON.parse(searchParams.get('filters') || "[]")
+        const globalFilter = searchParams.get('globalFilter') || ""
+        const sorting = JSON.parse(searchParams.get('sorting') || "[]")
+        const deleteType = searchParams.get('deleteType')
 
-        return response(true, 200, 'Pages fetched successfully', pages)
+        // Build match query
+        let matchQuery = {}
+        
+        if (pageType) {
+            matchQuery.pageType = pageType
+        }
+
+        // Handle deleteType filtering
+        if (deleteType === 'SD') {
+            matchQuery.deletedAt = null
+        } else if (deleteType === 'PD') {
+            matchQuery.deletedAt = { $ne: null }
+        }
+
+        // Global search
+        if (globalFilter) {
+            matchQuery["$or"] = [
+                { title: { $regex: globalFilter, $options: 'i' } },
+                { slug: { $regex: globalFilter, $options: 'i' } },
+            ]
+        }
+
+        // Column filtering
+        filters.forEach(filter => {
+            matchQuery[filter.id] = { $regex: filter.value, $options: 'i' }
+        })
+
+        // Sorting
+        let sortQuery = {}
+        sorting.forEach(sort => {
+            sortQuery[sort.id] = sort.desc ? -1 : 1
+        })
+
+        // Aggregate pipeline
+        const aggregatePipeline = [
+            { $match: matchQuery },
+            { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
+            { $skip: start },
+            { $limit: size }
+        ]
+
+        const pages = await PageBuilderModel.aggregate(aggregatePipeline)
+
+        // Get total row count
+        const totalRowCount = await PageBuilderModel.countDocuments(matchQuery)
+
+        return NextResponse.json({
+            success: true,
+            data: pages,
+            meta: { totalRowCount }
+        })
     } catch (error) {
         return catchError(error)
     }
