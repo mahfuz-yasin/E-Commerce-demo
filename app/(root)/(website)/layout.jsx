@@ -3,7 +3,7 @@ import Header from '@/components/Application/Website/Header'
 // Temporarily disabled tracking components for debugging
 // import FacebookPixel from '@/components/FacebookPixel'
 // import TikTokPixel from '@/components/TikTokPixel'
-import MessengerChat from '@/components/MessengerChat'
+// import MessengerChat from '@/components/MessengerChat'
 import React from 'react'
 import { Kumbh_Sans } from 'next/font/google'
 
@@ -24,7 +24,7 @@ const layout = ({ children }) => {
                 {children}
             </main>
             <Footer />
-            <MessengerChat />
+            {/* <MessengerChat /> */}
         </div>
     )
 }
