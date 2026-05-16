@@ -24,7 +24,10 @@ const ShowProduct = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={ADMIN_PRODUCT_EDIT(row.original._id)} />)
+        const editHref = ADMIN_PRODUCT_EDIT(row.original._id)
+        if (editHref) {
+            actionMenu.push(<EditAction key="edit" href={editHref} />)
+        }
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])

@@ -55,7 +55,10 @@ const ShowLandingPages = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={`/settings/landing-pages/create/builder?edit=${row.original._id}`} />)
+        const editHref = `/settings/landing-pages/create/builder?edit=${row.original._id}`
+        if (editHref) {
+            actionMenu.push(<EditAction key="edit" href={editHref} />)
+        }
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])

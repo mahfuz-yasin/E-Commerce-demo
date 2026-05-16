@@ -102,7 +102,9 @@ const OrderDetails = ({ params }) => {
                                                     <div>
                                                         <h4 className="text-lg">
                                                             {product?.productId?.slug ? (
-                                                                <Link href={WEBSITE_PRODUCT_DETAILS(product.productId.slug)}>{product?.productId?.name || product?.name || 'Unknown Product'}</Link>
+                                                                <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>
+                                                                    {product?.productId?.name || product?.name || 'Unknown Product'}
+                                                                </Link>
                                                             ) : (
                                                                 <span>{product?.productId?.name || product?.name || 'Unknown Product'}</span>
                                                             )}

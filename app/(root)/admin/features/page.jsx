@@ -55,7 +55,10 @@ const ShowFeatures = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={ADMIN_FEATURES_EDIT(row.original._id)} />)
+        const editHref = ADMIN_FEATURES_EDIT(row.original._id)
+        if (editHref) {
+            actionMenu.push(<EditAction key="edit" href={editHref} />)
+        }
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])
@@ -68,9 +71,11 @@ const ShowFeatures = () => {
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
                     <div className="flex justify-between items-center">
                         <h4 className='text-xl font-semibold'>Manage Features</h4>
-                        <Button>
-                            <FiPlus />
-                            <Link href={ADMIN_FEATURES_ADD}>New Feature</Link>
+                        <Button asChild>
+                            <Link href={ADMIN_FEATURES_ADD}>
+                                <FiPlus />
+                                New Feature
+                            </Link>
                         </Button>
                     </div>
                 </CardHeader>

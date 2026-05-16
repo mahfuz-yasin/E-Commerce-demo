@@ -55,7 +55,10 @@ const ShowPages = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={`/settings/pages/create/builder?edit=${row.original._id}`} />)
+        const editHref = `/settings/pages/create/builder?edit=${row.original._id}`
+        if (editHref) {
+            actionMenu.push(<EditAction key="edit" href={editHref} />)
+        }
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])

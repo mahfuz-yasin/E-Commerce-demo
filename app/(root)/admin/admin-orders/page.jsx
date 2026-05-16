@@ -25,7 +25,10 @@ const ShowOrder = () => {
 
     const action = useCallback((row, deleteType, handleDelete) => {
         let actionMenu = []
-        actionMenu.push(<ViewAction key="view" href={ADMIN_ORDER_DETAILS(row.original.order_id)} />)
+        const viewHref = ADMIN_ORDER_DETAILS(row.original.order_id)
+        if (viewHref) {
+            actionMenu.push(<ViewAction key="view" href={viewHref} />)
+        }
         actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
         return actionMenu
     }, [])
