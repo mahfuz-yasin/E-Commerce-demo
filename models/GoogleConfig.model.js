@@ -138,6 +138,16 @@ const googleConfigSchema = new mongoose.Schema({
     set: (value) => encrypt(value),
     get: (value) => decrypt(value)
   },
+  // GTM Variables
+  gtmVariables: {
+    type: Array,
+    default: []
+  },
+  // Custom HTML/JavaScript Tags
+  customTags: {
+    type: Array,
+    default: []
+  },
   
   // Conversion Linker
   conversionLinkerActive: {

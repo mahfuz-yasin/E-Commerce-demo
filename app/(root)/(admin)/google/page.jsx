@@ -28,6 +28,9 @@ const GoogleSettings = () => {
   const [loadingMerchantFeed, setLoadingMerchantFeed] = useState(false)
   const [feedQualityReport, setFeedQualityReport] = useState(null)
   const [loadingQualityCheck, setLoadingQualityCheck] = useState(false)
+  const [gtmVariables, setGtmVariables] = useState([])
+  const [customTags, setCustomTags] = useState([])
+  const [previewModeActive, setPreviewModeActive] = useState(false)
   
   const [formData, setFormData] = useState({
     // GA4
@@ -182,6 +185,30 @@ const GoogleSettings = () => {
     } finally {
       setLoadingQualityCheck(false)
     }
+  }
+
+  const addGtmVariable = () => {
+    setGtmVariables([...gtmVariables, { id: Date.now(), name: '', type: 'constant', value: '' }])
+  }
+
+  const removeGtmVariable = (id) => {
+    setGtmVariables(gtmVariables.filter(v => v.id !== id))
+  }
+
+  const updateGtmVariable = (id, field, value) => {
+    setGtmVariables(gtmVariables.map(v => v.id === id ? { ...v, [field]: value } : v))
+  }
+
+  const addCustomTag = () => {
+    setCustomTags([...customTags, { id: Date.now(), name: '', type: 'html', content: '', position: 'head' }])
+  }
+
+  const removeCustomTag = (id) => {
+    setCustomTags(customTags.filter(t => t.id !== id))
+  }
+
+  const updateCustomTag = (id, field, value) => {
+    setCustomTags(customTags.map(t => t.id === id ? { ...t, [field]: value } : t))
   }
 
   const handleOAuthFlow = async () => {
@@ -550,6 +577,140 @@ const GoogleSettings = () => {
               {renderField('GTM Container ID', 'gtmContainerId', 'text', 'GTM-XXXXXX')}
               {renderField('GTM Auth', 'gtmAuth', 'text', 'Enter GTM Auth', true)}
               {renderField('GTM Preview', 'gtmPreview', 'text', 'Enter Preview Environment')}
+              
+              {/* GTM Variables */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold">GTM Variables</h4>
+                    <Button size="sm" onClick={addGtmVariable} className="cursor-pointer">
+                      <Database className="h-4 w-4 mr-2" />
+                      Add Variable
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {gtmVariables.map(variable => (
+                      <div key={variable.id} className="p-3 bg-white rounded border space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Variable Name"
+                            value={variable.name}
+                            onChange={(e) => updateGtmVariable(variable.id, 'name', e.target.value)}
+                            className="flex-1"
+                          />
+                          <select
+                            value={variable.type}
+                            onChange={(e) => updateGtmVariable(variable.id, 'type', e.target.value)}
+                            className="w-32 p-2 border rounded"
+                          >
+                            <option value="constant">Constant</option>
+                            <option value="javascript">JavaScript Variable</option>
+                            <option value="dom">DOM Element</option>
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => removeGtmVariable(variable.id)}
+                            className="cursor-pointer"
+                          >
+                            <IoCloseCircleSharp className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Input
+                          placeholder="Variable Value"
+                          value={variable.value}
+                          onChange={(e) => updateGtmVariable(variable.id, 'value', e.target.value)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Custom Tags */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold">Custom HTML/JavaScript Tags</h4>
+                    <Button size="sm" onClick={addCustomTag} className="cursor-pointer">
+                      <Database className="h-4 w-4 mr-2" />
+                      Add Tag
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {customTags.map(tag => (
+                      <div key={tag.id} className="p-3 bg-white rounded border space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Tag Name"
+                            value={tag.name}
+                            onChange={(e) => updateCustomTag(tag.id, 'name', e.target.value)}
+                            className="flex-1"
+                          />
+                          <select
+                            value={tag.type}
+                            onChange={(e) => updateCustomTag(tag.id, 'type', e.target.value)}
+                            className="w-32 p-2 border rounded"
+                          >
+                            <option value="html">HTML</option>
+                            <option value="javascript">JavaScript</option>
+                          </select>
+                          <select
+                            value={tag.position}
+                            onChange={(e) => updateCustomTag(tag.id, 'position', e.target.value)}
+                            className="w-32 p-2 border rounded"
+                          >
+                            <option value="head">Head</option>
+                            <option value="body">Body</option>
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => removeCustomTag(tag.id)}
+                            className="cursor-pointer"
+                          >
+                            <IoCloseCircleSharp className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <textarea
+                          placeholder="Tag Content (HTML/JavaScript)"
+                          value={tag.content}
+                          onChange={(e) => updateCustomTag(tag.id, 'content', e.target.value)}
+                          className="w-full p-2 border rounded min-h-20 font-mono text-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Preview Mode */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-4">
+                    <AlertCircle className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-blue-900 mb-2">Preview Mode</h4>
+                      <p className="text-sm text-blue-800 mb-3">
+                        GTM Preview mode is active when gtm_auth and gtm_preview parameters are set.
+                        This allows you to test tags before publishing.
+                      </p>
+                      {formData.gtmAuth && formData.gtmPreview ? (
+                        <p className="text-sm text-green-700 font-medium">
+                          ✓ Preview mode is configured
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          Add GTM Auth and GTM Preview parameters to enable preview mode
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
               {renderSwitch('Enable GTM', 'isGTMActive', 'Tag management')}
               <div className="pt-4 border-t">
                 <Button
