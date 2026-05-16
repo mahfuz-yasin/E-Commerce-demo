@@ -134,7 +134,7 @@ const PageBuilder = () => {
         borderRadius: '0px',
         fontFamily: 'default'
     })
-    const { data: categoriesData } = useFetch('/api/admin/categories', 'GET')
+    const { data: categoriesData } = useFetch('/api/category', 'GET')
     const { data: productsData } = useFetch('/api/admin/products', 'GET')
     const { data: existingPages } = useFetch('/api/admin/pagebuilder?pageType=page', 'GET')
 

@@ -129,7 +129,7 @@ const LandingPageBuilder = () => {
         primaryColor: '#3b82f6',
         secondaryColor: '#10b981'
     })
-    const { data: categoriesData } = useFetch('/api/admin/categories', 'GET')
+    const { data: categoriesData } = useFetch('/api/category', 'GET')
     const { data: existingPages } = useFetch('/api/admin/pagebuilder?pageType=landing_page', 'GET')
 
     const availableCategories = categoriesData?.data || []
