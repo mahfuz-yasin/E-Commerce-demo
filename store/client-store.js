@@ -28,4 +28,18 @@ export const persistor = {
 // Add error boundary for store access
 if (typeof window !== 'undefined') {
     window.store = store
+    
+    // Add error handling for store access
+    const originalGetState = store.getState
+    store.getState = function() {
+        try {
+            return originalGetState.apply(this, arguments)
+        } catch (error) {
+            console.error('Error getting store state:', error)
+            return {
+                authStore: { auth: null },
+                cartStore: { products: [], count: 0 }
+            }
+        }
+    }
 }
