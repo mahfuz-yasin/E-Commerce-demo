@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import banner1 from '@/public/assets/images/banner1.avif'
 import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
+import CategoriesSection from '@/components/Application/Website/CategoriesSection'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 import { WEBSITE_SHOP, WEBSITE_RETURN_POLICY, WEBSITE_SHIPPING_POLICY, WEBSITE_SUPPORT, WEBSITE_MEMBERSHIP } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
@@ -136,6 +137,19 @@ const Home = () => {
             <ScrollReveal direction='up' delay={0}>
                 <FeaturedProduct />
             </ScrollReveal>
+
+            {/* Categories Section */}
+            <section className='lg:px-32 px-4 sm:py-16 py-8'>
+                <ScrollReveal direction='up' delay={0}>
+                    <div className='text-center mb-12'>
+                        <h2 className='text-3xl font-bold text-gray-900 mb-4'>আমাদের ক্যাটাগরি</h2>
+                        <p className='text-gray-600'>আপনার পছন্দের ক্যাটাগরি থেকে বেছে নিন</p>
+                    </div>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'>
+                        <CategoriesSection />
+                    </div>
+                </ScrollReveal>
+            </section>
 
             {/* Advertising Banner Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
