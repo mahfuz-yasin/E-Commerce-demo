@@ -7,16 +7,16 @@ const useDeleteMutation = (queryKey, deleteEndpoint) => {
 
     return useMutation({
         mutationFn: async ({ ids, deleteType }) => {
-            const { data: response } = await axios({
+            const response = await axios({
                 url: deleteEndpoint,
                 method: deleteType === 'PD' ? "DELETE" : "PUT",
                 data: { ids, deleteType }
             })
-            if (!response.success) {
-                throw new Error(response.message)
+            if (!response.data.success) {
+                throw new Error(response.data.message)
             }
 
-            return response
+            return response.data
         },
         onSuccess: (data) => {
             showToast('success', data.message)
