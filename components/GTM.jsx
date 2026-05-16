@@ -18,9 +18,9 @@ const GTM = () => {
 
   const fetchGTMConfig = async () => {
     try {
-      const { data } = await axios.get('/api/google/gtm/config')
-      if (data.success) {
-        setGtmConfig(data.data)
+      const response = await axios.get('/api/google/gtm/config')
+      if (response.data.success) {
+        setGtmConfig(response.data.data)
       }
     } catch (error) {
       console.error('Error fetching GTM config:', error)
