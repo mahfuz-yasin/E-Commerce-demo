@@ -7,8 +7,10 @@ import PageBuilderModel from "@/models/PageBuilder.model";
 // GET all pages (admin)
 export async function GET(request) {
     try {
+        console.log('Page Builder GET request received')
         const auth = await isAuthenticated('admin')
         if (!auth.isAuth) {
+            console.log('Page Builder GET: Unauthorized')
             return response(false, 403, 'Unauthorized.')
         }
 
@@ -17,13 +19,27 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url)
         const pageType = searchParams.get('pageType')
         
+        console.log('Page Builder GET: pageType =', pageType)
+        
         // Extract query parameters for pagination, filtering, and sorting
         const start = parseInt(searchParams.get('start') || 0, 10)
         const size = parseInt(searchParams.get('size') || 10, 10)
-        const filters = JSON.parse(searchParams.get('filters') || "[]")
+        
+        let filters = []
+        let sorting = []
+        try {
+            filters = JSON.parse(searchParams.get('filters') || "[]")
+            sorting = JSON.parse(searchParams.get('sorting') || "[]")
+        } catch (parseError) {
+            console.error('Page Builder GET: Error parsing filters/sorting:', parseError)
+            filters = []
+            sorting = []
+        }
+        
         const globalFilter = searchParams.get('globalFilter') || ""
-        const sorting = JSON.parse(searchParams.get('sorting') || "[]")
         const deleteType = searchParams.get('deleteType')
+
+        console.log('Page Builder GET: Query params - start:', start, 'size:', size, 'pageType:', pageType)
 
         // Build match query
         let matchQuery = {}
@@ -58,6 +74,8 @@ export async function GET(request) {
             sortQuery[sort.id] = sort.desc ? -1 : 1
         })
 
+        console.log('Page Builder GET: matchQuery =', JSON.stringify(matchQuery))
+
         // Aggregate pipeline
         const aggregatePipeline = [
             { $match: matchQuery },
@@ -66,10 +84,14 @@ export async function GET(request) {
             { $limit: size }
         ]
 
+        console.log('Page Builder GET: Executing aggregate pipeline')
         const pages = await PageBuilderModel.aggregate(aggregatePipeline)
+        console.log('Page Builder GET: Found', pages.length, 'pages')
 
         // Get total row count
+        console.log('Page Builder GET: Counting total documents')
         const totalRowCount = await PageBuilderModel.countDocuments(matchQuery)
+        console.log('Page Builder GET: Total row count =', totalRowCount)
 
         return NextResponse.json({
             success: true,
@@ -77,6 +99,7 @@ export async function GET(request) {
             meta: { totalRowCount }
         })
     } catch (error) {
+        console.error('Page Builder GET error:', error)
         return catchError(error)
     }
 }
