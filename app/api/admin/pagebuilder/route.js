@@ -92,10 +92,13 @@ export async function POST(request) {
         await connectDB()
         const payload = await request.json()
 
+        console.log('Page Builder POST payload:', JSON.stringify(payload, null, 2))
+
         const page = await PageBuilderModel.create(payload)
 
         return response(true, 201, 'Page created successfully', page)
     } catch (error) {
+        console.error('Page Builder POST error:', error)
         return catchError(error)
     }
 }
