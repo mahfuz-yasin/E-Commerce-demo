@@ -60,9 +60,10 @@ export async function middleware(request) {
 
         // verify token 
         const access_token = request.cookies.get('access_token').value
-        const { payload } = await jwtVerify(access_token, new TextEncoder().encode(process.env.SECRET_KEY))
+        const jwtResult = await jwtVerify(access_token, new TextEncoder().encode(process.env.SECRET_KEY))
+        const payload = jwtResult?.payload
 
-        const role = payload.role
+        const role = payload?.role
 
         // prevent logged-in users from accessing auth routes 
         if (pathname.startsWith('/auth')) {
