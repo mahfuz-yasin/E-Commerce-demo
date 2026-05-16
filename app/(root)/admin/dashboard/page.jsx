@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { Suspense } from 'react'
 import CountOverview from './CountOverview'
 import QuickAdd from './QuickAdd'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -14,8 +14,12 @@ import { ADMIN_ORDER_SHOW, ADMIN_REVIEW_SHOW } from '@/routes/AdminPanelRoute'
 const AdminDashboard = () => {
     return (
         <div className='pt-5'>
-            <CountOverview />
-            <QuickAdd />
+            <Suspense fallback={<div>Loading...</div>}>
+                <CountOverview />
+            </Suspense>
+            <Suspense fallback={<div>Loading...</div>}>
+                <QuickAdd />
+            </Suspense>
 
             <div className='mt-10 flex lg:flex-nowrap flex-wrap gap-10'>
                 <Card className="rounded-lg lg:w-[70%] w-full p-0">
@@ -29,7 +33,9 @@ const AdminDashboard = () => {
                     </CardHeader>
 
                     <CardContent>
-                        <OrderOverview />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <OrderOverview />
+                        </Suspense>
                     </CardContent>
 
                 </Card>
@@ -43,7 +49,9 @@ const AdminDashboard = () => {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <OrderStatus />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <OrderStatus />
+                        </Suspense>
                     </CardContent>
                 </Card>
             </div>
@@ -59,7 +67,9 @@ const AdminDashboard = () => {
                     </CardHeader>
 
                     <CardContent className='pt-3 lg:h-[350px] overflow-auto'>
-                        <LatestOrder />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <LatestOrder />
+                        </Suspense>
                     </CardContent>
 
                 </Card>
@@ -73,7 +83,9 @@ const AdminDashboard = () => {
                         </div>
                     </CardHeader>
                     <CardContent className='pt-3 px-1 lg:h-[350px] overflow-auto'>
-                        <LatestReview />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <LatestReview />
+                        </Suspense>
                     </CardContent>
                 </Card>
             </div>
