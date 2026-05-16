@@ -16,9 +16,10 @@ const FeaturedProduct = () => {
             try {
                 const url = '/api/product/get-featured-product'
                 console.log('Fetching featured products from:', url)
-                const { data } = await axios.get(url)
-                console.log('Featured products response:', data)
-                setProductData(data)
+                const response = await axios.get(url)
+                if (response.data.success) {
+                    setProductData(response.data)
+                }
             } catch (error) {
                 console.error('Error fetching featured products:', error)
                 setProductData({ success: false, error: true })

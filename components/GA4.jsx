@@ -13,9 +13,9 @@ const GA4 = ({ userId = null, debugMode = false }) => {
 
   const fetchGA4Config = async () => {
     try {
-      const { data } = await axios.get('/api/admin/google-settings')
-      if (data.success && data.data.ga4MeasurementId && data.data.isGA4Active === 'active') {
-        setMeasurementId(data.data.ga4MeasurementId)
+      const response = await axios.get('/api/admin/google-settings')
+      if (response.data.success && response.data.data.ga4MeasurementId && response.data.data.isGA4Active === 'active') {
+        setMeasurementId(response.data.data.ga4MeasurementId)
         setIsConfigured(true)
       }
     } catch (error) {

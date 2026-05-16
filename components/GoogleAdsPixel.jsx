@@ -14,10 +14,10 @@ const GoogleAdsPixel = ({ conversionId, conversionLabel, gclid, conversionValue 
 
   const fetchGoogleAdsConfig = async () => {
     try {
-      const { data } = await axios.get('/api/admin/google-settings')
-      if (data.success && data.data.isGoogleAdsActive === 'active') {
-        setConfigConversionId(data.data.googleAdsConversions?.purchase || null)
-        setConfigConversionLabel(data.data.googleAdsConversions?.purchase || null)
+      const response = await axios.get('/api/admin/google-settings')
+      if (response.data.success && response.data.data.isGoogleAdsActive === 'active') {
+        setConfigConversionId(response.data.data.googleAdsConversions?.purchase || null)
+        setConfigConversionLabel(response.data.data.googleAdsConversions?.purchase || null)
         setIsConfigured(true)
       }
     } catch (error) {

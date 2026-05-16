@@ -82,13 +82,12 @@ const HeroSlider = () => {
     useEffect(() => {
         const fetchDynamicSlides = async () => {
             try {
-                const { data } = await axios.get('/api/slider/active-slides', {
-                    timeout: 5000 // 5 second timeout
+                const response = await axios.get('/api/slider/active-slides', {
+                    headers: { 'Cache-Control': 'no-cache' }
                 })
-                
-                if (data.success && data.data && data.data.length > 0) {
+                if (response.data.success && response.data.data && response.data.data.length > 0) {
                     // Replace with dynamic slides
-                    const dynamicSlides = data.data.map(formatDynamicSlide)
+                    const dynamicSlides = response.data.data.map(formatDynamicSlide)
                     setSlides(dynamicSlides)
                     setIsHydrated(true)
                 }
