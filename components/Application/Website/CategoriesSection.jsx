@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import useFetch from '@/hooks/useFetch'
@@ -7,6 +7,7 @@ import useFetch from '@/hooks/useFetch'
 const CategoriesSection = () => {
     const { data: categoriesData } = useFetch('/api/category/get-category', 'GET')
     const [categories, setCategories] = useState([])
+    const scrollContainerRef = useRef(null)
 
     useEffect(() => {
         if (categoriesData && categoriesData.success && Array.isArray(categoriesData.data)) {
@@ -14,19 +15,34 @@ const CategoriesSection = () => {
         }
     }, [categoriesData])
 
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = scrollContainerRef.current.clientWidth * 0.5
+            scrollContainerRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            })
+        }
+    }
+
     if (!categories || categories.length === 0) {
         return null
     }
 
     return (
         <div className='relative group'>
-            <div className='flex overflow-x-auto gap-4 pb-4 scrollbar-hide scroll-smooth snap-x snap-mandatory'
+            <div className='flex overflow-x-auto gap-4 pb-4 scroll-smooth snap-x snap-mandatory'
                 style={{
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
-                    WebkitScrollbar: 'none'
                 }}
+                ref={scrollContainerRef}
             >
+                <style jsx>{`
+                    div::-webkit-scrollbar {
+                        display: none;
+                    }
+                `}</style>
                 {categories.map((category) => (
                     <Link
                         key={category._id}
@@ -56,6 +72,27 @@ const CategoriesSection = () => {
                     </Link>
                 ))}
             </div>
+
+            {/* Navigation buttons */}
+            <button
+                onClick={() => scroll('left')}
+                className='absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-amber-50'
+                aria-label='Scroll left'
+            >
+                <svg className='w-5 h-5 text-gray-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+                </svg>
+            </button>
+            <button
+                onClick={() => scroll('right')}
+                className='absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-amber-50'
+                aria-label='Scroll right'
+            >
+                <svg className='w-5 h-5 text-gray-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                </svg>
+            </button>
+
             {/* Scroll indicators */}
             <div className='flex justify-center gap-1 mt-2'>
                 {categories.map((_, index) => (
