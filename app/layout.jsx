@@ -60,8 +60,15 @@ export async function generateMetadata() {
       return defaultMetadata
     }
     
-    await connectDB()
-    // Facebook config is not critical for metadata
+    // Wrap DB connection in separate try-catch
+    try {
+      await connectDB()
+    } catch (dbError) {
+      console.error('Database connection error in generateMetadata:', dbError)
+      return defaultMetadata
+    }
+    
+    // Facebook config is not critical for metadata - wrap separately
     try {
       await FacebookConfigModel.getConfig()
     } catch (fbError) {
@@ -70,7 +77,7 @@ export async function generateMetadata() {
     
     return defaultMetadata
   } catch (error) {
-    console.error('Error in generateMetadata:', error)
+    console.error('Unexpected error in generateMetadata:', error)
     // Always return default metadata on any error
     return defaultMetadata
   }

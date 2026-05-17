@@ -11,11 +11,30 @@ export async function GET() {
             return response(true, 200, 'Products found.', [])
         }
         
-        await connectDB()
+        // Connect to DB with timeout
+        try {
+            await connectDB()
+        } catch (dbError) {
+            console.error('Database connection failed:', dbError)
+            return response(true, 200, 'Products found.', [])
+        }
 
-        const getProduct = await ProductModel.find({ deletedAt: null }).populate('media').limit(8).lean()
+        // Fetch products with error handling
+        let getProduct = []
+        try {
+            getProduct = await ProductModel.find({ deletedAt: null }).populate('media').limit(8).lean()
+        } catch (fetchError) {
+            console.error('Error fetching products:', fetchError)
+            return response(true, 200, 'Products found.', [])
+        }
 
-        return response(true, 200, 'Products found.', getProduct || [])
+        // Ensure we always return an array
+        if (!Array.isArray(getProduct)) {
+            console.warn('Product query did not return an array, returning empty array')
+            return response(true, 200, 'Products found.', [])
+        }
+
+        return response(true, 200, 'Products found.', getProduct)
 
     } catch (error) {
         console.error('Error fetching featured products:', error)

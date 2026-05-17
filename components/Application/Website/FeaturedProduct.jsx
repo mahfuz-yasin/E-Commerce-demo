@@ -100,13 +100,23 @@ const FeaturedProduct = () => {
             try {
                 const url = '/api/product/get-featured-product'
                 console.log('Fetching featured products from:', url)
-                const response = await axios.get(url)
-                if (response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
-                    setProductData(response.data)
+                
+                // Add timeout to prevent hanging requests
+                const response = await axios.get(url, { timeout: 10000 })
+                
+                // Validate response structure
+                if (response.data && response.data.success && Array.isArray(response.data.data)) {
+                    if (response.data.data.length > 0) {
+                        setProductData(response.data)
+                    }
+                    // If empty array, keep default products
+                } else {
+                    console.warn('Invalid response format from API:', response.data)
+                    setProductData({ success: true, data: defaultProducts })
                 }
             } catch (error) {
                 console.error('Error fetching featured products:', error)
-                // Keep default products on error
+                // Keep default products on any error
                 setProductData({ success: true, data: defaultProducts })
             } finally {
                 setLoading(false)
