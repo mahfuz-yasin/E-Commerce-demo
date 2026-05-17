@@ -1,8 +1,6 @@
 import dynamic from 'next/dynamic'
 import "./globals.css";
 import { Assistant } from 'next/font/google'
-import FacebookPixel from '@/components/FacebookPixel/FacebookPixel'
-import ScrollProgress from '@/components/ui/ScrollProgress'
 // Note: Using static metadata export to avoid DB connection issues
 const assistantFont = Assistant({
   weight: ['400', '500', '600', '700', '800'],
@@ -52,15 +50,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        {/* Temporarily disabled FacebookPixel for debugging */}
-        {/* {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && <FacebookPixel />} */}
-      </head>
-      <body
-        className={`${assistantFont.className} antialiased`}
-      >
-        {/* Temporarily disabled ScrollProgress for debugging */}
-        {/* <ScrollProgress /> */}
+      <body className={`${assistantFont.className} antialiased`}>
         <GlobalProvider>
           {children}
         </GlobalProvider>
