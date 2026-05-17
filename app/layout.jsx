@@ -3,7 +3,7 @@ import "./globals.css";
 import { Assistant } from 'next/font/google'
 import FacebookPixel from '@/components/FacebookPixel/FacebookPixel'
 import ScrollProgress from '@/components/ui/ScrollProgress'
-// Note: Database imports moved inside generateMetadata for safety
+// Note: Using static metadata export to avoid DB connection issues
 const assistantFont = Assistant({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
@@ -12,70 +12,41 @@ const assistantFont = Assistant({
 
 const GlobalProvider = dynamic(() => import('@/components/Application/GlobalProvider'))
 
-export async function generateMetadata() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alhilalpanjabi.com'
-  
-  const defaultMetadata = {
-    title: {
-      default: "Al-Hilal Panjabi | Premium Ethnic Wear for Men",
-      template: "%s | Al-Hilal Panjabi",
-    },
-    description: "Discover the finest collection of premium Panjabis at Al-Hilal. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
-    keywords: ["Panjabi", "Men's Ethnic Wear", "Al-Hilal Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
-    authors: [{ name: "Al-Hilal Panjabi" }],
-    creator: "Al-Hilal Panjabi",
-    openGraph: {
-      type: "website",
-      locale: "en_US",
-      url: baseUrl,
-      siteName: "Al-Hilal Panjabi",
-      title: "Al-Hilal Panjabi | Premium Ethnic Wear",
-      description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
-      images: [
-        {
-          url: `${baseUrl}/logo.webp`,
-          width: 1200,
-          height: 630,
-          alt: "Al-Hilal Panjabi Collection",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "Al-Hilal Panjabi",
-      description: "Premium Panjabis for the modern man.",
-      images: [`${baseUrl}/logo.webp`],
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-  }
-  
-  try {
-    // Only try to connect to DB if MONGODB_URI is set
-    if (!process.env.MONGODB_URI) {
-      console.warn('MONGODB_URI not set, using default metadata')
-      return defaultMetadata
-    }
-    
-    // Dynamic imports to prevent module initialization errors
-    const { connectDB } = await import('@/lib/databaseConnection')
-    
-    // Wrap DB connection in separate try-catch
-    try {
-      await connectDB()
-    } catch (dbError) {
-      console.error('Database connection error in generateMetadata:', dbError)
-      return defaultMetadata
-    }
-    
-    return defaultMetadata
-  } catch (error) {
-    console.error('Unexpected error in generateMetadata:', error)
-    // Always return default metadata on any error
-    return defaultMetadata
-  }
+export const metadata = {
+  title: {
+    default: "Al-Hilal Panjabi | Premium Ethnic Wear for Men",
+    template: "%s | Al-Hilal Panjabi",
+  },
+  description: "Discover the finest collection of premium Panjabis at Al-Hilal. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
+  keywords: ["Panjabi", "Men's Ethnic Wear", "Al-Hilal Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
+  authors: [{ name: "Al-Hilal Panjabi" }],
+  creator: "Al-Hilal Panjabi",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://alhilalpanjabi.com",
+    siteName: "Al-Hilal Panjabi",
+    title: "Al-Hilal Panjabi | Premium Ethnic Wear",
+    description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
+    images: [
+      {
+        url: "https://alhilalpanjabi.com/logo.webp",
+        width: 1200,
+        height: 630,
+        alt: "Al-Hilal Panjabi Collection",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Al-Hilal Panjabi",
+    description: "Premium Panjabis for the modern man.",
+    images: ["https://alhilalpanjabi.com/logo.webp"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({ children }) {
