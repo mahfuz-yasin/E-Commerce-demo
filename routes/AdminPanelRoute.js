@@ -98,6 +98,12 @@ export const ADMIN_FACEBOOK_CAMPAIGN_MANAGER = '/admin/facebook-settings/campaig
 // Leads routes
 export const ADMIN_LEADS_DASHBOARD = '/admin/leads'
 
+// Contact Inquiry routes
+export const ADMIN_CONTACT_INQUIRY = '/admin/contact-inquiry'
+
+// Contact Config routes
+export const ADMIN_CONTACT_CONFIG = '/admin/contact-config'
+
 // Up Banner routes
 export const ADMIN_UPBANNER = '/admin/upbanner'
 export const ADMIN_UPBANNER_ADD = '/admin/upbanner/add'

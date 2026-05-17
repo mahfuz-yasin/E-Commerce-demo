@@ -1,13 +1,50 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { showToast } from '@/lib/showToast'
 import { IoLocationOutline, IoCallOutline, IoMailOutline } from 'react-icons/io5'
-import { FaFacebookF, FaWhatsapp, FaInstagram } from 'react-icons/fa'
+import { FaFacebookF, FaWhatsapp, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa'
+import axios from 'axios'
+
+// Default contact config
+const defaultConfig = {
+    companyName: 'Al-Hilal Panjabi',
+    address: {
+        line1: 'Magura Sadar',
+        line2: 'Magura',
+        city: 'Magura',
+        district: 'Khulna Division',
+        country: 'Bangladesh'
+    },
+    phone: {
+        primary: '+880 1810-841539',
+        secondary: ''
+    },
+    email: {
+        primary: 'info@alhilalpanjabi.com',
+        support: 'support@alhilalpanjabi.com'
+    },
+    businessHours: {
+        days: 'Sat - Thu',
+        hours: '9AM - 8PM'
+    },
+    socialLinks: {
+        facebook: '#',
+        whatsapp: 'https://wa.me/8801810841539',
+        instagram: '#',
+        twitter: '',
+        youtube: ''
+    },
+    mapEmbedUrl: '',
+    pageTitle: 'Contact Us',
+    pageSubtitle: 'Have questions? We would love to hear from you. Send us a message and we will respond as soon as possible.'
+}
 
 const ContactUs = () => {
+    const [config, setConfig] = useState(defaultConfig)
+    const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -16,6 +53,25 @@ const ContactUs = () => {
         message: ''
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Fetch contact config
+    useEffect(() => {
+        fetchContactConfig()
+    }, [])
+
+    const fetchContactConfig = async () => {
+        try {
+            const response = await axios.get('/api/contact/config')
+            if (response.data.success && response.data.data) {
+                setConfig({ ...defaultConfig, ...response.data.data })
+            }
+        } catch (error) {
+            console.error('Error fetching contact config:', error)
+            // Keep default config on error
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleChange = (e) => {
         setFormData({
@@ -29,15 +85,26 @@ const ContactUs = () => {
         setIsSubmitting(true)
         
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            showToast('Message sent successfully! We will get back to you soon.', 'success')
-            setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+            const response = await axios.post('/api/contact/submit', formData)
+            if (response.data.success) {
+                showToast(response.data.message || 'Message sent successfully! We will get back to you soon.', 'success')
+                setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+            } else {
+                showToast(response.data.message || 'Failed to send message. Please try again.', 'error')
+            }
         } catch (error) {
-            showToast('Failed to send message. Please try again.', 'error')
+            console.error('Error submitting contact form:', error)
+            showToast(error?.response?.data?.message || 'Failed to send message. Please try again.', 'error')
         } finally {
             setIsSubmitting(false)
         }
+    }
+
+    // Get full address string
+    const getFullAddress = () => {
+        const { line1, line2, city, district, country } = config.address || {}
+        const parts = [config.companyName, line1, line2, city, district, country].filter(Boolean)
+        return parts
     }
 
     return (
@@ -45,9 +112,9 @@ const ContactUs = () => {
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-amber-600 to-amber-700 py-16">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Contact Us</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{config.pageTitle}</h1>
                     <p className="text-white/90 text-lg max-w-2xl mx-auto">
-                        Have questions? We would love to hear from you. Send us a message and we will respond as soon as possible.
+                        {config.pageSubtitle}
                     </p>
                 </div>
             </div>
@@ -62,9 +129,12 @@ const ContactUs = () => {
                             </div>
                             <h3 className="font-semibold text-gray-900 mb-2">Visit Us</h3>
                             <p className="text-gray-600 text-sm">
-                                Al-Hilal Panjabi<br />
-                                Magura Sadar, Magura<br />
-                                Khulna Division, Bangladesh
+                                {getFullAddress().map((part, index) => (
+                                    <span key={index}>
+                                        {part}
+                                        {index < getFullAddress().length - 1 && <br />}
+                                    </span>
+                                ))}
                             </p>
                         </div>
 
@@ -74,8 +144,9 @@ const ContactUs = () => {
                             </div>
                             <h3 className="font-semibold text-gray-900 mb-2">Call Us</h3>
                             <p className="text-gray-600 text-sm">
-                                +880 1810-841539<br />
-                                Sat - Thu: 9AM - 8PM
+                                {config.phone?.primary}{config.phone?.secondary && <><br />{config.phone.secondary}</>}
+                                <br />
+                                {config.businessHours?.days}: {config.businessHours?.hours}
                             </p>
                         </div>
 
@@ -85,8 +156,7 @@ const ContactUs = () => {
                             </div>
                             <h3 className="font-semibold text-gray-900 mb-2">Email Us</h3>
                             <p className="text-gray-600 text-sm">
-                                info@alhilalpanjabi.com<br />
-                                support@alhilalpanjabi.com
+                                {config.email?.primary}{config.email?.support && <><br />{config.email.support}</>}
                             </p>
                         </div>
 
@@ -94,15 +164,31 @@ const ContactUs = () => {
                         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                             <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
                             <div className="flex gap-3">
-                                <a href="#" className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
-                                    <FaFacebookF />
-                                </a>
-                                <a href="https://wa.me/8801810841539" className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-colors">
-                                    <FaWhatsapp />
-                                </a>
-                                <a href="#" className="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition-colors">
-                                    <FaInstagram />
-                                </a>
+                                {config.socialLinks?.facebook && (
+                                    <a href={config.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
+                                        <FaFacebookF />
+                                    </a>
+                                )}
+                                {config.socialLinks?.whatsapp && (
+                                    <a href={config.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-colors">
+                                        <FaWhatsapp />
+                                    </a>
+                                )}
+                                {config.socialLinks?.instagram && (
+                                    <a href={config.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition-colors">
+                                        <FaInstagram />
+                                    </a>
+                                )}
+                                {config.socialLinks?.twitter && (
+                                    <a href={config.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-sky-500 rounded-lg flex items-center justify-center text-white hover:bg-sky-600 transition-colors">
+                                        <FaTwitter />
+                                    </a>
+                                )}
+                                {config.socialLinks?.youtube && (
+                                    <a href={config.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center text-white hover:bg-red-700 transition-colors">
+                                        <FaYoutube />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -199,15 +285,30 @@ const ContactUs = () => {
                             </form>
                         </div>
 
-                        {/* Map Placeholder */}
-                        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                            <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
-                                <div className="text-center">
-                                    <IoLocationOutline className="text-4xl text-gray-400 mx-auto mb-2" />
-                                    <p className="text-gray-500">Map integration coming soon</p>
+                        {/* Map Section */}
+                        {config.mapEmbedUrl ? (
+                            <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                                <iframe
+                                    src={config.mapEmbedUrl}
+                                    width="100%"
+                                    height="400"
+                                    style={{ border: 0, borderRadius: '0.75rem' }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    title="Location Map"
+                                />
+                            </div>
+                        ) : (
+                            <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                                <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
+                                    <div className="text-center">
+                                        <IoLocationOutline className="text-4xl text-gray-400 mx-auto mb-2" />
+                                        <p className="text-gray-500">Map coming soon</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
