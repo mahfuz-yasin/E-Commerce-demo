@@ -1,8 +1,21 @@
 import React from 'react'
-import ProductDetails from './ProductDetails'
+import dynamic from 'next/dynamic'
 import { headers } from 'next/headers'
 // import { trackGA4ViewItem } from '@/lib/ga4-server'
 // import { cookies } from 'next/headers'
+
+// Dynamically import ProductDetails client component to prevent SSR issues
+const ProductDetails = dynamic(() => import('./ProductDetails'), { 
+    ssr: false,
+    loading: () => (
+        <div className='flex justify-center items-center py-10 h-[400px]'>
+            <div className='text-center'>
+                <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4'></div>
+                <p className='text-gray-600'>Loading product...</p>
+            </div>
+        </div>
+    )
+})
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -90,91 +103,105 @@ export async function generateMetadata({ params }) {
 }
 
 const ProductPage = async ({ params, searchParams }) => {
-    const { slug } = await params
-    const { color, size } = await searchParams
-
-    // Get the base URL from headers for server component
-    const headersList = await headers()
-    const host = headersList.get('host') || 'alhilalpanjabi.com'
-    const protocol = host.includes('localhost') ? 'http' : 'https'
-    const baseUrl = `${protocol}://${host}`
-
-    let url = `${baseUrl}/api/product/details/${slug}`
-
-    if (color && size) {
-        url += `?color=${color}&size=${size}`
-    }
-
-    const response = await fetch(url, {
-        cache: 'no-store'
-    })
-
-    if (!response.ok) {
-        return (
-            <div className='flex justify-center items-center py-10 h-[300px]'>
-                <h1 className='text-4xl font-semibold'>Data not found.</h1>
-            </div>
-        )
-    }
-
-    let getProduct
     try {
-        getProduct = await response.json()
-    } catch (parseError) {
-        console.error('Error parsing product data:', parseError)
+        const { slug } = await params
+        const { color, size } = await searchParams
+
+        if (!slug) {
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Invalid product URL.</h1>
+                </div>
+            )
+        }
+
+        // Get the base URL from headers for server component
+        const headersList = await headers()
+        const host = headersList.get('host') || 'alhilalpanjabi.com'
+        const protocol = host.includes('localhost') ? 'http' : 'https'
+        const baseUrl = `${protocol}://${host}`
+
+        let url = `${baseUrl}/api/product/details/${slug}`
+
+        if (color && size) {
+            url += `?color=${color}&size=${size}`
+        }
+
+        let response
+        try {
+            response = await fetch(url, {
+                cache: 'no-store'
+            })
+        } catch (fetchError) {
+            console.error('Error fetching product:', fetchError)
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Unable to load product.</h1>
+                </div>
+            )
+        }
+
+        if (!response.ok) {
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Product not found.</h1>
+                </div>
+            )
+        }
+
+        let getProduct
+        try {
+            getProduct = await response.json()
+        } catch (parseError) {
+            console.error('Error parsing product data:', parseError)
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Error loading product data.</h1>
+                </div>
+            )
+        }
+
+        if (!getProduct || !getProduct.success || !getProduct.data) {
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Product not found.</h1>
+                </div>
+            )
+        }
+
+        // Ensure we have valid data before rendering
+        const productData = getProduct.data.product
+        const variantData = getProduct.data.variant
+        const colorsData = getProduct.data.colors || []
+        const sizesData = getProduct.data.sizes || []
+        const reviewCountData = getProduct.data.reviewCount || 0
+
+        if (!productData || !variantData) {
+            return (
+                <div className='flex justify-center items-center py-10 h-[300px]'>
+                    <h1 className='text-4xl font-semibold'>Product information is incomplete.</h1>
+                </div>
+            )
+        }
+
+        return (
+            <ProductDetails
+                product={productData}
+                variant={variantData}
+                colors={colorsData}
+                sizes={sizesData}
+                reviewCount={reviewCountData}
+            />
+        )
+    } catch (error) {
+        console.error('=== CRITICAL ERROR IN PRODUCT PAGE ===', error)
         return (
             <div className='flex justify-center items-center py-10 h-[300px]'>
-                <h1 className='text-4xl font-semibold'>Error loading product data.</h1>
+                <h1 className='text-4xl font-semibold'>An error occurred loading this product.</h1>
+                <p className='text-gray-500 mt-4'>{error?.message || 'Unknown error'}</p>
             </div>
         )
     }
-
-    if (!getProduct.success || !getProduct.data) {
-        return (
-            <div className='flex justify-center items-center py-10 h-[300px]'>
-                <h1 className='text-4xl font-semibold'>Product not found.</h1>
-            </div>
-        )
-    }
-
-    // Track GA4 view_item event (server-side) - TEMPORARILY DISABLED
-    // const displayProduct = getProduct?.data?.variant || getProduct?.data?.product
-    // if (displayProduct) {
-    //     const cookieStore = await cookies()
-    //     const clientId = cookieStore.get('ga4_client_id')?.value
-    //     const userId = cookieStore.get('user_id')?.value
-
-    //     try {
-    //         await trackGA4ViewItem(displayProduct, clientId, userId)
-    //     } catch (error) {
-    //         console.error('GA4 view_item tracking failed:', error)
-    //     }
-    // }
-
-    // Ensure we have valid data before rendering
-    const productData = getProduct?.data?.product
-    const variantData = getProduct?.data?.variant
-    const colorsData = getProduct?.data?.colors || []
-    const sizesData = getProduct?.data?.sizes || []
-    const reviewCountData = getProduct?.data?.reviewCount || 0
-
-    if (!productData || !variantData) {
-        return (
-            <div className='flex justify-center items-center py-10 h-[300px]'>
-                <h1 className='text-4xl font-semibold'>Product information is incomplete.</h1>
-            </div>
-        )
-    }
-
-    return (
-        <ProductDetails
-            product={productData}
-            variant={variantData}
-            colors={colorsData}
-            sizes={sizesData}
-            reviewCount={reviewCountData}
-        />
-    )
 }
 
 export default ProductPage
