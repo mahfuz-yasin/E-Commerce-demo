@@ -9,21 +9,13 @@ const rootReducer = combineReducers({
     cartStore: cartReducer
 })
 
-// Preloaded state to ensure store is always properly initialized
-const preloadedState = {
-    authStore: { auth: null },
-    cartStore: { products: [], count: 0 }
-}
-
 // Create store without persistence for SSR safety
 export const store = configureStore({
     reducer: rootReducer,
-    preloadedState,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ 
             serializableCheck: false,
-            immutableCheck: false,
-            thunk: true
+            immutableCheck: false
         }),
     devTools: process.env.NODE_ENV !== 'production'
 })
@@ -35,51 +27,4 @@ export const persistor = {
     flush: () => Promise.resolve(),
     pause: () => {},
     resume: () => {},
-}
-
-// Add error boundary for store access
-if (typeof window !== 'undefined') {
-    window.store = store
-    
-    // Ensure store is ready before accessing
-    store.ready = true
-    
-    // Add error handling for store access
-    const originalGetState = store.getState
-    store.getState = function() {
-        try {
-            const state = originalGetState.apply(this, arguments)
-            // Ensure authStore and auth are always defined
-            if (!state) {
-                return preloadedState
-            }
-            if (!state.authStore) {
-                return {
-                    ...state,
-                    authStore: { auth: null }
-                }
-            }
-            if (state.authStore.auth === undefined) {
-                return {
-                    ...state,
-                    authStore: { ...state.authStore, auth: null }
-                }
-            }
-            return state
-        } catch (error) {
-            console.error('Error getting store state:', error)
-            return preloadedState
-        }
-    }
-    
-    // Add error handling for dispatch
-    const originalDispatch = store.dispatch
-    store.dispatch = function(action) {
-        try {
-            return originalDispatch.apply(this, arguments)
-        } catch (error) {
-            console.error('Error dispatching action:', error, action)
-            throw error
-        }
-    }
 }

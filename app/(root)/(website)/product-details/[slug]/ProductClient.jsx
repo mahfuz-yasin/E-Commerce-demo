@@ -389,24 +389,20 @@ const ProductClient = ({ product, variant, colors, sizes, reviewCount }) => {
       </div>
 
       {/* Modals */}
-      {typeof window !== 'undefined' && (
-        <>
-          <DirectOrderModal
-            isOpen={isDirectModalOpen}
-            onClose={() => setIsDirectModalOpen(false)}
-            product={product}
-            variant={variant}
-            selectedSize={selectedSizes[0] || variant.size}
-          />
-          <WhatsAppOrderModal
-            isOpen={isWhatsAppModalOpen}
-            onClose={() => setIsWhatsAppModalOpen(false)}
-            product={product}
-            variant={variant}
-            selectedSize={selectedSizes[0] || variant.size}
-          />
-        </>
-      )}
+      <DirectOrderModal
+        isOpen={isDirectModalOpen}
+        onClose={() => setIsDirectModalOpen(false)}
+        product={product}
+        variant={variant}
+        selectedSize={selectedSizes[0] || variant.size}
+      />
+      <WhatsAppOrderModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => setIsWhatsAppModalOpen(false)}
+        product={product}
+        variant={variant}
+        selectedSize={selectedSizes[0] || variant.size}
+      />
     </div>
   )
 }
