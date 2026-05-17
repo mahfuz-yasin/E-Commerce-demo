@@ -13,65 +13,65 @@ const defaultProducts = [
         _id: 'default-1',
         name: 'Premium Panjabi',
         slug: 'premium-panjabi',
-        price: 1500,
-        discountPrice: 1200,
-        image: { secure_url: '/assets/images/panjabi-1.webp' }
+        mrp: 1500,
+        sellingPrice: 1200,
+        media: [{ secure_url: '/assets/images/panjabi-1.webp' }]
     },
     {
         _id: 'default-2',
         name: 'Classic Panjabi',
         slug: 'classic-panjabi',
-        price: 1800,
-        discountPrice: 1500,
-        image: { secure_url: '/assets/images/panjabi-2.webp' }
+        mrp: 1800,
+        sellingPrice: 1500,
+        media: [{ secure_url: '/assets/images/panjabi-2.webp' }]
     },
     {
         _id: 'default-3',
         name: 'Designer Panjabi',
         slug: 'designer-panjabi',
-        price: 2000,
-        discountPrice: 1700,
-        image: { secure_url: '/assets/images/panjabi-3.webp' }
+        mrp: 2000,
+        sellingPrice: 1700,
+        media: [{ secure_url: '/assets/images/panjabi-3.webp' }]
     },
     {
         _id: 'default-4',
         name: 'Elegant Panjabi',
         slug: 'elegant-panjabi',
-        price: 2200,
-        discountPrice: 1900,
-        image: { secure_url: '/assets/images/panjabi-4.webp' }
+        mrp: 2200,
+        sellingPrice: 1900,
+        media: [{ secure_url: '/assets/images/panjabi-4.webp' }]
     },
     {
         _id: 'default-5',
         name: 'Royal Panjabi',
         slug: 'royal-panjabi',
-        price: 2500,
-        discountPrice: 2100,
-        image: { secure_url: '/assets/images/panjabi-5.webp' }
+        mrp: 2500,
+        sellingPrice: 2100,
+        media: [{ secure_url: '/assets/images/panjabi-5.webp' }]
     },
     {
         _id: 'default-6',
         name: 'Traditional Panjabi',
         slug: 'traditional-panjabi',
-        price: 1700,
-        discountPrice: 1400,
-        image: { secure_url: '/assets/images/panjabi-6.webp' }
+        mrp: 1700,
+        sellingPrice: 1400,
+        media: [{ secure_url: '/assets/images/panjabi-6.webp' }]
     },
     {
         _id: 'default-7',
         name: 'Modern Panjabi',
         slug: 'modern-panjabi',
-        price: 1900,
-        discountPrice: 1600,
-        image: { secure_url: '/assets/images/panjabi-7.webp' }
+        mrp: 1900,
+        sellingPrice: 1600,
+        media: [{ secure_url: '/assets/images/panjabi-7.webp' }]
     },
     {
         _id: 'default-8',
         name: 'Stylish Panjabi',
         slug: 'stylish-panjabi',
-        price: 2100,
-        discountPrice: 1800,
-        image: { secure_url: '/assets/images/panjabi-8.webp' }
+        mrp: 2100,
+        sellingPrice: 1800,
+        media: [{ secure_url: '/assets/images/panjabi-8.webp' }]
     }
 ]
 
