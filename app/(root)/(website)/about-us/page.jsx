@@ -1,7 +1,6 @@
 'use client'
 import WebsiteBreadcrumb from '@/components/Application/Website/WebsiteBreadcrumb'
 import React, { useEffect, useState } from 'react'
-import useFetch from '@/hooks/useFetch'
 
 const breadcrumb = {
     title: 'About',
@@ -11,14 +10,41 @@ const breadcrumb = {
 }
 
 const AboutUs = () => {
-    const { data: aboutData } = useFetch('/api/settings/about-us', 'GET')
     const [content, setContent] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        if (aboutData && aboutData.success && aboutData.data) {
-            setContent(aboutData.data.content || '')
+        const fetchContent = async () => {
+            try {
+                const response = await fetch('/api/settings/about-us')
+                const data = await response.json()
+                if (data.success && data.data && data.data.content) {
+                    setContent(data.data.content)
+                }
+            } catch (error) {
+                console.error('Error fetching about content:', error)
+            } finally {
+                setIsLoading(false)
+            }
         }
-    }, [aboutData])
+        fetchContent()
+    }, [])
+
+    if (isLoading) {
+        return (
+            <div>
+                <WebsiteBreadcrumb props={breadcrumb} />
+                <div className='lg:px-40 px-5 py-20'>
+                    <div className="animate-pulse">
+                        <div className="h-8 bg-gray-200 rounded mb-4 w-1/3"></div>
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
    <div>
