@@ -134,9 +134,11 @@ export async function GET(request, { params }) {
             reviewCount: review
         }
 
+        console.log('[API /product/details] Success:', getProduct.name)
         return response(true, 200, 'Product data found.', productData)
 
     } catch (error) {
-        return catchError(error)
+        console.error('[API /product/details] Error:', error.message, error.stack)
+        return catchError(error, 'Failed to fetch product details')
     }
 }

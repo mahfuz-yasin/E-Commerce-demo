@@ -30,27 +30,47 @@ async function getProductData(slug, color, size) {
       url += `?color=${encodeURIComponent(color)}&size=${encodeURIComponent(size)}`
     }
 
-    const response = await fetch(url, {
-      cache: 'no-store',
-      headers: {
-        'Accept': 'application/json',
-      }
-    })
+    console.log('[ProductServer] Fetching from:', url)
 
-    if (!response.ok) {
-      return { error: true, status: response.status, message: 'Product not found' }
+    let response
+    try {
+      response = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json',
+        }
+      })
+    } catch (fetchError) {
+      console.error('[ProductServer] Fetch error:', fetchError.message)
+      return { error: true, message: `Network error: ${fetchError.message}` }
     }
 
-    const data = await response.json()
+    console.log('[ProductServer] Response status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error')
+      console.error('[ProductServer] API error response:', errorText)
+      return { error: true, status: response.status, message: `API error: ${response.status}` }
+    }
+
+    let data
+    try {
+      data = await response.json()
+    } catch (parseError) {
+      console.error('[ProductServer] JSON parse error:', parseError.message)
+      return { error: true, message: 'Invalid JSON response from API' }
+    }
+    
+    console.log('[ProductServer] API success:', data.success, 'has data:', !!data.data)
     
     if (!data.success || !data.data) {
-      return { error: true, message: 'Invalid product data' }
+      return { error: true, message: data.message || 'Invalid product data' }
     }
 
     return { error: false, data: data.data }
     
   } catch (error) {
-    console.error('Error fetching product:', error)
+    console.error('[ProductServer] Unexpected error:', error.message)
     return { error: true, message: error.message || 'Failed to load product' }
   }
 }
