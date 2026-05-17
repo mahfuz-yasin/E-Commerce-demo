@@ -28,7 +28,7 @@ import DirectOrderModal from "@/components/Application/Website/DirectOrderModal"
 import WhatsAppOrderModal from "@/components/Application/Website/WhatsAppOrderModal";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import ImageZoom from "@/components/ui/ImageZoom";
-import { trackViewContent, trackAddToCart } from "@/components/FacebookPixel"
+import { viewContent as trackViewContent, addToCart as trackAddToCart } from "@/lib/facebookPixel"
 import { trackTikTokViewContent, trackTikTokAddToCart, generateTikTokEventId } from "@/components/TikTokPixel";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
 
