@@ -7,7 +7,7 @@ import ProductBox from './ProductBox';
 import { WEBSITE_SHOP } from '@/routes/WebsiteRoute';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-// Default products for instant loading
+// Default products for instant loading with local images
 const defaultProducts = [
     {
         _id: 'default-1',
@@ -15,7 +15,7 @@ const defaultProducts = [
         slug: 'premium-panjabi',
         mrp: 1500,
         sellingPrice: 1200,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Premium+Panjabi', alt: 'Premium Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-1.webp', alt: 'Premium Panjabi' }]
     },
     {
         _id: 'default-2',
@@ -23,7 +23,7 @@ const defaultProducts = [
         slug: 'classic-panjabi',
         mrp: 1800,
         sellingPrice: 1500,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Classic+Panjabi', alt: 'Classic Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-2.webp', alt: 'Classic Panjabi' }]
     },
     {
         _id: 'default-3',
@@ -31,7 +31,7 @@ const defaultProducts = [
         slug: 'designer-panjabi',
         mrp: 2000,
         sellingPrice: 1700,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Designer+Panjabi', alt: 'Designer Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-3.webp', alt: 'Designer Panjabi' }]
     },
     {
         _id: 'default-4',
@@ -39,7 +39,7 @@ const defaultProducts = [
         slug: 'elegant-panjabi',
         mrp: 2200,
         sellingPrice: 1900,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Elegant+Panjabi', alt: 'Elegant Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-4.webp', alt: 'Elegant Panjabi' }]
     },
     {
         _id: 'default-5',
@@ -47,7 +47,7 @@ const defaultProducts = [
         slug: 'royal-panjabi',
         mrp: 2500,
         sellingPrice: 2100,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Royal+Panjabi', alt: 'Royal Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-5.webp', alt: 'Royal Panjabi' }]
     },
     {
         _id: 'default-6',
@@ -55,7 +55,7 @@ const defaultProducts = [
         slug: 'traditional-panjabi',
         mrp: 1700,
         sellingPrice: 1400,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Traditional+Panjabi', alt: 'Traditional Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-6.webp', alt: 'Traditional Panjabi' }]
     },
     {
         _id: 'default-7',
@@ -63,7 +63,7 @@ const defaultProducts = [
         slug: 'modern-panjabi',
         mrp: 1900,
         sellingPrice: 1600,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Modern+Panjabi', alt: 'Modern Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-7.webp', alt: 'Modern Panjabi' }]
     },
     {
         _id: 'default-8',
@@ -71,7 +71,7 @@ const defaultProducts = [
         slug: 'stylish-panjabi',
         mrp: 2100,
         sellingPrice: 1800,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Stylish+Panjabi', alt: 'Stylish Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-8.webp', alt: 'Stylish Panjabi' }]
     },
     {
         _id: 'default-9',
@@ -79,7 +79,7 @@ const defaultProducts = [
         slug: 'festive-panjabi',
         mrp: 2800,
         sellingPrice: 2400,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Festive+Panjabi', alt: 'Festive Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-9.webp', alt: 'Festive Panjabi' }]
     },
     {
         _id: 'default-10',
@@ -87,7 +87,7 @@ const defaultProducts = [
         slug: 'wedding-panjabi',
         mrp: 3500,
         sellingPrice: 2900,
-        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Wedding+Panjabi', alt: 'Wedding Panjabi' }]
+        media: [{ secure_url: '/assets/images/panjabi-10.webp', alt: 'Wedding Panjabi' }]
     }
 ]
 
