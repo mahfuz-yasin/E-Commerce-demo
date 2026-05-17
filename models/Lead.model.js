@@ -61,7 +61,7 @@ const leadSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 
-leadSchema.index({ facebookLeadId: 1 })
+// Note: facebookLeadId already has unique: true which creates an index automatically
 leadSchema.index({ status: 1 })
 leadSchema.index({ createdAt: -1 })
 
