@@ -75,6 +75,7 @@ export const ADMIN_FACEBOOK_BUDGET_OPTIMIZATION = '/admin/facebook-settings/budg
 export const ADMIN_FACEBOOK_SEGMENTS = '/admin/facebook-settings/segments'
 export const ADMIN_FACEBOOK_RETARGETING = '/admin/facebook-settings/retargeting'
 export const ADMIN_FACEBOOK_ATTRIBUTION = '/admin/facebook-settings/attribution'
+export const ADMIN_FACEBOOK_PERFORMANCE_METRICS = '/admin/facebook-settings/performance-metrics'
 
 // TikTok Settings routes
 export const ADMIN_TIKTOK_SETTINGS = '/admin/tiktoksettings'
