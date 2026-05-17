@@ -4,6 +4,12 @@ import SliderModel from "@/models/Slider.model";
 
 export async function GET() {
     try {
+        // Check if MONGODB_URI is set
+        if (!process.env.MONGODB_URI) {
+            console.warn('MONGODB_URI not set, returning empty slides array')
+            return response(true, 200, 'Active slides retrieved successfully.', [])
+        }
+        
         await connectDB()
 
         const slides = await SliderModel.find({ 
@@ -22,6 +28,8 @@ export async function GET() {
         return response(true, 200, 'Active slides retrieved successfully.', optimizedSlides)
 
     } catch (error) {
-        return catchError(error)
+        console.error('Error fetching slides:', error)
+        // Return empty array instead of error
+        return response(true, 200, 'Active slides retrieved successfully.', [])
     }
 }

@@ -7,6 +7,11 @@ import ReviewModel from "@/models/Review.model";
 
 export async function GET(request, { params }) {
     try {
+        // Check if MONGODB_URI is set
+        if (!process.env.MONGODB_URI) {
+            console.warn('MONGODB_URI not set, returning 404 for product details')
+            return response(false, 404, 'Product not found.')
+        }
 
         await connectDB()
 
