@@ -1,9 +1,7 @@
 import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
-import ProductModel from "@/models/Product.model";
-import MediaModel from "@/models/Media.model";
-import ProductVariantModel from "@/models/ProductVariant.model";
-import ReviewModel from "@/models/Review.model";
+
+// Note: Models imported dynamically to prevent Server Component initialization errors
 
 export async function GET(request, { params }) {
     try {
@@ -14,6 +12,11 @@ export async function GET(request, { params }) {
         }
 
         await connectDB()
+        
+        // Dynamic imports to prevent module initialization errors
+        const { default: ProductModel } = await import('@/models/Product.model')
+        const { default: ProductVariantModel } = await import('@/models/ProductVariant.model')
+        const { default: ReviewModel } = await import('@/models/Review.model')
 
         const getParams = await params
         const slug = getParams.slug
