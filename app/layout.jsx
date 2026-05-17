@@ -14,54 +14,65 @@ const assistantFont = Assistant({
 const GlobalProvider = dynamic(() => import('@/components/Application/GlobalProvider'))
 
 export async function generateMetadata() {
-  try {
-    await connectDB()
-    const config = await FacebookConfigModel.getConfig()
-    
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alhilalpanjabi.com'
-    
-    return {
-      title: {
-        default: "Al-Hilal Panjabi | Premium Ethnic Wear for Men",
-        template: "%s | Al-Hilal Panjabi",
-      },
-      description: "Discover the finest collection of premium Panjabis at Al-Hilal. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
-      keywords: ["Panjabi", "Men's Ethnic Wear", "Al-Hilal Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
-      authors: [{ name: "Al-Hilal Panjabi" }],
-      creator: "Al-Hilal Panjabi",
-      openGraph: {
-        type: "website",
-        locale: "en_US",
-        url: baseUrl,
-        siteName: "Al-Hilal Panjabi",
-        title: "Al-Hilal Panjabi | Premium Ethnic Wear",
-        description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
-        images: [
-          {
-            url: `${baseUrl}/logo.webp`,
-            width: 1200,
-            height: 630,
-            alt: "Al-Hilal Panjabi Collection",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "Al-Hilal Panjabi",
-        description: "Premium Panjabis for the modern man.",
-        images: [`${baseUrl}/logo.webp`],
-      },
-      robots: {
-        index: true,
-        follow: true,
-      },
-    }
-  } catch (error) {
-    console.error('Error generating metadata:', error)
-    return {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alhilalpanjabi.com'
+  
+  const defaultMetadata = {
+    title: {
+      default: "Al-Hilal Panjabi | Premium Ethnic Wear for Men",
+      template: "%s | Al-Hilal Panjabi",
+    },
+    description: "Discover the finest collection of premium Panjabis at Al-Hilal. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
+    keywords: ["Panjabi", "Men's Ethnic Wear", "Al-Hilal Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
+    authors: [{ name: "Al-Hilal Panjabi" }],
+    creator: "Al-Hilal Panjabi",
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: baseUrl,
+      siteName: "Al-Hilal Panjabi",
+      title: "Al-Hilal Panjabi | Premium Ethnic Wear",
+      description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
+      images: [
+        {
+          url: `${baseUrl}/logo.webp`,
+          width: 1200,
+          height: 630,
+          alt: "Al-Hilal Panjabi Collection",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
       title: "Al-Hilal Panjabi",
-      description: "Premium Ethnic Wear for Men",
+      description: "Premium Panjabis for the modern man.",
+      images: [`${baseUrl}/logo.webp`],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
+  
+  try {
+    // Only try to connect to DB if MONGODB_URI is set
+    if (!process.env.MONGODB_URI) {
+      console.warn('MONGODB_URI not set, using default metadata')
+      return defaultMetadata
     }
+    
+    await connectDB()
+    // Facebook config is not critical for metadata
+    try {
+      await FacebookConfigModel.getConfig()
+    } catch (fbError) {
+      console.error('Facebook config error (non-critical):', fbError)
+    }
+    
+    return defaultMetadata
+  } catch (error) {
+    console.error('Error in generateMetadata:', error)
+    // Always return default metadata on any error
+    return defaultMetadata
   }
 }
 
