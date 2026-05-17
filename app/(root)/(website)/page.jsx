@@ -7,6 +7,7 @@ import banner1 from '@/public/assets/images/banner1.avif'
 import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
 import CategoriesSection from '@/components/Application/Website/CategoriesSection'
+import UpBanner from '@/components/Application/Website/UpBanner'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 import { WEBSITE_SHOP, WEBSITE_RETURN_POLICY, WEBSITE_SHIPPING_POLICY, WEBSITE_SUPPORT, WEBSITE_MEMBERSHIP } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
@@ -98,6 +99,9 @@ const Home = () => {
             <section className='w-full'>
                 <HeroSlider />
             </section>
+
+            {/* Up Banner Section */}
+            <UpBanner />
 
             {/* Promo Banners Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>

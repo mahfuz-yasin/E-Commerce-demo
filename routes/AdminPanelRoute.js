@@ -97,3 +97,8 @@ export const ADMIN_FACEBOOK_CAMPAIGN_MANAGER = '/admin/facebook-settings/campaig
 
 // Leads routes
 export const ADMIN_LEADS_DASHBOARD = '/admin/leads'
+
+// Up Banner routes
+export const ADMIN_UPBANNER = '/admin/upbanner'
+export const ADMIN_UPBANNER_ADD = '/admin/upbanner/add'
+export const ADMIN_UPBANNER_EDIT = (id) => id ? `/admin/upbanner/edit/${id}` : null
