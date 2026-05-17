@@ -1,7 +1,6 @@
 import React from 'react'
 import ProductDetails from './ProductDetails'
 import { headers } from 'next/headers'
-import MediaModel from '@/models/Media.model'
 import { trackGA4ViewItem } from '@/lib/ga4-server'
 import { cookies } from 'next/headers'
 
@@ -36,12 +35,16 @@ export async function generateMetadata({ params }) {
     const variant = getProduct.data.variant
     const displayProduct = variant || product
     
-    // Get primary image
+    // Get primary image from API response (no DB call)
     let imageUrl = `${baseUrl}/logo.webp`
     if (displayProduct.media && displayProduct.media.length > 0) {
-      const media = await MediaModel.findById(displayProduct.media[0])
-      if (media) {
-        imageUrl = media.secure_url || imageUrl
+      // Use media directly from API response
+      const media = displayProduct.media[0]
+      if (typeof media === 'object' && media.secure_url) {
+        imageUrl = media.secure_url
+      } else if (typeof media === 'string') {
+        // If media is just an ID, use placeholder
+        imageUrl = `${baseUrl}/assets/images/panjabi-1.webp`
       }
     }
     
