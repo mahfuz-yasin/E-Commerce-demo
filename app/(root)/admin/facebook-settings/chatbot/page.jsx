@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Facebook, Plus, Edit, Trash2, RefreshCw, Bot, MessageSquare, CheckCircle, XCircle, Sync, Play, Pause } from 'lucide-react'
+import { Facebook, Plus, Edit, Trash2, RefreshCw, Bot, MessageSquare, CheckCircle, XCircle, Play, Pause } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -291,7 +291,7 @@ const ChatbotAutomation = () => {
                   <p className="text-sm text-gray-600">Synced Flows</p>
                   <p className="text-2xl font-bold">{flows.filter(f => f.syncStatus === 'synced').length}</p>
                 </div>
-                <Sync className="h-8 w-8 text-purple-600" />
+                <RefreshCw className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -618,7 +618,7 @@ const ChatbotAutomation = () => {
                             {syncing === flow._id ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                             ) : (
-                              <Sync className="h-4 w-4 mr-2" />
+                              <RefreshCw className="h-4 w-4 mr-2" />
                             )}
                             Sync
                           </Button>

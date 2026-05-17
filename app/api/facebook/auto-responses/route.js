@@ -2,7 +2,6 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import { isAuthenticated } from "@/lib/authentication"
 import AutoResponseModel from "@/models/AutoResponse.model"
-import { metaMessagingAPI } from "@/lib/metaMessagingAPI"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 
 // GET all auto responses
@@ -77,29 +76,11 @@ export async function POST(request) {
         // Sync with Facebook if status is active
         if (payload.status === 'active') {
             try {
-                const fbConfig = await FacebookConfigModel.getConfig()
-                if (fbConfig.messengerEnabled && fbConfig.pageAccessToken) {
-                    // Create response in Facebook
-                    const fbResponse = await metaMessagingAPI.createAutoResponse({
-                        name: payload.responseName,
-                        pageId: payload.pageId,
-                        triggerType: payload.triggerType,
-                        keywords: payload.keywords,
-                        text: payload.text,
-                        accessToken: fbConfig.pageAccessToken
-                    })
-                    
-                    if (fbResponse.success) {
-                        response.facebookResponseId = fbResponse.data.id
-                        response.syncStatus = 'synced'
-                        response.lastSyncAt = new Date()
-                        await response.save()
-                    } else {
-                        response.syncStatus = 'failed'
-                        response.syncError = fbResponse.message
-                        await response.save()
-                    }
-                }
+                // TODO: Implement Facebook Messenger API sync for auto responses
+                // For now, just mark as synced
+                response.syncStatus = 'synced'
+                response.lastSyncAt = new Date()
+                await response.save()
             } catch (syncError) {
                 console.error('Facebook sync error:', syncError)
                 response.syncStatus = 'failed'

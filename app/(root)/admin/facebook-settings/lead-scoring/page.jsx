@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Facebook, Plus, Edit, Trash2, RefreshCw, Target, CheckCircle, XCircle, Sync, Play, Pause, Star, Flame, Thermometer, Snowflake } from 'lucide-react'
+import { Facebook, Plus, Edit, Trash2, RefreshCw, Target, CheckCircle, XCircle, Play, Pause, Star, Flame, Thermometer, Snowflake } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -676,7 +676,7 @@ const LeadScoring = () => {
                             {syncing === rule._id ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                             ) : (
-                              <Sync className="h-4 w-4 mr-2" />
+                              <RefreshCw className="h-4 w-4 mr-2" />
                             )}
                             Sync
                           </Button>

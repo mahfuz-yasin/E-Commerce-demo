@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Facebook, Plus, Edit, Trash2, RefreshCw, ShoppingCart, CheckCircle, XCircle, Sync, Play, Pause, Clock, Gift, Percent, DollarSign } from 'lucide-react'
+import { Facebook, Plus, Edit, Trash2, RefreshCw, ShoppingCart, CheckCircle, XCircle, Play, Pause, Clock, Gift, Percent, DollarSign } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -614,7 +614,7 @@ const AbandonedCartRecovery = () => {
                             {syncing === campaign._id ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                             ) : (
-                              <Sync className="h-4 w-4 mr-2" />
+                              <RefreshCw className="h-4 w-4 mr-2" />
                             )}
                             Sync
                           </Button>

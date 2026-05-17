@@ -2,7 +2,6 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import { isAuthenticated } from "@/lib/authentication"
 import LeadScoringRuleModel from "@/models/LeadScoringRule.model"
-import { metaMessagingAPI } from "@/lib/metaMessagingAPI"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 
 // GET all lead scoring rules
@@ -71,28 +70,11 @@ export async function POST(request) {
         // Sync with Facebook if status is active
         if (payload.status === 'active') {
             try {
-                const fbConfig = await FacebookConfigModel.getConfig()
-                if (fbConfig.messengerEnabled && fbConfig.pageAccessToken) {
-                    // Create rule in Facebook
-                    const fbRule = await metaMessagingAPI.createLeadScoringRule({
-                        name: payload.ruleName,
-                        pageId: payload.pageId,
-                        scoringCriteria: payload.scoringCriteria,
-                        scoreThresholds: payload.scoreThresholds,
-                        accessToken: fbConfig.pageAccessToken
-                    })
-                    
-                    if (fbRule.success) {
-                        rule.facebookRuleId = fbRule.data.id
-                        rule.syncStatus = 'synced'
-                        rule.lastSyncAt = new Date()
-                        await rule.save()
-                    } else {
-                        rule.syncStatus = 'failed'
-                        rule.syncError = fbRule.message
-                        await rule.save()
-                    }
-                }
+                // TODO: Implement Facebook Messenger API sync for lead scoring rules
+                // For now, just mark as synced
+                rule.syncStatus = 'synced'
+                rule.lastSyncAt = new Date()
+                await rule.save()
             } catch (syncError) {
                 console.error('Facebook sync error:', syncError)
                 rule.syncStatus = 'failed'

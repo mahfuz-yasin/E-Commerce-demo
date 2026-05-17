@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
-import { Facebook, Plus, Edit, Trash2, RefreshCw, MessageSquare, CheckCircle, XCircle, Sync, Play, Pause, Clock, Target } from 'lucide-react'
+import { Facebook, Plus, Edit, Trash2, RefreshCw, MessageSquare, CheckCircle, XCircle, Play, Pause, Clock, Target } from 'lucide-react'
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -227,7 +227,7 @@ const AutoResponses = () => {
                   <p className="text-sm text-gray-600">Synced Responses</p>
                   <p className="text-2xl font-bold">{responses.filter(r => r.syncStatus === 'synced').length}</p>
                 </div>
-                <Sync className="h-8 w-8 text-purple-600" />
+                <RefreshCw className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -541,7 +541,7 @@ const AutoResponses = () => {
                             {syncing === response._id ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                             ) : (
-                              <Sync className="h-4 w-4 mr-2" />
+                              <RefreshCw className="h-4 w-4 mr-2" />
                             )}
                             Sync
                           </Button>

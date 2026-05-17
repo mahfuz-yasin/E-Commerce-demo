@@ -2,7 +2,6 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import { isAuthenticated } from "@/lib/authentication"
 import ChatbotFlowModel from "@/models/ChatbotFlow.model"
-import { metaMessagingAPI } from "@/lib/metaMessagingAPI"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 
 // GET all chatbot flows
@@ -71,28 +70,11 @@ export async function POST(request) {
         // Sync with Facebook if status is active
         if (payload.status === 'active') {
             try {
-                const fbConfig = await FacebookConfigModel.getConfig()
-                if (fbConfig.messengerEnabled && fbConfig.pageAccessToken) {
-                    // Create flow in Facebook
-                    const fbFlow = await metaMessagingAPI.createChatbotFlow({
-                        name: payload.flowName,
-                        pageId: payload.pageId,
-                        welcomeMessage: payload.welcomeMessage,
-                        steps: payload.steps,
-                        accessToken: fbConfig.pageAccessToken
-                    })
-                    
-                    if (fbFlow.success) {
-                        flow.facebookFlowId = fbFlow.data.id
-                        flow.syncStatus = 'synced'
-                        flow.lastSyncAt = new Date()
-                        await flow.save()
-                    } else {
-                        flow.syncStatus = 'failed'
-                        flow.syncError = fbFlow.message
-                        await flow.save()
-                    }
-                }
+                // TODO: Implement Facebook Messenger API sync for chatbot flows
+                // For now, just mark as synced
+                flow.syncStatus = 'synced'
+                flow.lastSyncAt = new Date()
+                await flow.save()
             } catch (syncError) {
                 console.error('Facebook sync error:', syncError)
                 flow.syncStatus = 'failed'

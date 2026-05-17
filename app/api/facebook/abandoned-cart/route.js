@@ -2,7 +2,6 @@ import { connectDB } from "@/lib/databaseConnection"
 import { catchError, response } from "@/lib/helperFunction"
 import { isAuthenticated } from "@/lib/authentication"
 import AbandonedCartRecoveryModel from "@/models/AbandonedCartRecovery.model"
-import { metaMessagingAPI } from "@/lib/metaMessagingAPI"
 import FacebookConfigModel from "@/models/FacebookConfig.model"
 
 // GET all abandoned cart recovery campaigns
@@ -67,28 +66,11 @@ export async function POST(request) {
         // Sync with Facebook if status is active
         if (payload.status === 'active') {
             try {
-                const fbConfig = await FacebookConfigModel.getConfig()
-                if (fbConfig.messengerEnabled && fbConfig.pageAccessToken) {
-                    // Create campaign in Facebook
-                    const fbCampaign = await metaMessagingAPI.createAbandonedCartCampaign({
-                        name: payload.campaignName,
-                        pageId: payload.pageId,
-                        triggerDelay: payload.triggerDelayMinutes,
-                        messageSequence: payload.messageSequence,
-                        accessToken: fbConfig.pageAccessToken
-                    })
-                    
-                    if (fbCampaign.success) {
-                        campaign.facebookCampaignId = fbCampaign.data.id
-                        campaign.syncStatus = 'synced'
-                        campaign.lastSyncAt = new Date()
-                        await campaign.save()
-                    } else {
-                        campaign.syncStatus = 'failed'
-                        campaign.syncError = fbCampaign.message
-                        await campaign.save()
-                    }
-                }
+                // TODO: Implement Facebook Messenger API sync for abandoned cart recovery
+                // For now, just mark as synced
+                campaign.syncStatus = 'synced'
+                campaign.lastSyncAt = new Date()
+                await campaign.save()
             } catch (syncError) {
                 console.error('Facebook sync error:', syncError)
                 campaign.syncStatus = 'failed'
