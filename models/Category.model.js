@@ -13,6 +13,11 @@ const categorySchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    image: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Media',
+        required: false
+    },
 
     deletedAt: {
         type: Date,

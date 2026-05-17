@@ -61,10 +61,25 @@ export async function GET(request) {
             { $skip: start },
             { $limit: size },
             {
+                $lookup: {
+                    from: 'media',
+                    localField: 'image',
+                    foreignField: '_id',
+                    as: 'image'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$image',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
                 $project: {
                     _id: 1,
                     name: 1,
                     slug: 1,
+                    image: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     deletedAt: 1

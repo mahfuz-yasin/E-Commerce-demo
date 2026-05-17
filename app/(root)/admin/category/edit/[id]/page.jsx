@@ -4,6 +4,7 @@ import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { zSchema } from '@/lib/zodSchema'
 import { useForm } from 'react-hook-form'
@@ -13,6 +14,8 @@ import slugify from 'slugify'
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
 import useFetch from '@/hooks/useFetch'
+import Image from 'next/image'
+import MediaModal from '@/components/Application/Admin/MediaModal'
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
     { href: ADMIN_CATEGORY_SHOW, label: 'Category' },
@@ -26,8 +29,12 @@ const EditCategory = ({ params }) => {
 
 
     const [loading, setLoading] = useState(false)
+    const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
+    const [selectedMedia, setSelectedMedia] = useState([])
     const formSchema = zSchema.pick({
         _id: true, name: true, slug: true
+    }).extend({
+        image: z.string().optional()
     })
 
     const form = useForm({
@@ -36,6 +43,7 @@ const EditCategory = ({ params }) => {
             _id: id,
             name: "",
             slug: "",
+            image: "",
         },
     })
  
@@ -47,7 +55,8 @@ const EditCategory = ({ params }) => {
             form.reset({
                 _id: data?._id,
                 name: data?.name,
-                slug: data?.slug
+                slug: data?.slug,
+                image: data?.image?._id || data?.image || ""
             })
         }
     }, [categoryData])
@@ -59,6 +68,14 @@ const EditCategory = ({ params }) => {
             form.setValue('slug', slugify(name).toLowerCase())
         }
     }, [form.watch('name')])
+
+    // Handle media selection when modal closes
+    useEffect(() => {
+        if (!isMediaModalOpen && selectedMedia.length > 0) {
+            form.setValue('image', selectedMedia[0]._id)
+            setSelectedMedia([])
+        }
+    }, [isMediaModalOpen, selectedMedia, form])
 
     const onSubmit = async (values) => {
         setLoading(true)
@@ -119,6 +136,49 @@ const EditCategory = ({ params }) => {
                                     )}
                                 />
                             </div>
+                            <div className='mb-5'>
+                                <FormField
+                                    control={form.control}
+                                    name="image"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Category Image</FormLabel>
+                                            <FormControl>
+                                                <div className="space-y-2">
+                                                    {field.value ? (
+                                                        <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                                                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                                <span className="text-sm text-gray-500">Image selected (ID: {field.value})</span>
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                variant="destructive"
+                                                                size="sm"
+                                                                className="absolute top-2 right-2"
+                                                                onClick={() => {
+                                                                    form.setValue('image', '')
+                                                                }}
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
+                                                    ) : (
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            className="w-full h-32 border-dashed"
+                                                            onClick={() => setIsMediaModalOpen(true)}
+                                                        >
+                                                            Select from Media Library
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             <div className='mb-3'>
                                 <ButtonLoading loading={loading} type="submit" text="Update Category" className="cursor-pointer" />
@@ -129,6 +189,14 @@ const EditCategory = ({ params }) => {
 
                 </CardContent>
             </Card>
+
+            <MediaModal 
+                open={isMediaModalOpen} 
+                setOpen={setIsMediaModalOpen}
+                selectedMedia={selectedMedia}
+                setSelectedMedia={setSelectedMedia}
+                isMultiple={false}
+            />
 
         </div>
     )

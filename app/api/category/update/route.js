@@ -16,6 +16,8 @@ export async function PUT(request) {
 
         const schema = zSchema.pick({
             _id: true, name: true, slug: true
+        }).extend({
+            image: z.string().optional()
         })
 
         const validate = schema.safeParse(payload)
@@ -23,7 +25,7 @@ export async function PUT(request) {
             return response(false, 400, 'Invalid or missing fields.', validate.error)
         }
 
-        const { _id, name, slug } = validate.data
+        const { _id, name, slug, image } = validate.data
 
         const getCategory = await CategoryModel.findOne({ deletedAt: null, _id })
         if (!getCategory) {
@@ -32,6 +34,9 @@ export async function PUT(request) {
 
         getCategory.name = name
         getCategory.slug = slug
+        if (image !== undefined) {
+            getCategory.image = image
+        }
         await getCategory.save()
 
         return response(true, 200, 'Category updated successfully.')

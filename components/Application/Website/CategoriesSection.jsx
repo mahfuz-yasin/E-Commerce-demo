@@ -23,10 +23,13 @@ const CategoriesSection = () => {
                     className='group'
                 >
                     <div className='bg-white rounded-xl p-4 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100 h-full'>
-                        <div className='aspect-square rounded-lg bg-gray-50 mb-3 overflow-hidden'>
-                            {category.image ? (
+                        <h3 className='text-center font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm mb-3'>
+                            {category.name}
+                        </h3>
+                        <div className='aspect-square rounded-lg bg-gray-50 overflow-hidden'>
+                            {category.image && category.image.secure_url ? (
                                 <Image
-                                    src={category.image}
+                                    src={category.image.secure_url}
                                     alt={category.name}
                                     width={200}
                                     height={200}
@@ -38,9 +41,6 @@ const CategoriesSection = () => {
                                 </div>
                             )}
                         </div>
-                        <h3 className='text-center font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm'>
-                            {category.name}
-                        </h3>
                     </div>
                 </Link>
             ))}

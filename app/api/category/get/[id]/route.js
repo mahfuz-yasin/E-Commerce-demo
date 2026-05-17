@@ -26,7 +26,7 @@ export async function GET(request, { params }) {
 
         filter._id = id
 
-        const getCategory = await CategoryModel.findOne(filter).lean()
+        const getCategory = await CategoryModel.findOne(filter).populate('image').lean()
 
         if (!getCategory) {
             return response(false, 404, 'Category not found.')

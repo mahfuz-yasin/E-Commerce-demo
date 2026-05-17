@@ -16,6 +16,8 @@ export async function POST(request) {
 
         const schema = zSchema.pick({
             name: true, slug: true
+        }).extend({
+            image: z.string().optional()
         })
 
         const validate = schema.safeParse(payload)
@@ -23,10 +25,10 @@ export async function POST(request) {
             return response(false, 400, 'Invalid or missing fields.', validate.error)
         }
 
-        const { name, slug } = validate.data
+        const { name, slug, image } = validate.data
 
         const newCategory = new CategoryModel({
-            name, slug
+            name, slug, image
         })
 
         await newCategory.save()
