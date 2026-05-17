@@ -50,7 +50,7 @@ const FooterSettings = () => {
     }, [])
 
     useEffect(() => {
-        if (pagesData && pagesData.success) {
+        if (pagesData && pagesData.success && Array.isArray(pagesData.data)) {
             setAvailablePages(pagesData.data || [])
         }
     }, [pagesData])
