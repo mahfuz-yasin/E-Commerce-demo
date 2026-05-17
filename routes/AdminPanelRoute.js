@@ -73,6 +73,7 @@ export const ADMIN_FACEBOOK_DYNAMIC_ADS = '/admin/facebook-settings/dynamic-ads'
 export const ADMIN_FACEBOOK_AB_TESTING = '/admin/facebook-settings/ab-testing'
 export const ADMIN_FACEBOOK_BUDGET_OPTIMIZATION = '/admin/facebook-settings/budget-optimization'
 export const ADMIN_FACEBOOK_SEGMENTS = '/admin/facebook-settings/segments'
+export const ADMIN_FACEBOOK_RETARGETING = '/admin/facebook-settings/retargeting'
 
 // TikTok Settings routes
 export const ADMIN_TIKTOK_SETTINGS = '/admin/tiktoksettings'
