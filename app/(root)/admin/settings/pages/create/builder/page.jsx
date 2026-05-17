@@ -114,9 +114,9 @@ const PageBuilder = () => {
     const { data: productsData } = useFetch('/api/admin/products', 'GET')
     const { data: existingPages } = useFetch('/api/admin/pagebuilder?pageType=page', 'GET')
 
-    const availableCategories = categoriesData?.data || []
-    const availableProducts = productsData?.data || []
-    const existingSlugs = existingPages?.data?.map(p => p.slug) || []
+    const availableCategories = Array.isArray(categoriesData?.data) ? categoriesData.data : []
+    const availableProducts = Array.isArray(productsData?.data) ? productsData.data : []
+    const existingSlugs = Array.isArray(existingPages?.data) ? existingPages.data.map(p => p.slug) : []
 
     useEffect(() => {
         if (pageTitle) {
