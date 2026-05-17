@@ -15,6 +15,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import imgPlaceholder from '@/public/assets/images/img-placeholder.webp'
 import { decode, encode } from "entities";
+import { sanitizeHTML } from "@/lib/xssSanitizer";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { useDispatch, useSelector } from "react-redux";
@@ -378,7 +379,7 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                                 ))}
                             </div>
                         ) : (
-                            <div dangerouslySetInnerHTML={{ __html: encode(product.description) }}></div>
+                            <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(encode(product.description)) }}></div>
                         )}
                     </div>
                 </div>

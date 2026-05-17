@@ -1,6 +1,7 @@
 'use client'
 import WebsiteBreadcrumb from '@/components/Application/Website/WebsiteBreadcrumb'
 import React, { useEffect, useState } from 'react'
+import { sanitizeHTML } from '@/lib/xssSanitizer'
 
 const breadcrumb = {
     title: 'About',
@@ -51,7 +52,7 @@ const AboutUs = () => {
      <WebsiteBreadcrumb props={breadcrumb} />
      <div className='lg:px-40 px-5 py-20'>
        {content ? (
-         <div dangerouslySetInnerHTML={{ __html: content }} />
+         <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(content) }} />
        ) : (
          <>
            <h1 className='text-xl font-semibold mb-3'>About Us</h1>

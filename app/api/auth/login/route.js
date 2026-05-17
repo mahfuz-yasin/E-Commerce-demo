@@ -67,17 +67,13 @@ export async function POST(request) {
         // otp generation 
         await OTPModel.deleteMany({ email })  // deleting old otps 
 
-        let OTP = 123456
-        if (email !== 'admin@gmail.com') {
-            OTP = generateOTP()
+        const OTP = generateOTP()
 
-            const OTPEmailTemplate = otpEmail(OTP)
+        const OTPEmailTemplate = otpEmail(OTP)
 
-            const otpEmailStatus = await sendMail("Your login verification code.", email, OTPEmailTemplate)
-            if (!otpEmailStatus.success) {
-                return response(false, 500, 'Something went wrong.')
-            }
-
+        const otpEmailStatus = await sendMail("Your login verification code.", email, OTPEmailTemplate)
+        if (!otpEmailStatus.success) {
+            return response(false, 500, 'Failed to send OTP email.')
         }
 
         // storing otp into database 

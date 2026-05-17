@@ -1,6 +1,7 @@
 'use client'
+import { useFetch } from '@/hooks/useFetch'
 import React, { useEffect, useState } from 'react'
-import useFetch from '@/hooks/useFetch'
+import { sanitizeHTML } from '@/lib/xssSanitizer'
 
 const ReturnPolicy = () => {
   const { data: contentData } = useFetch('/api/content/return-policy', 'GET')
@@ -19,7 +20,7 @@ const ReturnPolicy = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-6">{content.title}</h1>
-      <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: content.content }} />
+      <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHTML(content.content) }} />
     </div>
   )
 }
