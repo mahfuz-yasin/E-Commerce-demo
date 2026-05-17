@@ -1,5 +1,5 @@
 'use client'
-import { useFetch } from '@/hooks/useFetch'
+import useFetch from '@/hooks/useFetch'
 import React, { useEffect, useState } from 'react'
 import { sanitizeHTML } from '@/lib/xssSanitizer'
 
