@@ -101,7 +101,7 @@ const FeaturedProduct = () => {
                 const url = '/api/product/get-featured-product'
                 console.log('Fetching featured products from:', url)
                 const response = await axios.get(url)
-                if (response.data.success && Array.isArray(response.data.data)) {
+                if (response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
                     setProductData(response.data)
                 }
             } catch (error) {
