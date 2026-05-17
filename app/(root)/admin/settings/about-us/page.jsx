@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
 import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import axios from "axios"
+import Editor from "@/components/Application/Admin/Editor"
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -19,7 +19,7 @@ const AboutUsSettings = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(true)
     const [existingContent, setExistingContent] = useState(null)
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm()
+    const [editorContent, setEditorContent] = useState('')
 
     useEffect(() => {
         fetchAboutContent()
@@ -31,7 +31,7 @@ const AboutUsSettings = () => {
             const response = await axios.get('/api/settings/about-us')
             if (response.data.success && response.data.data) {
                 setExistingContent(response.data.data)
-                setValue('content', response.data.data.content || '')
+                setEditorContent(response.data.data.content || '')
             }
         } catch (error) {
             console.error('Error fetching about content:', error)
@@ -40,19 +40,24 @@ const AboutUsSettings = () => {
         }
     }
 
-    const onSubmit = async (data) => {
+    const handleEditorChange = (event, editor) => {
+        const data = editor.getData()
+        setEditorContent(data)
+    }
+
+    const onSubmit = async () => {
         setIsLoading(true)
         try {
             let response
             if (existingContent) {
                 response = await axios.put(`/api/admin/settings/${existingContent._id}`, {
-                    ...data,
+                    content: editorContent,
                     type: 'page',
                     key: 'about-us'
                 })
             } else {
                 response = await axios.post('/api/admin/settings', {
-                    ...data,
+                    content: editorContent,
                     type: 'page',
                     key: 'about-us'
                 })
@@ -85,25 +90,25 @@ const AboutUsSettings = () => {
                     {isFetching ? (
                         <div className="text-center py-8">Loading...</div>
                     ) : (
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Content (HTML supported)</label>
-                                <textarea
-                                    {...register('content', { required: 'Content is required' })}
-                                    className="w-full min-h-[400px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                    placeholder="Enter about us content..."
-                                />
-                                {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
+                                <label className="text-sm font-medium">Content</label>
+                                <div className="border border-gray-300 rounded-md">
+                                    <Editor 
+                                        onChange={handleEditorChange} 
+                                        initialData={editorContent} 
+                                    />
+                                </div>
                             </div>
 
                             <div className="flex gap-4">
                                 {isLoading ? (
                                     <ButtonLoading />
                                 ) : (
-                                    <Button type="submit">Save Content</Button>
+                                    <Button onClick={onSubmit}>Save Content</Button>
                                 )}
                             </div>
-                        </form>
+                        </div>
                     )}
                 </CardContent>
             </Card>
