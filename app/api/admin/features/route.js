@@ -7,7 +7,18 @@ export async function GET(request) {
     try {
         await connectDB()
 
-        const features = await FeatureModel.find()
+        const searchParams = request.nextUrl.searchParams
+        const deleteType = searchParams.get('deleteType')
+
+        let query = {}
+
+        if (deleteType === 'SD') {
+            query = { deletedAt: null }
+        } else if (deleteType === 'PD') {
+            query = { deletedAt: { $ne: null } }
+        }
+
+        const features = await FeatureModel.find(query)
             .sort({ order: 1 })
             .lean()
 
