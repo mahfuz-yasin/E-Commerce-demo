@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
 import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper"
-import { Link } from "lucide-react"
-import { ADMIN_DOWNBANNER_ADD } from "@/routes/AdminPanelRoute"
+import DeleteAction from "@/components/Application/Admin/DeleteAction"
+import EditAction from "@/components/Application/Admin/EditAction"
+import { ADMIN_DOWNBANNER_ADD, ADMIN_DOWNBANNER_EDIT } from "@/routes/AdminPanelRoute"
+import Link from "next/link"
+import { useCallback, useMemo } from "react"
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -49,15 +52,19 @@ const columnsConfig = [
     }
 ]
 
-const action = (row, deleteType, handleDelete) => [
-    {
-        label: 'Edit',
-        icon: <Link size={16} />,
-        onClick: () => window.location.href = `/admin/downbanner/edit/${row.original._id}`
-    }
-]
-
 const DownBannerPage = () => {
+    const columns = useMemo(() => columnsConfig, [])
+
+    const action = useCallback((row, deleteType, handleDelete) => {
+        let actionMenu = []
+        const editHref = ADMIN_DOWNBANNER_EDIT(row.original._id)
+        if (editHref) {
+            actionMenu.push(<EditAction key="edit" href={editHref} />)
+        }
+        actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType} />)
+        return actionMenu
+    }, [])
+
     return (
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
@@ -74,7 +81,7 @@ const DownBannerPage = () => {
                         queryKey="downbanner-data"
                         fetchUrl="/api/admin/downbanner"
                         initialPageSize={10}
-                        columnsConfig={columnsConfig}
+                        columnsConfig={columns}
                         deleteEndpoint="/api/admin/downbanner"
                         deleteType="SD"
                         createAction={action}
