@@ -61,7 +61,6 @@ export async function generateMetadata() {
     
     // Dynamic imports to prevent module initialization errors
     const { connectDB } = await import('@/lib/databaseConnection')
-    const { default: FacebookConfigModel } = await import('@/models/FacebookConfig.model')
     
     // Wrap DB connection in separate try-catch
     try {
@@ -69,13 +68,6 @@ export async function generateMetadata() {
     } catch (dbError) {
       console.error('Database connection error in generateMetadata:', dbError)
       return defaultMetadata
-    }
-    
-    // Facebook config is not critical for metadata - wrap separately
-    try {
-      await FacebookConfigModel.getConfig()
-    } catch (fbError) {
-      console.error('Facebook config error (non-critical):', fbError)
     }
     
     return defaultMetadata
