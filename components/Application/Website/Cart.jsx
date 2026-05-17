@@ -54,7 +54,7 @@ const Cart = ({ onOpenChange }) => {
                 <BsCart2 size={25} className="text-gray-500 hover:text-primary" />
                 <span className="absolute bg-red-500 text-white text-xs rounded-full w-4 h-4 flex justify-center items-center -right-2 -top-1">{cart.count || 0}</span>
             </SheetTrigger>
-            <SheetContent className="sm:max-w-[450px] w-full flex flex-col h-[100dvh] p-0 z-[60]" overlayClassName="z-[60]">
+            <SheetContent className="sm:max-w-[450px] w-full flex flex-col h-[100dvh] p-0 z-[110]" overlayClassName="z-[110]">
                 <SheetHeader className='py-4 px-4 border-b flex-shrink-0'>
                     <SheetTitle className="text-2xl">My Cart ({cart.count || 0})</SheetTitle>
                     <SheetDescription></SheetDescription>
