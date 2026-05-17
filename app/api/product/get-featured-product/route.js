@@ -1,12 +1,13 @@
 import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
 import ProductModel from "@/models/Product.model";
+import MediaModel from "@/models/Media.model";
 
 export async function GET() {
     try {
         await connectDB()
 
-        const getProduct = await ProductModel.find({ deletedAt: null }).limit(8).lean()
+        const getProduct = await ProductModel.find({ deletedAt: null }).populate('media').limit(8).lean()
 
         return response(true, 200, 'Products found.', getProduct || [])
 
