@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { showToast } from "@/lib/showToast";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
-const Cart = () => {
+const Cart = ({ onOpenChange }) => {
     const [open, setOpen] = useState(false)
     const [subtotal, setSubTotal] = useState(0)
     const [discount, setDiscount] = useState(0)
@@ -41,13 +41,20 @@ const Cart = () => {
         setDiscount(discountAmount)
     }, [cart])
 
+    const handleOpenChange = (isOpen) => {
+        setOpen(isOpen)
+        if (isOpen && onOpenChange) {
+            onOpenChange()
+        }
+    }
+
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger className="relative">
                 <BsCart2 size={25} className="text-gray-500 hover:text-primary" />
                 <span className="absolute bg-red-500 text-white text-xs rounded-full w-4 h-4 flex justify-center items-center -right-2 -top-1">{cart.count || 0}</span>
             </SheetTrigger>
-            <SheetContent className="sm:max-w-[450px] w-full flex flex-col h-[100dvh] p-0">
+            <SheetContent className="sm:max-w-[450px] w-full flex flex-col h-[100dvh] p-0 z-[60]" overlayClassName="z-[60]">
                 <SheetHeader className='py-4 px-4 border-b flex-shrink-0'>
                     <SheetTitle className="text-2xl">My Cart ({cart.count || 0})</SheetTitle>
                     <SheetDescription></SheetDescription>

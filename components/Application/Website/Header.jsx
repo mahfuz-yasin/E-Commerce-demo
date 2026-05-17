@@ -107,7 +107,7 @@ const Header = () => {
                             </button>
 
                             <div className="relative hover:scale-110 transition-transform">
-                                <Cart />
+                                <Cart onOpenChange={closeMenu} />
                             </div>
 
                             {!auth ? (
