@@ -22,10 +22,10 @@ const Footer = () => {
     return (
         <footer className='bg-white border-t border-slate-100 mt-20 font-sans'>
             {/* ১. মেইন ফুটার কন্টেন্ট */}
-            <div className='grid lg:grid-cols-12 md:grid-cols-2 grid-cols-2 gap-y-12 gap-x-4 py-16 lg:px-32 px-6'>
+            <div className='grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-y-12 gap-x-4 py-16 lg:px-32 px-6'>
 
                 {/* ব্র্যান্ড ভিশন সেকশন - মোবাইলে পুরো উইডথ নেবে */}
-                <ScrollReveal direction='up' delay={0} className='col-span-2 lg:col-span-4 md:col-span-2'>
+                <ScrollReveal direction='up' delay={0} className='col-span-1 lg:col-span-4 md:col-span-2'>
                     <Link href={WEBSITE_HOME} className="inline-block mb-6 group">
                         <div className="flex flex-col">
                             <Image src={logo} alt="Al-Hilal Panjabi" width={100} height={100} className="w-24 h-24" />
@@ -79,6 +79,10 @@ const Footer = () => {
                             <span className='w-1 h-1 rounded-full bg-amber-600 opacity-0 group-hover:opacity-100 transition-all'></span>
                             Return Policy
                         </Link></li>
+                        <li><Link href="/shipping-policy" className='text-slate-500 hover:text-amber-600 transition-all flex items-center gap-2 group'>
+                            <span className='w-1 h-1 rounded-full bg-amber-600 opacity-0 group-hover:opacity-100 transition-all'></span>
+                            Shipping Policy
+                        </Link></li>
                         <li><Link href="/privacy-policy" className='text-slate-500 hover:text-amber-600 transition-all flex items-center gap-2 group'>
                             <span className='w-1 h-1 rounded-full bg-amber-600 opacity-0 group-hover:opacity-100 transition-all'></span>
                             Privacy Policy
@@ -98,7 +102,7 @@ const Footer = () => {
                 </ScrollReveal>
 
                 {/* কন্টাক্ট সেকশন - মোবাইলে পুরো উইডথ নেবে */}
-                <ScrollReveal direction='up' delay={0.4} className='col-span-2 lg:col-span-4'>
+                <ScrollReveal direction='up' delay={0.4} className='col-span-1 lg:col-span-4 md:col-span-2'>
                     <h4 className='text-slate-900 font-bold text-lg mb-6 relative after:content-[""] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-amber-600'>Showroom</h4>
                     <div className='space-y-5'>
                         <div className='flex gap-4'>
