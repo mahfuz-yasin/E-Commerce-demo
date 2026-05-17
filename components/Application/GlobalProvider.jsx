@@ -1,6 +1,5 @@
 'use client'
 import React, { Suspense, useEffect, useState } from 'react'
-import Loading from './Loading'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Provider } from 'react-redux'
@@ -51,10 +50,8 @@ const GlobalProvider = ({ children }) => {
     return (
         <QueryClientProvider client={queryClient}>
             <ReduxProviderWrapper>
-                <Suspense fallback={<Loading />}>
-                    {children}
-                    <ToastContainer />
-                </Suspense>
+                {children}
+                <ToastContainer />
             </ReduxProviderWrapper>
             <Suspense fallback={null}>
                 <ReactQueryDevtools initialIsOpen={false} />
