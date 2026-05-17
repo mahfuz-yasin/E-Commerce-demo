@@ -53,7 +53,7 @@ export async function generateMetadata({ params }) {
       description: product.shortDescription || `Shop ${product.name} at Al-Hilal Panjabi. Premium quality ethnic wear for men.`,
       openGraph: {
         type: 'product',
-        url: `${baseUrl}/product/${slug}`,
+        url: `${baseUrl}/product-details/${slug}`,
         title: product.name,
         description: product.shortDescription || `Shop ${product.name} at Al-Hilal Panjabi.`,
         images: [
