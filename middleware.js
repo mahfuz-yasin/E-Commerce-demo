@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute"
 import { jwtVerify } from "jose"
 import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute"
+import { checkRateLimit } from "./lib/redisRateLimiter"
+import { containsInjection } from "./lib/inputSanitizer"
 
 export async function middleware(request) {
     try {
@@ -91,6 +93,37 @@ export async function middleware(request) {
         console.log(error)
         return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
     }
+}
+
+// Apply security headers to all responses
+export async function securityMiddleware(request) {
+    const response = NextResponse.next()
+    
+    // Content Security Policy
+    const cspDirectives = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: blob: https://res.cloudinary.com https://*.facebook.com https://*.google.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://*.facebook.com https://*.google-analytics.com https://*.google.com",
+        "frame-src 'self' https://www.facebook.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "upgrade-insecure-requests",
+    ].join('; ')
+    
+    // Set security headers
+    response.headers.set('Content-Security-Policy', cspDirectives)
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-XSS-Protection', '1; mode=block')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()')
+    
+    return response
 }
 
 

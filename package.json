@@ -51,6 +51,7 @@
     "framer-motion": "^12.38.0",
     "fuse.js": "^7.1.0",
     "input-otp": "^1.4.2",
+    "ioredis": "^5.4.1",
     "jose": "^6.0.11",
     "lucide-react": "^0.509.0",
     "material-react-table": "^3.2.1",
