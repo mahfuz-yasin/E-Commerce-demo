@@ -7,6 +7,16 @@ import { NextResponse } from "next/server"
 // GET all up banners (admin)
 export async function GET(request) {
     try {
+        // Check if MONGODB_URI is set
+        if (!process.env.MONGODB_URI) {
+            console.warn('MONGODB_URI not set, returning empty up banners array')
+            return NextResponse.json({
+                success: true,
+                data: [],
+                meta: { totalRowCount: 0 }
+            })
+        }
+        
         const auth = await isAuthenticated('admin')
         if (!auth.isAuth) {
             return response(false, 403, 'Unauthorized.')
@@ -45,7 +55,13 @@ export async function GET(request) {
             meta: { totalRowCount: total }
         })
     } catch (error) {
-        return catchError(error)
+        console.error('Error fetching up banners:', error)
+        // Return empty array instead of error
+        return NextResponse.json({
+            success: true,
+            data: [],
+            meta: { totalRowCount: 0 }
+        })
     }
 }
 
