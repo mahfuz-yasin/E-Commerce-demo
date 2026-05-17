@@ -104,40 +104,6 @@ const Home = () => {
             {/* Up Banner Section */}
             <UpBanner />
 
-            {/* Promo Banners Section */}
-            <section className='lg:px-32 px-4 sm:py-16 py-8'>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-10'>
-                    <ScrollReveal direction='left' delay={0}>
-                        <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
-                            <Link href={WEBSITE_SHOP} className='block'>
-                                <Image
-                                    src={banner1}
-                                    alt='Premium Panjabi Collection'
-                                    className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
-                                    priority
-                                    quality={100}
-                                    sizes='(max-width: 640px) 100vw, 50vw'
-                                />
-                            </Link>
-                        </div>
-                    </ScrollReveal>
-                    <ScrollReveal direction='right' delay={0.1}>
-                        <div className='border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
-                            <Link href={WEBSITE_SHOP} className='block'>
-                                <Image
-                                    src={banner2}
-                                    alt='New Arrivals Collection'
-                                    className='w-full h-auto object-cover transition-transform duration-500 hover:scale-105'
-                                    priority
-                                    quality={100}
-                                    sizes='(max-width: 640px) 100vw, 50vw'
-                                />
-                            </Link>
-                        </div>
-                    </ScrollReveal>
-                </div>
-            </section>
-
             {/* Featured Products Section */}
             <ScrollReveal direction='up' delay={0}>
                 <FeaturedProduct />
