@@ -3,8 +3,7 @@ import "./globals.css";
 import { Assistant } from 'next/font/google'
 import FacebookPixel from '@/components/FacebookPixel/FacebookPixel'
 import ScrollProgress from '@/components/ui/ScrollProgress'
-import { connectDB } from "@/lib/databaseConnection"
-import FacebookConfigModel from "@/models/FacebookConfig.model"
+// Note: Database imports moved inside generateMetadata for safety
 const assistantFont = Assistant({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
@@ -59,6 +58,10 @@ export async function generateMetadata() {
       console.warn('MONGODB_URI not set, using default metadata')
       return defaultMetadata
     }
+    
+    // Dynamic imports to prevent module initialization errors
+    const { connectDB } = await import('@/lib/databaseConnection')
+    const { default: FacebookConfigModel } = await import('@/models/FacebookConfig.model')
     
     // Wrap DB connection in separate try-catch
     try {
