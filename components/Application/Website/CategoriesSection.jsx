@@ -26,7 +26,70 @@ const CategoriesSection = () => {
     }
 
     if (!categories || categories.length === 0) {
-        return null
+        return (
+            <div className='relative group'>
+                <div className='flex overflow-x-auto gap-4 pb-4 scroll-smooth snap-x snap-mandatory'
+                    style={{
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                    }}
+                    ref={scrollContainerRef}
+                >
+                    <style jsx>{`
+                        div::-webkit-scrollbar {
+                            display: none;
+                        }
+                    `}</style>
+                    {/* Default categories */}
+                    {['Panjabi', 'Kurta', 'Waistcoat', 'Sherwani'].map((name, index) => (
+                        <Link
+                            key={index}
+                            href='/shop'
+                            className='flex-shrink-0 w-[calc(25%-12px)] min-w-[80px] max-w-[120px] snap-start group/card'
+                        >
+                            <div className='bg-white rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 hover:border-amber-300 h-full'>
+                                <div className='aspect-square rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden mb-2 flex items-center justify-center'>
+                                    <span className='text-2xl'>📦</span>
+                                </div>
+                                <h3 className='text-center font-semibold text-gray-800 group-hover/card:text-amber-600 transition-colors text-xs line-clamp-2'>
+                                    {name}
+                                </h3>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Navigation buttons */}
+                <button
+                    onClick={() => scroll('left')}
+                    className='absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-amber-50'
+                    aria-label='Scroll left'
+                >
+                    <svg className='w-5 h-5 text-gray-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+                    </svg>
+                </button>
+                <button
+                    onClick={() => scroll('right')}
+                    className='absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-amber-50'
+                    aria-label='Scroll right'
+                >
+                    <svg className='w-5 h-5 text-gray-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                    </svg>
+                </button>
+
+                {/* Scroll indicators */}
+                <div className='flex justify-center gap-1 mt-2'>
+                    {[0, 1, 2, 3].map((index) => (
+                        <div
+                            key={index}
+                            className='w-1.5 h-1.5 rounded-full bg-gray-300'
+                        />
+                    ))}
+                </div>
+            </div>
+        )
     }
 
     return (
