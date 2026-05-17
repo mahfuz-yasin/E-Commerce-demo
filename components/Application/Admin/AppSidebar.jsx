@@ -44,14 +44,25 @@ const AppSidebar = () => {
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton asChild className="font-semibold px-2 py-5">
                                         {menu?.url ? (
-                                            <Link href={menu.url}>
-                                                <menu.icon />
-                                                {menu.title}
+                                            menu.url.startsWith('http') ? (
+                                                <a href={menu.url} target="_blank" rel="noopener noreferrer">
+                                                    <menu.icon />
+                                                    {menu.title}
 
-                                                {menu.submenu && menu.submenu.length > 0 &&
-                                                    <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                                }
-                                            </Link>
+                                                    {menu.submenu && menu.submenu.length > 0 &&
+                                                        <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                    }
+                                                </a>
+                                            ) : (
+                                                <Link href={menu.url}>
+                                                    <menu.icon />
+                                                    {menu.title}
+
+                                                    {menu.submenu && menu.submenu.length > 0 &&
+                                                        <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                    }
+                                                </Link>
+                                            )
                                         ) : (
                                             <div className="flex items-center w-full">
                                                 <menu.icon />
