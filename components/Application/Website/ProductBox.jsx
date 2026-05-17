@@ -83,11 +83,14 @@ const ProductBox = ({ product }) => {
                         <h3 className='text-white text-center px-4 font-semibold text-sm md:text-base line-clamp-2'>{product?.name}</h3>
                         <div className='flex items-center gap-2'>
                             {product?.slug ? (
-                                <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
-                                    <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Details</Button>
+                                <Link 
+                                    href={WEBSITE_PRODUCT_DETAILS(product.slug)} 
+                                    className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105 inline-flex items-center justify-center'
+                                >
+                                    Details
                                 </Link>
                             ) : (
-                                <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm opacity-50 cursor-not-allowed' disabled>Details</Button>
+                                <span className='bg-white text-black rounded-full px-3 py-2 text-xs md:text-sm opacity-50 cursor-not-allowed inline-flex items-center justify-center'>Details</span>
                             )}
                             <Button onClick={handleAddToCart} className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Add to Cart</Button>
                         </div>
