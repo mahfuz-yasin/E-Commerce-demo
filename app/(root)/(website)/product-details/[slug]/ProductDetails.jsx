@@ -43,7 +43,9 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
     const [isDirectModalOpen, setIsDirectModalOpen] = useState(false)
     const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false)
     useEffect(() => {
-        setActiveThumb(variant?.media[0]?.secure_url)
+        // Safely set active thumb from variant media or use placeholder
+        const firstMedia = variant?.media?.[0]?.secure_url
+        setActiveThumb(firstMedia || imgPlaceholder)
         // Don't auto-select sizes - let user choose manually
         setSelectedSizes([])
     }, [variant])
@@ -242,11 +244,13 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                         <span className="text-sm ps-2">({reviewCount} Reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xl font-semibold">{variant.sellingPrice.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
-                        <span className="text-sm line-through text-gray-500">{variant.mrp.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-xl font-semibold">{(variant.sellingPrice || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
+                        <span className="text-sm line-through text-gray-500">{(variant.mrp || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
 
 
-                        <span className="bg-red-500 rounded-2xl px-3 py-1 text-white text-xs ms-5">-{variant.discountPercentage}%</span>
+                        {variant.discountPercentage > 0 && (
+                            <span className="bg-red-500 rounded-2xl px-3 py-1 text-white text-xs ms-5">-{variant.discountPercentage}%</span>
+                        )}
 
 
                     </div>
