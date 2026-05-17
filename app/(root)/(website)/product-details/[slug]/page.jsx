@@ -1,21 +1,10 @@
 import React from 'react'
-import dynamic from 'next/dynamic'
 import { headers } from 'next/headers'
 // import { trackGA4ViewItem } from '@/lib/ga4-server'
 // import { cookies } from 'next/headers'
 
-// Dynamically import ProductDetails client component to prevent SSR issues
-const ProductDetails = dynamic(() => import('./ProductDetails'), { 
-    ssr: false,
-    loading: () => (
-        <div className='flex justify-center items-center py-10 h-[400px]'>
-            <div className='text-center'>
-                <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4'></div>
-                <p className='text-gray-600'>Loading product...</p>
-            </div>
-        </div>
-    )
-})
+// Import ProductDetails normally - it's a client component
+import ProductDetails from './ProductDetails'
 
 export async function generateMetadata({ params }) {
   const { slug } = await params

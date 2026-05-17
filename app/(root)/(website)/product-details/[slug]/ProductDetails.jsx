@@ -58,9 +58,12 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
         setSelectedSizes([])
     }, [variant])
 
-    // Track ViewContent event
+    // Track ViewContent event - only in browser
     useEffect(() => {
-        if (product && variant) {
+        // Only run tracking in browser, not during SSR
+        if (typeof window === 'undefined' || !product || !variant) return
+        
+        try {
             // Facebook Pixel tracking
             trackViewContent(
                 product._id,
@@ -79,6 +82,8 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
                 'BDT',
                 eventId
             )
+        } catch (error) {
+            console.error('Tracking error:', error)
         }
     }, [product, variant])
 
@@ -137,28 +142,32 @@ const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
             return showToast('error', 'Please select at least one size.')
         }
 
-        // Track AddToCart event (track once for the first size)
-        if (selectedSizes.length > 0) {
-            // Facebook Pixel tracking
-            trackAddToCart(
-                product._id,
-                product.name,
-                variant.sellingPrice,
-                qty,
-                'BDT'
-            )
-            
-            // TikTok Pixel tracking (with same event_id for deduplication)
-            const eventId = generateTikTokEventId()
-            trackTikTokAddToCart(
-                product._id,
-                'product',
-                product.name,
-                variant.sellingPrice,
-                qty,
-                'BDT',
-                eventId
-            )
+        // Track AddToCart event (track once for the first size) - only in browser
+        if (typeof window !== 'undefined' && selectedSizes.length > 0) {
+            try {
+                // Facebook Pixel tracking
+                trackAddToCart(
+                    product._id,
+                    product.name,
+                    variant.sellingPrice,
+                    qty,
+                    'BDT'
+                )
+                
+                // TikTok Pixel tracking (with same event_id for deduplication)
+                const eventId = generateTikTokEventId()
+                trackTikTokAddToCart(
+                    product._id,
+                    'product',
+                    product.name,
+                    variant.sellingPrice,
+                    qty,
+                    'BDT',
+                    eventId
+                )
+            } catch (error) {
+                console.error('Add to cart tracking error:', error)
+            }
         }
 
         // Add each selected size as a separate cart item
