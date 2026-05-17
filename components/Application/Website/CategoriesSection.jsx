@@ -5,7 +5,7 @@ import Image from 'next/image'
 import useFetch from '@/hooks/useFetch'
 
 const CategoriesSection = () => {
-    const { data: categoriesData } = useFetch('/api/category', 'GET')
+    const { data: categoriesData } = useFetch('/api/category/get-category', 'GET')
     const [categories, setCategories] = useState([])
 
     useEffect(() => {
