@@ -16,20 +16,34 @@ export async function GET(request) {
 
         const searchParams = request.nextUrl.searchParams
         const deleteType = searchParams.get('deleteType')
+        const page = parseInt(searchParams.get('page')) || 1
+        const limit = parseInt(searchParams.get('limit')) || 10
 
         let query = {}
 
-        if (deleteType === 'SD') {
+        // By default, only fetch non-deleted banners
+        if (!deleteType || deleteType === 'SD') {
             query = { deletedAt: null }
         } else if (deleteType === 'PD') {
             query = { deletedAt: { $ne: null } }
         }
 
-        const banners = await UpBannerModel.find(query)
-            .sort({ order: 1, createdAt: -1 })
-            .lean()
+        const skip = (page - 1) * limit
 
-        return response(true, 200, 'Up banners fetched successfully', banners)
+        const [banners, total] = await Promise.all([
+            UpBannerModel.find(query)
+                .sort({ order: 1, createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            UpBannerModel.countDocuments(query)
+        ])
+
+        return NextResponse.json({
+            success: true,
+            data: banners,
+            meta: { totalRowCount: total }
+        })
     } catch (error) {
         return catchError(error)
     }

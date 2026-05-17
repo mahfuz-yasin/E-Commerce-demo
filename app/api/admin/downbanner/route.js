@@ -16,6 +16,8 @@ export async function GET(request) {
 
         const searchParams = request.nextUrl.searchParams
         const deleteType = searchParams.get('deleteType')
+        const page = parseInt(searchParams.get('page')) || 1
+        const limit = parseInt(searchParams.get('limit')) || 10
 
         let query = {}
 
@@ -26,11 +28,22 @@ export async function GET(request) {
             query = { deletedAt: { $ne: null } }
         }
 
-        const banners = await DownBannerModel.find(query)
-            .sort({ order: 1, createdAt: -1 })
-            .lean()
+        const skip = (page - 1) * limit
 
-        return response(true, 200, 'Down banners fetched successfully', banners)
+        const [banners, total] = await Promise.all([
+            DownBannerModel.find(query)
+                .sort({ order: 1, createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            DownBannerModel.countDocuments(query)
+        ])
+
+        return NextResponse.json({
+            success: true,
+            data: banners,
+            meta: { totalRowCount: total }
+        })
     } catch (error) {
         return catchError(error)
     }
