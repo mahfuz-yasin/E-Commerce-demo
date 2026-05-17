@@ -78,6 +78,7 @@ export const ADMIN_FACEBOOK_ATTRIBUTION = '/admin/facebook-settings/attribution'
 export const ADMIN_FACEBOOK_PERFORMANCE_METRICS = '/admin/facebook-settings/performance-metrics'
 export const ADMIN_FACEBOOK_CHATBOT = '/admin/facebook-settings/chatbot'
 export const ADMIN_FACEBOOK_AUTO_RESPONSES = '/admin/facebook-settings/auto-responses'
+export const ADMIN_FACEBOOK_ABANDONED_CART = '/admin/facebook-settings/abandoned-cart'
 
 // TikTok Settings routes
 export const ADMIN_TIKTOK_SETTINGS = '/admin/tiktoksettings'
