@@ -14,10 +14,14 @@ const CategoriesSection = () => {
     const [categories, setCategories] = useState([])
 
     useEffect(() => {
-        if (categoriesData && categoriesData.success) {
+        if (categoriesData && categoriesData.success && Array.isArray(categoriesData.data)) {
             setCategories(categoriesData.data)
         }
     }, [categoriesData])
+
+    if (!categories || categories.length === 0) {
+        return null
+    }
 
     return (
         <Swiper
