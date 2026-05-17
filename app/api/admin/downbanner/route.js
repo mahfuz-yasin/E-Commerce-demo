@@ -19,7 +19,8 @@ export async function GET(request) {
 
         let query = {}
 
-        if (deleteType === 'SD') {
+        // By default, only fetch non-deleted banners
+        if (!deleteType || deleteType === 'SD') {
             query = { deletedAt: null }
         } else if (deleteType === 'PD') {
             query = { deletedAt: { $ne: null } }
