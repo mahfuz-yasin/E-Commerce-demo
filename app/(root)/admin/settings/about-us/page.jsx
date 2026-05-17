@@ -3,11 +3,16 @@ import BreadCrumb from "@/components/Application/Admin/BreadCrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { showToast } from "@/lib/showToast"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import axios from "axios"
-import Editor from "@/components/Application/Admin/Editor"
+import dynamic from 'next/dynamic'
+
+const Editor = dynamic(() => import('@/components/Application/Admin/Editor'), {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading editor...</div>
+})
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -94,10 +99,12 @@ const AboutUsSettings = () => {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Content</label>
                                 <div className="border border-gray-300 rounded-md">
-                                    <Editor 
-                                        onChange={handleEditorChange} 
-                                        initialData={editorContent} 
-                                    />
+                                    <Suspense fallback={<div className="text-center py-8">Loading editor...</div>}>
+                                        <Editor 
+                                            onChange={handleEditorChange} 
+                                            initialData={editorContent} 
+                                        />
+                                    </Suspense>
                                 </div>
                             </div>
 
