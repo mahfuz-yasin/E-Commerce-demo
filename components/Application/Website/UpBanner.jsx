@@ -38,7 +38,7 @@ const UpBanner = () => {
         setIsLoading(true)
         try {
             const response = await axios.get('/api/admin/upbanner')
-            if (response.data.success && response.data.data && response.data.data.length > 0) {
+            if (response.data.success && response.data.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
                 // Filter active banners and take first 2
                 const activeBanners = response.data.data
                     .filter(b => b.isActive)

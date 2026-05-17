@@ -39,7 +39,7 @@ const Home = () => {
     const [features, setFeatures] = useState([])
 
     useEffect(() => {
-        if (featuresData && featuresData.success) {
+        if (featuresData && featuresData.success && Array.isArray(featuresData.data)) {
             setFeatures(featuresData.data)
         }
     }, [featuresData])
