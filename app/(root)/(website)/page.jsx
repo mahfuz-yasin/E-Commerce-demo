@@ -8,6 +8,7 @@ import banner2 from '@/public/assets/images/banner2.avif'
 import FeaturedProduct from '@/components/Application/Website/FeaturedProduct'
 import CategoriesSection from '@/components/Application/Website/CategoriesSection'
 import UpBanner from '@/components/Application/Website/UpBanner'
+import DownBanner from '@/components/Application/Website/DownBanner'
 import advertisingBanner from '@/public/assets/images/advertising-banner.avif'
 import { WEBSITE_SHOP, WEBSITE_RETURN_POLICY, WEBSITE_SHIPPING_POLICY, WEBSITE_SUPPORT, WEBSITE_MEMBERSHIP } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
@@ -281,6 +282,9 @@ const Home = () => {
                     })}
                 </div>
             </section>
+
+            {/* Down Banner Section */}
+            <DownBanner />
 
         </>
     )

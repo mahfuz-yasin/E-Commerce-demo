@@ -102,3 +102,13 @@ export const ADMIN_LEADS_DASHBOARD = '/admin/leads'
 export const ADMIN_UPBANNER = '/admin/upbanner'
 export const ADMIN_UPBANNER_ADD = '/admin/upbanner/add'
 export const ADMIN_UPBANNER_EDIT = (id) => id ? `/admin/upbanner/edit/${id}` : null
+
+// Banner (Promo Banner) routes
+export const ADMIN_BANNER_SHOW = '/admin/settings/banner'
+export const ADMIN_BANNER_ADD = '/admin/settings/banner/add'
+export const ADMIN_BANNER_EDIT = (id) => id ? `/admin/settings/banner/edit/${id}` : null
+
+// Down Banner routes
+export const ADMIN_DOWNBANNER = '/admin/downbanner'
+export const ADMIN_DOWNBANNER_ADD = '/admin/downbanner/add'
+export const ADMIN_DOWNBANNER_EDIT = (id) => id ? `/admin/downbanner/edit/${id}` : null
