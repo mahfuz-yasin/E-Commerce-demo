@@ -31,8 +31,8 @@ const iconMap = {
 
 export const dynamic = 'force-dynamic'
 
-const HeroSlider = nextDynamic(() => import('@/components/Application/Website/HeroSlider'), { ssr: false })
-const Testimonial = nextDynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false })
+const HeroSlider = nextDynamic(() => import('@/components/Application/Website/HeroSlider'), { ssr: false, loading: () => <div className="w-full h-[400px] bg-gray-100 animate-pulse" /> })
+const Testimonial = nextDynamic(() => import('@/components/Application/Website/Testimonial'), { ssr: false, loading: () => <div className="w-full h-[300px] bg-gray-100 animate-pulse" /> })
 
 const Home = () => {
     const { data: featuresData } = useFetch('/api/features', 'GET')
