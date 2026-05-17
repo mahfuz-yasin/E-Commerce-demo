@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute"
 import { jwtVerify } from "jose"
 import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute"
-import { checkRateLimit } from "./lib/redisRateLimiter"
-import { containsInjection } from "./lib/inputSanitizer"
 
 export async function middleware(request) {
     try {
