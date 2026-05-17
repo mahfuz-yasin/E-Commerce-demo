@@ -12,11 +12,12 @@ export async function GET() {
         }).lean()
 
         if (!aboutPage) {
-            return response(false, 404, 'About page not found')
+            return response(true, 200, 'About page not found, using default content', null)
         }
 
         return response(true, 200, 'About page fetched successfully', aboutPage)
     } catch (error) {
-        return catchError(error)
+        console.error('Error fetching about page:', error)
+        return response(true, 200, 'Error fetching about page', null)
     }
 }
