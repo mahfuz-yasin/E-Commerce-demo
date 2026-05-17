@@ -72,6 +72,22 @@ const defaultProducts = [
         mrp: 2100,
         sellingPrice: 1800,
         media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Stylish+Panjabi', alt: 'Stylish Panjabi' }]
+    },
+    {
+        _id: 'default-9',
+        name: 'Festive Panjabi',
+        slug: 'festive-panjabi',
+        mrp: 2800,
+        sellingPrice: 2400,
+        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Festive+Panjabi', alt: 'Festive Panjabi' }]
+    },
+    {
+        _id: 'default-10',
+        name: 'Wedding Panjabi',
+        slug: 'wedding-panjabi',
+        mrp: 3500,
+        sellingPrice: 2900,
+        media: [{ secure_url: 'https://via.placeholder.com/400x500?text=Wedding+Panjabi', alt: 'Wedding Panjabi' }]
     }
 ]
 
