@@ -49,8 +49,25 @@ export async function GET(request, { params }) {
 
         const variant = await ProductVariantModel.findOne(variantFilter).populate('media', 'secure_url').lean()
 
-        if (!variant) {
-            return response(false, 404, 'Product not found.')
+        // If no variant found with specific filters, try to get any variant for this product
+        let selectedVariant = variant
+        if (!selectedVariant) {
+            selectedVariant = await ProductVariantModel.findOne({ product: getProduct._id }).populate('media', 'secure_url').lean()
+        }
+
+        // If still no variant, use product data as fallback
+        if (!selectedVariant) {
+            selectedVariant = {
+                _id: getProduct._id,
+                product: getProduct._id,
+                name: getProduct.name,
+                size: getProduct.size || ['M'],
+                colors: getProduct.colors || [{ name: 'Default', code: '#000000' }],
+                mrp: getProduct.mrp,
+                sellingPrice: getProduct.sellingPrice,
+                media: getProduct.media || [],
+                stock: getProduct.stock || 0
+            }
         }
 
         // get color and size 
@@ -103,7 +120,7 @@ export async function GET(request, { params }) {
 
         const productData = {
             product: getProduct,
-            variant: variant,
+            variant: selectedVariant,
             colors: getColor,
             sizes: getSize.length ? getSize.map(item => item.size) : [],
             reviewCount: review
