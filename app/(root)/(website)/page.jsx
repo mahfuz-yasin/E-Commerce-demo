@@ -102,16 +102,18 @@ const Home = () => {
             </section>
 
             {/* Up Banner Section */}
-            <UpBanner />
+            <ScrollReveal direction='up' delay={0}>
+                <UpBanner />
+            </ScrollReveal>
 
             {/* Featured Products Section */}
-            <ScrollReveal direction='up' delay={0}>
+            <ScrollReveal direction='up' delay={0.1}>
                 <FeaturedProduct />
             </ScrollReveal>
 
             {/* Categories Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
-                <ScrollReveal direction='up' delay={0}>
+                <ScrollReveal direction='up' delay={0.2}>
                     <div className='text-center mb-8'>
                         <h2 className='text-3xl font-bold text-gray-900 mb-4'>আমাদের ক্যাটাগরি</h2>
                         <p className='text-gray-600'>আপনার পছন্দের ক্যাটাগরি থেকে বেছে নিন</p>
@@ -122,7 +124,7 @@ const Home = () => {
 
             {/* Advertising Banner Section */}
             <section className='lg:px-32 px-4 sm:py-16 py-8'>
-                <ScrollReveal direction='scale' delay={0}>
+                <ScrollReveal direction='scale' delay={0.3}>
                     <div className='w-full overflow-hidden rounded-lg shadow-sm'>
                         <Image
                             src={advertisingBanner}
@@ -137,120 +139,124 @@ const Home = () => {
             </section>
 
             {/* Testimonials Section */}
-            <ScrollReveal direction='up' delay={0}>
+            <ScrollReveal direction='up' delay={0.4}>
                 <Testimonial />
             </ScrollReveal>
 
             {/* Features/Trust Badges Section */}
-            <section className='lg:px-32 px-4 py-16 sm:py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50'>
-                <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-8'>
-                    {displayFeatures.map((feature) => {
-                        const IconComponent = iconMap[feature.icon]
+            <ScrollReveal direction='up' delay={0.5}>
+                <section className='lg:px-32 px-4 py-16 sm:py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50'>
+                    <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-8'>
+                        {displayFeatures.map((feature) => {
+                            const IconComponent = iconMap[feature.icon]
 
-                        // Get color classes based on feature.color
-                        const getColorClasses = (color) => {
-                            switch (color) {
-                                case 'blue':
-                                    return {
-                                        from: 'from-blue-50',
-                                        to: 'from-blue-500 to-blue-600',
-                                        text: 'text-blue-600',
-                                        bg: 'bg-blue-50',
-                                        border: 'border-blue-500'
-                                    }
-                                case 'green':
-                                    return {
-                                        from: 'from-green-50',
-                                        to: 'from-green-500 to-green-600',
-                                        text: 'text-green-600',
-                                        bg: 'bg-green-50',
-                                        border: 'border-green-500'
-                                    }
-                                case 'purple':
-                                    return {
-                                        from: 'from-purple-50',
-                                        to: 'from-purple-500 to-purple-600',
-                                        text: 'text-purple-600',
-                                        bg: 'bg-purple-50',
-                                        border: 'border-purple-500'
-                                    }
-                                case 'orange':
-                                    return {
-                                        from: 'from-orange-50',
-                                        to: 'from-orange-500 to-orange-600',
-                                        text: 'text-orange-600',
-                                        bg: 'bg-orange-50',
-                                        border: 'border-orange-500'
-                                    }
-                                case 'red':
-                                    return {
-                                        from: 'from-red-50',
-                                        to: 'from-red-500 to-red-600',
-                                        text: 'text-red-600',
-                                        bg: 'bg-red-50',
-                                        border: 'border-red-500'
-                                    }
-                                case 'pink':
-                                    return {
-                                        from: 'from-pink-50',
-                                        to: 'from-pink-500 to-pink-600',
-                                        text: 'text-pink-600',
-                                        bg: 'bg-pink-50',
-                                        border: 'border-pink-500'
-                                    }
-                                case 'indigo':
-                                    return {
-                                        from: 'from-indigo-50',
-                                        to: 'from-indigo-500 to-indigo-600',
-                                        text: 'text-indigo-600',
-                                        bg: 'bg-indigo-50',
-                                        border: 'border-indigo-500'
-                                    }
-                                case 'teal':
-                                    return {
-                                        from: 'from-teal-50',
-                                        to: 'from-teal-500 to-teal-600',
-                                        text: 'text-teal-600',
-                                        bg: 'bg-teal-50',
-                                        border: 'border-teal-500'
-                                    }
-                                default:
-                                    return {
-                                        from: 'from-blue-50',
-                                        to: 'from-blue-500 to-blue-600',
-                                        text: 'text-blue-600',
-                                        bg: 'bg-blue-50',
-                                        border: 'border-blue-500'
-                                    }
+                            // Get color classes based on feature.color
+                            const getColorClasses = (color) => {
+                                switch (color) {
+                                    case 'blue':
+                                        return {
+                                            from: 'from-blue-50',
+                                            to: 'from-blue-500 to-blue-600',
+                                            text: 'text-blue-600',
+                                            bg: 'bg-blue-50',
+                                            border: 'border-blue-500'
+                                        }
+                                    case 'green':
+                                        return {
+                                            from: 'from-green-50',
+                                            to: 'from-green-500 to-green-600',
+                                            text: 'text-green-600',
+                                            bg: 'bg-green-50',
+                                            border: 'border-green-500'
+                                        }
+                                    case 'purple':
+                                        return {
+                                            from: 'from-purple-50',
+                                            to: 'from-purple-500 to-purple-600',
+                                            text: 'text-purple-600',
+                                            bg: 'bg-purple-50',
+                                            border: 'border-purple-500'
+                                        }
+                                    case 'orange':
+                                        return {
+                                            from: 'from-orange-50',
+                                            to: 'from-orange-500 to-orange-600',
+                                            text: 'text-orange-600',
+                                            bg: 'bg-orange-50',
+                                            border: 'border-orange-500'
+                                        }
+                                    case 'red':
+                                        return {
+                                            from: 'from-red-50',
+                                            to: 'from-red-500 to-red-600',
+                                            text: 'text-red-600',
+                                            bg: 'bg-red-50',
+                                            border: 'border-red-500'
+                                        }
+                                    case 'pink':
+                                        return {
+                                            from: 'from-pink-50',
+                                            to: 'from-pink-500 to-pink-600',
+                                            text: 'text-pink-600',
+                                            bg: 'bg-pink-50',
+                                            border: 'border-pink-500'
+                                        }
+                                    case 'indigo':
+                                        return {
+                                            from: 'from-indigo-50',
+                                            to: 'from-indigo-500 to-indigo-600',
+                                            text: 'text-indigo-600',
+                                            bg: 'bg-indigo-50',
+                                            border: 'border-indigo-500'
+                                        }
+                                    case 'teal':
+                                        return {
+                                            from: 'from-teal-50',
+                                            to: 'from-teal-500 to-teal-600',
+                                            text: 'text-teal-600',
+                                            bg: 'bg-teal-50',
+                                            border: 'border-teal-500'
+                                        }
+                                    default:
+                                        return {
+                                            from: 'from-blue-50',
+                                            to: 'from-blue-500 to-blue-600',
+                                            text: 'text-blue-600',
+                                            bg: 'bg-blue-50',
+                                            border: 'border-blue-500'
+                                        }
+                                }
                             }
-                        }
 
-                        const colors = getColorClasses(feature.color)
-                        const index = displayFeatures.indexOf(feature)
+                            const colors = getColorClasses(feature.color)
+                            const index = displayFeatures.indexOf(feature)
 
-                        return (
-                            <ScrollReveal key={feature._id || feature.icon} direction='up' delay={index * 0.1}>
-                                <div className='group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 overflow-hidden h-full'>
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-                                    <div className='relative z-10'>
-                                        <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                                            {IconComponent && <IconComponent size={32} className='text-white' />}
+                            return (
+                                <ScrollReveal key={feature._id || feature.icon} direction='up' delay={index * 0.1}>
+                                    <div className='group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 overflow-hidden h-full'>
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${colors.from} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                                        <div className='relative z-10'>
+                                            <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${colors.to} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                                                {IconComponent && <IconComponent size={32} className='text-white' />}
+                                            </div>
+                                            <h3 className={`text-xl font-bold text-gray-900 mb-3 group-hover:${colors.text} transition-colors`}>{feature.title}</h3>
+                                            <p className='text-gray-600 mb-4'>{feature.description}</p>
+                                            <Button asChild variant="outline" size="sm" className={`w-full hover:${colors.bg} hover:${colors.border} hover:${colors.text} transition-colors`}>
+                                                <Link href={feature.link}>{feature.buttonText}</Link>
+                                            </Button>
                                         </div>
-                                        <h3 className={`text-xl font-bold text-gray-900 mb-3 group-hover:${colors.text} transition-colors`}>{feature.title}</h3>
-                                        <p className='text-gray-600 mb-4'>{feature.description}</p>
-                                        <Button asChild variant="outline" size="sm" className={`w-full hover:${colors.bg} hover:${colors.border} hover:${colors.text} transition-colors`}>
-                                            <Link href={feature.link}>{feature.buttonText}</Link>
-                                        </Button>
                                     </div>
-                                </div>
-                            </ScrollReveal>
-                        )
-                    })}
-                </div>
-            </section>
+                                </ScrollReveal>
+                            )
+                        })}
+                    </div>
+                </section>
+            </ScrollReveal>
 
             {/* Down Banner Section */}
-            <DownBanner />
+            <ScrollReveal direction='up' delay={0.6}>
+                <DownBanner />
+            </ScrollReveal>
 
         </>
     )
