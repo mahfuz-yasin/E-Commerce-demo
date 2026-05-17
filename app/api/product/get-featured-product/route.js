@@ -8,13 +8,10 @@ export async function GET() {
 
         const getProduct = await ProductModel.find({ deletedAt: null }).limit(8).lean()
 
-        if (!getProduct || getProduct.length === 0) {
-            return response(true, 200, 'No products found.', [])
-        }
-
-        return response(true, 200, 'Products found.', getProduct)
+        return response(true, 200, 'Products found.', getProduct || [])
 
     } catch (error) {
-        return catchError(error)
+        console.error('Error fetching featured products:', error)
+        return response(false, 500, 'Failed to fetch products')
     }
 }
