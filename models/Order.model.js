@@ -31,6 +31,8 @@ const orderSchema = new mongoose.Schema({
             qty: { type: Number, required: true },
             mrp: { type: Number, required: true },
             sellingPrice: { type: Number, required: true },
+            image: { type: String, required: false },
+            size: { type: String, required: false },
         }
     ],
     subtotal: {

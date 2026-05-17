@@ -98,18 +98,18 @@ const OrderDetails = ({ params }) => {
                                         <tr key={product.variantId?._id || index} className="md:table-row block border-b">
                                             <td className="md:table-cell p-3">
                                                 <div className="flex items-center gap-5">
-                                                    <Image src={product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
+                                                    <Image src={product?.image || product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
                                                     <div>
                                                         <h4 className="text-lg">
                                                             {product?.productId?.slug ? (
                                                                 <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>
-                                                                    {product?.productId?.name || product?.name || 'Unknown Product'}
+                                                                    {product?.name || product?.productId?.name || 'Unknown Product'}
                                                                 </Link>
                                                             ) : (
-                                                                <span>{product?.productId?.name || product?.name || 'Unknown Product'}</span>
+                                                                <span>{product?.name || product?.productId?.name || 'Unknown Product'}</span>
                                                             )}
                                                             {product?.variantId?.colors && <p className="text-sm text-gray-500">Colors: {product.variantId.colors.map(c => c.name).join(', ')}</p>}
-                                                            {product?.variantId?.size && <p className="text-sm text-gray-500">Size: {Array.isArray(product.variantId.size) ? product.variantId.size.join(', ') : product.variantId.size}</p>}
+                                                            <p className="text-sm text-gray-500">Size: {product?.size || (product?.variantId?.size ? (Array.isArray(product.variantId.size) ? product.variantId.size.join(', ') : product.variantId.size) : 'N/A')}</p>
                                                         </h4>
                                                     </div>
                                                 </div>

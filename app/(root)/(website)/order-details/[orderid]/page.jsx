@@ -38,6 +38,19 @@ const OrderDetails = async ({ params }) => {
                             <p><b>Order Id:</b> {orderData?.data?.order_id}</p>
                             <p><b>Transaction Id:</b> {orderData?.data?.payment_id}</p>
                             <p className="capitalize"><b>Status:</b> {orderData?.data?.status}</p>
+                            <p className="capitalize"><b>Payment Method:</b> {orderData?.data?.paymentMethod}</p>
+                            {orderData?.data?.paymentDetails?.bkash?.number && (
+                                <p><b>bKash Number:</b> {orderData?.data?.paymentDetails?.bkash?.number}</p>
+                            )}
+                            {orderData?.data?.paymentDetails?.bkash?.transactionId && (
+                                <p><b>bKash Transaction ID:</b> {orderData?.data?.paymentDetails?.bkash?.transactionId}</p>
+                            )}
+                            {orderData?.data?.paymentDetails?.nagad?.number && (
+                                <p><b>Nagad Number:</b> {orderData?.data?.paymentDetails?.nagad?.number}</p>
+                            )}
+                            {orderData?.data?.paymentDetails?.nagad?.transactionId && (
+                                <p><b>Nagad Transaction ID:</b> {orderData?.data?.paymentDetails?.nagad?.transactionId}</p>
+                            )}
                         </div>
                         <table className="w-full border">
                             <thead className="border-b bg-gray-50 md:table-header-group hidden">
@@ -53,12 +66,12 @@ const OrderDetails = async ({ params }) => {
                                     <tr key={`${product?.variantId?._id || index}-${index}`} className="md:table-row block border-b">
                                         <td className="p-3">
                                             <div className="flex items-center gap-5">
-                                                <Image src={product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
+                                                <Image src={product?.image || product?.variantId?.media?.[0]?.secure_url || placeholderImg.src} width={60} height={60} alt="product" className="rounded" />
                                                 <div>
                                                     <h4 className="text-lg line-clamp-1">
-                                                        <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>{product?.productId?.name}</Link>
+                                                        <Link href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}>{product?.name}</Link>
                                                         <p>Colors: {product?.variantId?.colors?.map(c => c.name).join(', ')}</p>
-                                                        <p>Size: {product?.variantId?.size}</p>
+                                                        <p>Size: {product?.size || product?.variantId?.size?.join(', ')}</p>
                                                     </h4>
                                                 </div>
                                             </div>

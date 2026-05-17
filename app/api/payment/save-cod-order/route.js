@@ -17,7 +17,9 @@ export async function POST(request) {
             name: z.string().min(1),
             qty: z.number().min(1),
             mrp: z.number().nonnegative(),
-            sellingPrice: z.number().nonnegative()
+            sellingPrice: z.number().nonnegative(),
+            image: z.string().optional(),
+            size: z.string().optional()
         })
 
         const paymentDetailsSchema = z.object({
