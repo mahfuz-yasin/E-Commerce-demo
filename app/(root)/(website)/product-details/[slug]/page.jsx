@@ -117,12 +117,22 @@ const ProductPage = async ({ params, searchParams }) => {
         )
     }
 
-    const getProduct = await response.json()
-
-    if (!getProduct.success) {
+    let getProduct
+    try {
+        getProduct = await response.json()
+    } catch (parseError) {
+        console.error('Error parsing product data:', parseError)
         return (
             <div className='flex justify-center items-center py-10 h-[300px]'>
-                <h1 className='text-4xl font-semibold'>Data not found.</h1>
+                <h1 className='text-4xl font-semibold'>Error loading product data.</h1>
+            </div>
+        )
+    }
+
+    if (!getProduct.success || !getProduct.data) {
+        return (
+            <div className='flex justify-center items-center py-10 h-[300px]'>
+                <h1 className='text-4xl font-semibold'>Product not found.</h1>
             </div>
         )
     }
@@ -141,13 +151,28 @@ const ProductPage = async ({ params, searchParams }) => {
     //     }
     // }
 
+    // Ensure we have valid data before rendering
+    const productData = getProduct?.data?.product
+    const variantData = getProduct?.data?.variant
+    const colorsData = getProduct?.data?.colors || []
+    const sizesData = getProduct?.data?.sizes || []
+    const reviewCountData = getProduct?.data?.reviewCount || 0
+
+    if (!productData || !variantData) {
+        return (
+            <div className='flex justify-center items-center py-10 h-[300px]'>
+                <h1 className='text-4xl font-semibold'>Product information is incomplete.</h1>
+            </div>
+        )
+    }
+
     return (
         <ProductDetails
-            product={getProduct?.data?.product}
-            variant={getProduct?.data?.variant}
-            colors={getProduct?.data?.colors}
-            sizes={getProduct?.data?.sizes}
-            reviewCount={getProduct?.data?.reviewCount}
+            product={productData}
+            variant={variantData}
+            colors={colorsData}
+            sizes={sizesData}
+            reviewCount={reviewCountData}
         />
     )
 }

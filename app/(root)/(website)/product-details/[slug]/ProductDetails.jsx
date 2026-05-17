@@ -31,6 +31,14 @@ import ImageZoom from "@/components/ui/ImageZoom";
 import { viewContent as trackViewContent, addToCart as trackAddToCart } from "@/lib/facebookPixel"
 import { trackTikTokViewContent, trackTikTokAddToCart, generateTikTokEventId } from "@/components/TikTokPixel";
 const ProductDetails = ({ product, variant, colors, sizes, reviewCount }) => {
+    // Defensive check - if no product data, show error
+    if (!product || !variant) {
+        return (
+            <div className='flex justify-center items-center py-10 h-[300px]'>
+                <h1 className='text-2xl font-semibold text-gray-600'>Product data not available.</h1>
+            </div>
+        )
+    }
 
     const dispatch = useDispatch()
     const cartStore = useSelector(store => store?.cartStore || { products: [], count: 0 })
