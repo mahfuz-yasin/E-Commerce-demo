@@ -82,18 +82,26 @@ const ProductBox = ({ product }) => {
                     <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 transition-all duration-300 ${showOverlay ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                         <h3 className='text-white text-center px-4 font-semibold text-sm md:text-base line-clamp-2'>{product?.name}</h3>
                         <div className='flex items-center gap-2'>
-                            <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
-                                <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Details</Button>
-                            </Link>
+                            {product?.slug ? (
+                                <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
+                                    <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Details</Button>
+                                </Link>
+                            ) : (
+                                <Button className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm opacity-50 cursor-not-allowed' disabled>Details</Button>
+                            )}
                             <Button onClick={handleAddToCart} className='bg-white text-black hover:bg-gray-100 rounded-full px-3 py-2 text-xs md:text-sm transition-transform hover:scale-105'>Add to Cart</Button>
                         </div>
                     </div>
                 </div>
 
                 <div className="p-3 md:p-4 border-t">
-                    <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block'>
-                        <h4 className='font-medium text-sm md:text-base line-clamp-2 hover:text-primary transition-colors duration-200 min-h-[2.5rem]'>{product?.name}</h4>
-                    </Link>
+                    {product?.slug ? (
+                        <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)} className='block'>
+                            <h4 className='font-medium text-sm md:text-base line-clamp-2 hover:text-primary transition-colors duration-200 min-h-[2.5rem]'>{product?.name}</h4>
+                        </Link>
+                    ) : (
+                        <h4 className='font-medium text-sm md:text-base line-clamp-2 min-h-[2.5rem]'>{product?.name}</h4>
+                    )}
 
                     <div className='flex items-center gap-2 mt-2'>
                         <span className='font-bold text-sm md:text-base text-gray-900'>{product?.sellingPrice?.toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</span>
