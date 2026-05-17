@@ -27,9 +27,9 @@ const CategoriesSection = () => {
                             {category.name}
                         </h3>
                         <div className='aspect-square rounded-lg bg-gray-50 overflow-hidden'>
-                            {category.image && category.image.secure_url ? (
+                            {category.image ? (
                                 <Image
-                                    src={category.image.secure_url}
+                                    src={category.image.secure_url || category.image}
                                     alt={category.name}
                                     width={200}
                                     height={200}
