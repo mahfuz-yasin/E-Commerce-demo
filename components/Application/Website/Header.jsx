@@ -78,7 +78,7 @@ const Header = () => {
                                 { label: 'All', href: WEBSITE_SHOP },
                                 { label: 'Premium', href: `${WEBSITE_SHOP}?category=t-premium` },
                                 { label: 'Crash', href: `${WEBSITE_SHOP}?category=crash` },
-                                { label: 'Oversized', href: `${WEBSITE_SHOP}?category=overshized` },
+                                { label: 'Oversized', href: `${WEBSITE_SHOP}?category=oversized` },
                                 { label: 'About', href: '/about-us' },
                             ].map((item) => (
                                 <li key={item.label} className='border-b lg:border-none last:border-none'>
