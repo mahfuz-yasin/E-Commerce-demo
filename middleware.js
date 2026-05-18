@@ -7,6 +7,12 @@ export async function middleware(request) {
     try {
         const pathname = request.nextUrl.pathname
         const url = request.nextUrl
+        
+        // Skip middleware for API routes - they handle their own auth
+        if (pathname.startsWith('/api')) {
+            return NextResponse.next()
+        }
+        
         const hasToken = request.cookies.has('access_token')
 
         // Capture UTM parameters, fbclid, ttclid, and gclid
