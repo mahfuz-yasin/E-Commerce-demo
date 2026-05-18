@@ -33,6 +33,8 @@ async function getProductData(slug, color, size) {
     console.log('[ProductServer] Database connected')
     
     // Dynamic imports to prevent module initialization errors
+    // Media model must be imported first to ensure it's registered for populate
+    const { default: MediaModel } = await import('@/models/Media.model')
     const { default: ProductModel } = await import('@/models/Product.model')
     const { default: ProductVariantModel } = await import('@/models/ProductVariant.model')
     const { default: ReviewModel } = await import('@/models/Review.model')
