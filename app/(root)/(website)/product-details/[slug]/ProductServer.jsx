@@ -23,14 +23,23 @@ async function getProductData(slug, color, size) {
     const headersList = await headers()
     const host = headersList.get('host') || 'alhilalpanjabi.com'
     const protocol = host.includes('localhost') ? 'http' : 'https'
-    const baseUrl = `${protocol}://${host}`
+    
+    // Handle Vercel production environment
+    let baseUrl
+    if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`
+    } else if (host.includes('localhost')) {
+      baseUrl = 'http://localhost:3000'
+    } else {
+      baseUrl = `${protocol}://${host}`
+    }
 
     let url = `${baseUrl}/api/product/details/${slug}`
     if (color && size) {
       url += `?color=${encodeURIComponent(color)}&size=${encodeURIComponent(size)}`
     }
 
-    console.log('[ProductServer] Fetching from:', url)
+    console.log('[ProductServer] Fetching from:', url, 'Host:', host, 'VERCEL_URL:', process.env.VERCEL_URL)
 
     let response
     try {
@@ -50,8 +59,8 @@ async function getProductData(slug, color, size) {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error')
-      console.error('[ProductServer] API error response:', errorText, 'Status:', response.status)
-      return { error: true, status: response.status, message: `API error ${response.status}: ${response.statusText}` }
+      console.error('[ProductServer] API error response:', errorText.substring(0, 500), 'Status:', response.status)
+      return { error: true, status: response.status, message: `API error ${response.status}` }
     }
 
     let data
