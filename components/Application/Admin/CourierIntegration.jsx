@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { showToast } from '@/lib/showToast'
-import ButtonLoading from './ButtonLoading'
+import ButtonLoading from '../ButtonLoading'
 import { Truck, Package, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react'
 
 const courierOptions = [
