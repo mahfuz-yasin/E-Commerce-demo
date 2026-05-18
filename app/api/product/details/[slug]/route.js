@@ -6,6 +6,7 @@ import { catchError, response } from "@/lib/helperFunction";
 export async function GET(request, { params }) {
     try {
         console.log('[API /product/details] Request received:', request.url)
+        console.log('[API /product/details] Headers:', Object.fromEntries(request.headers.entries()))
         
         // Check if MONGODB_URI is set
         if (!process.env.MONGODB_URI) {
