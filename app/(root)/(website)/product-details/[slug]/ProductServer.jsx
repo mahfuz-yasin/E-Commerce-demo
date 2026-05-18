@@ -38,19 +38,20 @@ async function getProductData(slug, color, size) {
         cache: 'no-store',
         headers: {
           'Accept': 'application/json',
-        }
+        },
+        next: { revalidate: 0 }
       })
     } catch (fetchError) {
-      console.error('[ProductServer] Fetch error:', fetchError.message)
+      console.error('[ProductServer] Fetch error:', fetchError.message, fetchError)
       return { error: true, message: `Network error: ${fetchError.message}` }
     }
 
-    console.log('[ProductServer] Response status:', response.status)
+    console.log('[ProductServer] Response status:', response.status, response.statusText)
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error')
-      console.error('[ProductServer] API error response:', errorText)
-      return { error: true, status: response.status, message: `API error: ${response.status}` }
+      console.error('[ProductServer] API error response:', errorText, 'Status:', response.status)
+      return { error: true, status: response.status, message: `API error ${response.status}: ${response.statusText}` }
     }
 
     let data
@@ -61,16 +62,20 @@ async function getProductData(slug, color, size) {
       return { error: true, message: 'Invalid JSON response from API' }
     }
     
-    console.log('[ProductServer] API success:', data.success, 'has data:', !!data.data)
+    console.log('[ProductServer] API response:', { success: data.success, hasData: !!data.data, message: data.message })
     
-    if (!data.success || !data.data) {
-      return { error: true, message: data.message || 'Invalid product data' }
+    if (!data.success) {
+      return { error: true, status: 404, message: data.message || 'Product not found' }
+    }
+    
+    if (!data.data) {
+      return { error: true, message: 'Invalid product data structure' }
     }
 
     return { error: false, data: data.data }
     
   } catch (error) {
-    console.error('[ProductServer] Unexpected error:', error.message)
+    console.error('[ProductServer] Unexpected error:', error.message, error)
     return { error: true, message: error.message || 'Failed to load product' }
   }
 }

@@ -5,13 +5,17 @@ import { catchError, response } from "@/lib/helperFunction";
 
 export async function GET(request, { params }) {
     try {
+        console.log('[API /product/details] Request received:', request.url)
+        
         // Check if MONGODB_URI is set
         if (!process.env.MONGODB_URI) {
-            console.warn('MONGODB_URI not set, returning 404 for product details')
-            return response(false, 404, 'Product not found.')
+            console.error('[API /product/details] MONGODB_URI not set!')
+            return response(false, 500, 'Server configuration error.')
         }
 
+        console.log('[API /product/details] Connecting to database...')
         await connectDB()
+        console.log('[API /product/details] Database connected')
         
         // Dynamic imports to prevent module initialization errors
         const { default: ProductModel } = await import('@/models/Product.model')
