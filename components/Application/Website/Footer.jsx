@@ -71,10 +71,10 @@ const Footer = () => {
                 </ScrollReveal>
 
                 {/* Middle Section - Cards Grid */}
-                {/* Mobile: 2 columns (Shop & Pages side by side, Support & Contact below) */}
+                {/* Mobile: 1 column */}
                 {/* Tablet: 2 columns */}
                 {/* Desktop: 4 columns */}
-                <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch'>
                     
                     {/* Shop Card */}
                     <ScrollReveal direction='up' delay={0.1} className="h-full">
