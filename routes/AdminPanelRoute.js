@@ -118,3 +118,8 @@ export const ADMIN_BANNER_EDIT = (id) => id ? `/admin/settings/banner/edit/${id}
 export const ADMIN_DOWNBANNER = '/admin/downbanner'
 export const ADMIN_DOWNBANNER_ADD = '/admin/downbanner/add'
 export const ADMIN_DOWNBANNER_EDIT = (id) => id ? `/admin/downbanner/edit/${id}` : null
+
+// Courier Settings routes
+export const ADMIN_COURIER_SETTINGS = '/admin/courier-settings'
+export const ADMIN_COURIER_STEADFAST = '/admin/courier-settings/steadfast'
+export const ADMIN_COURIER_PATHAO = '/admin/courier-settings/pathao'
