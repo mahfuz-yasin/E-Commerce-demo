@@ -101,22 +101,7 @@ export async function middleware(request) {
 
 export const config = {
     matcher: [
-        // Admin routes - include /admin prefix
-        '/admin/:path*',
-        // Legacy admin routes for compatibility
-        '/dashboard', '/dashboard/:path*',
-        '/product', '/product/add', '/product/edit/:path*',
-        '/product-variant', '/product-variant/:path*',
-        '/category', '/category/:path*',
-        '/coupon', '/coupon/:path*',
-        '/media', '/media/:path*',
-        '/customers', '/customers/:path*',
-        '/review', '/review/:path*',
-        '/admin-orders', '/admin-orders/:path*',
-        '/trash', '/trash/:path*',
-        '/slider', '/slider/:path*',
-        // User routes
-        '/my-account/:path*',
-        '/auth/:path*'
+        // Exclude API routes
+        '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ]
 }
