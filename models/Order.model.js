@@ -91,6 +91,34 @@ const orderSchema = new mongoose.Schema({
         default: null,
         index: true
     },
+    // Courier tracking fields
+    courierInfo: {
+        courierName: {
+            type: String,
+            enum: ['steadfast', 'pathao', 'redx', ''], // '' = not assigned
+            default: ''
+        },
+        trackingCode: {
+            type: String,
+            default: null
+        },
+        consignmentId: {
+            type: String,
+            default: null
+        },
+        status: {
+            type: String,
+            default: 'pending' // pending, picked_up, in_transit, delivered, cancelled, returned
+        },
+        createdAt: {
+            type: Date,
+            default: null
+        },
+        updatedAt: {
+            type: Date,
+            default: null
+        }
+    }
 }, { timestamps: true })
 
 const OrderModel = (mongoose.models && mongoose.models.Order) || mongoose.model('Order', orderSchema, 'orders')

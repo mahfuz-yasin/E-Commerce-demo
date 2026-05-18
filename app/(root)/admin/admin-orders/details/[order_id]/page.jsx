@@ -11,6 +11,7 @@ import Select from "@/components/Application/Select"
 import { orderStatus } from "@/lib/utils"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import { showToast } from "@/lib/showToast"
+import CourierIntegration from "@/components/Application/Admin/CourierIntegration"
 import axios from "axios"
 
 const breadcrumbData = [
@@ -34,6 +35,10 @@ const OrderDetails = ({ params }) => {
     const [orderStatus, setOrderStatus] = useState()
     const [updatingStatus, setUpdatingStatus] = useState(false)
     const { data, loading } = useFetch(`/api/orders/get/${order_id}`)
+
+    const handleOrderUpdate = (updatedOrder) => {
+        setOrderData(updatedOrder)
+    }
 
 
     useEffect(() => {
@@ -207,47 +212,53 @@ const OrderDetails = ({ params }) => {
                                         </table>
                                     </div>
                                 </div>
-                                <div className="p-5 bg-gray-50 dark:bg-card">
-                                    <h4 className="text-lg font-semibold mb-5">Order Summary</h4>
-                                    <div>
-                                        <table className="w-full">
-                                            <tbody>
-                                                <tr>
-                                                    <td className="font-medium py-2">Subtotal</td>
-                                                    <td className="text-end py-2">{(orderData?.subtotal || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Discount</td>
-                                                    <td className="text-end py-2">{(orderData?.discount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Coupon Discount</td>
-                                                    <td className="text-end py-2">{(orderData?.couponDiscountAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="font-medium py-2">Total</td>
-                                                    <td className="text-end py-2">{(orderData?.totalAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
-                                                </tr>
+                                <div className="space-y-5">
+                                    {/* Courier Integration */}
+                                    <CourierIntegration 
+                                        order={orderData} 
+                                        onUpdate={handleOrderUpdate}
+                                    />
 
+                                    {/* Order Summary */}
+                                    <div className="p-5 bg-gray-50 dark:bg-card rounded-lg border">
+                                        <h4 className="text-lg font-semibold mb-5">Order Summary</h4>
+                                        <div>
+                                            <table className="w-full">
+                                                <tbody>
+                                                    <tr>
+                                                        <td className="font-medium py-2">Subtotal</td>
+                                                        <td className="text-end py-2">{(orderData?.subtotal || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="font-medium py-2">Discount</td>
+                                                        <td className="text-end py-2">{(orderData?.discount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="font-medium py-2">Coupon Discount</td>
+                                                        <td className="text-end py-2">{(orderData?.couponDiscountAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="font-medium py-2">Total</td>
+                                                        <td className="text-end py-2">{(orderData?.totalAmount || 0).toLocaleString('en-BD', { style: 'currency', currency: 'BDT' })}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                                            </tbody>
-                                        </table>
+                                        <hr className="my-4" />
+
+                                        <div className="pt-3">
+                                            <h4 className="text-lg font-semibold mb-2">Order Status</h4>
+                                            <Select
+                                                options={statusOptions}
+                                                selected={orderStatus}
+                                                setSelected={(value) => setOrderStatus(value)}
+                                                placeholder="Select"
+                                                isMulti={false}
+                                            />
+                                            <ButtonLoading type="button" loading={updatingStatus} onClick={handleOrderStatus} text="Save Status" className="mt-5 cursor-pointer" />
+                                        </div>
                                     </div>
-
-                                    <hr />
-
-                                    <div className="pt-3">
-                                        <h4 className="text-lg font-semibold mb-2">Order Status</h4>
-                                        <Select
-                                            options={statusOptions}
-                                            selected={orderStatus}
-                                            setSelected={(value) => setOrderStatus(value)}
-                                            placeholder="Select"
-                                            isMulti={false}
-                                        />
-                                        <ButtonLoading type="button" loading={updatingStatus} onClick={handleOrderStatus} text="Save Status" className="mt-5 cursor-pointer" />
-                                    </div>
-
                                 </div>
                             </div>
 
