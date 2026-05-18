@@ -1,12 +1,12 @@
 /**
  * ProductServer - Server Component
  * Fetches product data server-side and passes to client component
- * NOTE: No database imports at top level - safe for Server Components
+ * Uses direct DB connection to avoid Vercel auth issues with internal API calls
  */
 
 import React from 'react'
-import { headers } from 'next/headers'
 import ProductClient from './ProductClient'
+import { connectDB } from '@/lib/databaseConnection'
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -20,71 +20,118 @@ export async function generateMetadata({ params }) {
 
 async function getProductData(slug, color, size) {
   try {
-    const headersList = await headers()
-    const host = headersList.get('host') || 'alhilalpanjabi.com'
-    const protocol = host.includes('localhost') ? 'http' : 'https'
+    console.log('[ProductServer] Direct DB fetch for slug:', slug)
+
+    // Check if MONGODB_URI is set
+    if (!process.env.MONGODB_URI) {
+      console.error('[ProductServer] MONGODB_URI not set!')
+      return { error: true, message: 'Server configuration error.' }
+    }
+
+    // Connect to database
+    await connectDB()
+    console.log('[ProductServer] Database connected')
     
-    // Handle Vercel production environment
-    let baseUrl
-    if (process.env.VERCEL_URL) {
-      baseUrl = `https://${process.env.VERCEL_URL}`
-    } else if (host.includes('localhost')) {
-      baseUrl = 'http://localhost:3000'
-    } else {
-      baseUrl = `${protocol}://${host}`
+    // Dynamic imports to prevent module initialization errors
+    const { default: ProductModel } = await import('@/models/Product.model')
+    const { default: ProductVariantModel } = await import('@/models/ProductVariant.model')
+    const { default: ReviewModel } = await import('@/models/Review.model')
+
+    const filter = { deletedAt: null, slug }
+
+    // get product 
+    const getProduct = await ProductModel.findOne(filter).populate('media', 'secure_url').lean()
+
+    if (!getProduct) {
+      console.log('[ProductServer] Product not found:', slug)
+      return { error: true, status: 404, message: 'Product not found.' }
     }
 
-    let url = `${baseUrl}/api/product/details/${slug}`
-    if (color && size) {
-      url += `?color=${encodeURIComponent(color)}&size=${encodeURIComponent(size)}`
+    console.log('[ProductServer] Product found:', getProduct.name)
+
+    // get product variant 
+    const variantFilter = { product: getProduct._id }
+
+    if (size) {
+      variantFilter.size = { $in: size.split(',') }
+    }
+    if (color) {
+      variantFilter.colors = { $elemMatch: { name: color } }
     }
 
-    console.log('[ProductServer] Fetching from:', url, 'Host:', host, 'VERCEL_URL:', process.env.VERCEL_URL)
+    const variant = await ProductVariantModel.findOne(variantFilter).populate('media', 'secure_url').lean()
 
-    let response
-    try {
-      response = await fetch(url, {
-        cache: 'no-store',
-        headers: {
-          'Accept': 'application/json',
-        },
-        next: { revalidate: 0 }
-      })
-    } catch (fetchError) {
-      console.error('[ProductServer] Fetch error:', fetchError.message, fetchError)
-      return { error: true, message: `Network error: ${fetchError.message}` }
+    // If no variant found with specific filters, try to get any variant for this product
+    let selectedVariant = variant
+    if (!selectedVariant) {
+      selectedVariant = await ProductVariantModel.findOne({ product: getProduct._id }).populate('media', 'secure_url').lean()
     }
 
-    console.log('[ProductServer] Response status:', response.status, response.statusText)
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error')
-      console.error('[ProductServer] API error response:', errorText.substring(0, 500), 'Status:', response.status)
-      return { error: true, status: response.status, message: `API error ${response.status}` }
+    // If still no variant, use product data as fallback
+    if (!selectedVariant) {
+      selectedVariant = {
+        _id: getProduct._id,
+        product: getProduct._id,
+        name: getProduct.name,
+        size: getProduct.size || ['M'],
+        colors: getProduct.colors || [{ name: 'Default', code: '#000000' }],
+        mrp: getProduct.mrp,
+        sellingPrice: getProduct.sellingPrice,
+        media: getProduct.media || [],
+        stock: getProduct.stock || 0
+      }
     }
 
-    let data
-    try {
-      data = await response.json()
-    } catch (parseError) {
-      console.error('[ProductServer] JSON parse error:', parseError.message)
-      return { error: true, message: 'Invalid JSON response from API' }
-    }
-    
-    console.log('[ProductServer] API response:', { success: data.success, hasData: !!data.data, message: data.message })
-    
-    if (!data.success) {
-      return { error: true, status: 404, message: data.message || 'Product not found' }
-    }
-    
-    if (!data.data) {
-      return { error: true, message: 'Invalid product data structure' }
+    // Get all variants and extract unique color names
+    const allVariantsForColors = await ProductVariantModel.find({ product: getProduct._id }).select('colors').lean()
+    const uniqueColors = new Set()
+    allVariantsForColors.forEach(variant => {
+      if (Array.isArray(variant.colors)) {
+        variant.colors.forEach(c => {
+          if (c.name) uniqueColors.add(c.name)
+        })
+      }
+    })
+    const getColor = Array.from(uniqueColors)
+
+    // Extract unique sizes from all variants
+    const allVariants = await ProductVariantModel.find({ product: getProduct._id }).select('size').lean()
+    const uniqueSizes = new Set()
+    const validSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL']
+
+    allVariants.forEach(variant => {
+      if (Array.isArray(variant.size)) {
+        variant.size.forEach(s => uniqueSizes.add(s))
+      } else if (typeof variant.size === 'string') {
+        let remaining = variant.size
+        const sortedSizes = [...validSizes].sort((a, b) => b.length - a.length)
+        for (const size of sortedSizes) {
+          while (remaining.includes(size)) {
+            uniqueSizes.add(size)
+            remaining = remaining.replace(size, '')
+          }
+        }
+      }
+    })
+
+    const getSize = Array.from(uniqueSizes).map(size => ({ size }))
+
+    // get review count
+    const review = await ReviewModel.countDocuments({ product: getProduct._id })
+
+    const productData = {
+      product: getProduct,
+      variant: selectedVariant,
+      colors: getColor,
+      sizes: getSize.length ? getSize.map(item => item.size) : [],
+      reviewCount: review
     }
 
-    return { error: false, data: data.data }
+    console.log('[ProductServer] Success:', getProduct.name)
+    return { error: false, data: productData }
     
   } catch (error) {
-    console.error('[ProductServer] Unexpected error:', error.message, error)
+    console.error('[ProductServer] Error:', error.message, error.stack)
     return { error: true, message: error.message || 'Failed to load product' }
   }
 }
