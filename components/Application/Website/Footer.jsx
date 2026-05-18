@@ -9,8 +9,8 @@ import Image from 'next/image'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 
 const Footer = () => {
-    // Glassmorphism effect classes
-    const glassCard = "backdrop-blur-md bg-white/70 border border-white/40 shadow-lg rounded-2xl p-5";
+    // Glassmorphism effect classes - equal height cards
+    const glassCard = "backdrop-blur-md bg-white/70 border border-white/40 shadow-lg rounded-2xl p-5 h-full flex flex-col";
     const glassIcon = "backdrop-blur-sm bg-gradient-to-br from-amber-500/20 to-amber-600/30 text-amber-700 border border-white/50";
 
     const socialLinks = [
@@ -74,16 +74,16 @@ const Footer = () => {
                 {/* Mobile: 2 columns (Shop & Pages side by side, Support & Contact below) */}
                 {/* Tablet: 2 columns */}
                 {/* Desktop: 4 columns */}
-                <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+                <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch'>
                     
                     {/* Shop Card */}
-                    <ScrollReveal direction='up' delay={0.1}>
+                    <ScrollReveal direction='up' delay={0.1} className="h-full">
                         <div className={glassCard}>
                             <h4 className='text-slate-800 font-bold text-base mb-4 flex items-center gap-2'>
                                 <span className="w-8 h-1 bg-amber-500 rounded-full"></span>
                                 Shop
                             </h4>
-                            <ul className='space-y-2'>
+                            <ul className='space-y-2 flex-1'>
                                 {shopLinks.map(link => (
                                     <li key={link}>
                                         <Link href={WEBSITE_SHOP} className='text-slate-600 hover:text-amber-600 transition-all text-sm flex items-center gap-2 group'>
@@ -97,13 +97,13 @@ const Footer = () => {
                     </ScrollReveal>
 
                     {/* Pages Card */}
-                    <ScrollReveal direction='up' delay={0.15}>
+                    <ScrollReveal direction='up' delay={0.15} className="h-full">
                         <div className={glassCard}>
                             <h4 className='text-slate-800 font-bold text-base mb-4 flex items-center gap-2'>
                                 <span className="w-8 h-1 bg-amber-500 rounded-full"></span>
                                 Pages
                             </h4>
-                            <ul className='space-y-2'>
+                            <ul className='space-y-2 flex-1'>
                                 {pageLinks.map(link => (
                                     <li key={link.name}>
                                         <Link href={link.href} className='text-slate-600 hover:text-amber-600 transition-all text-sm flex items-center gap-2 group'>
@@ -117,13 +117,13 @@ const Footer = () => {
                     </ScrollReveal>
 
                     {/* Support Card */}
-                    <ScrollReveal direction='up' delay={0.2}>
+                    <ScrollReveal direction='up' delay={0.2} className="h-full">
                         <div className={glassCard}>
                             <h4 className='text-slate-800 font-bold text-base mb-4 flex items-center gap-2'>
                                 <span className="w-8 h-1 bg-amber-500 rounded-full"></span>
                                 Support
                             </h4>
-                            <ul className='space-y-2'>
+                            <ul className='space-y-2 flex-1'>
                                 {supportLinks.map(link => (
                                     <li key={link.name}>
                                         <Link href={link.href} className='text-slate-600 hover:text-amber-600 transition-all text-sm flex items-center gap-2 group'>
@@ -137,13 +137,13 @@ const Footer = () => {
                     </ScrollReveal>
 
                     {/* Showroom/Contact Card */}
-                    <ScrollReveal direction='up' delay={0.25}>
+                    <ScrollReveal direction='up' delay={0.25} className="h-full">
                         <div className={glassCard}>
                             <h4 className='text-slate-800 font-bold text-base mb-4 flex items-center gap-2'>
                                 <span className="w-8 h-1 bg-amber-500 rounded-full"></span>
                                 Showroom
                             </h4>
-                            <div className='space-y-3'>
+                            <div className='space-y-3 flex-1'>
                                 <div className='flex gap-3 items-start'>
                                     <div className={`p-2 rounded-lg ${glassIcon}`}>
                                         <IoLocationOutline size={16} />
