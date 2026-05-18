@@ -57,11 +57,28 @@ export async function middleware(request) {
 
         // Check for protected routes
         if (!hasToken) {
-            // if the user is not loggedin and trying to access a protected route, redirect to login page. 
-            if (!pathname.startsWith('/auth')) {
+            // Public routes that don't require authentication
+            const publicRoutes = ['/', '/shop', '/product-details', '/profile', '/about', '/contact', '/blog']
+            const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`))
+            
+            // Allow access to public routes and auth routes without login
+            if (isPublicRoute || pathname.startsWith('/auth')) {
+                return response
+            }
+            
+            // Protect admin routes
+            const adminRoutes = ['/admin']
+            const isAdminRoute = adminRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`))
+            
+            // Protect user account routes
+            const userProtectedRoutes = ['/my-account']
+            const isUserProtectedRoute = userProtectedRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`))
+            
+            if (isAdminRoute || isUserProtectedRoute) {
                 return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
             }
-            return response // Allow access to auth routes if not logged in. 
+            
+            return response
         }
 
         // verify token 
