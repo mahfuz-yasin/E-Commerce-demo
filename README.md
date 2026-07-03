@@ -1,4 +1,4 @@
-﻿# Al-Hilal Panjabi
+﻿# E-Online Fashion Panjabi
 
 Premium Panjabi & Pyjama Store - Wholesale & Retail
 
@@ -6,7 +6,7 @@ Premium Panjabi & Pyjama Store - Wholesale & Retail
 
 ### 🖼️ Recommended Image Asset Guidelines
 
-To maintain high performance and visual consistency across the **Al-Hilal Panjabi** platform, follow these image size recommendations. These are optimized for Cloudinary delivery and Next.js performance.
+To maintain high performance and visual consistency across the **E-Online Fashion Panjabi** platform, follow these image size recommendations. These are optimized for Cloudinary delivery and Next.js performance.
 
 | Image Type | Recommended Size | Notes |
 | :--- | :--- | :--- |

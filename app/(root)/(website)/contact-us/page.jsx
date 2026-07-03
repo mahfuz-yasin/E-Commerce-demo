@@ -10,7 +10,7 @@ import axios from 'axios'
 
 // Default contact config
 const defaultConfig = {
-    companyName: 'Al-Hilal Panjabi',
+    companyName: 'E-Online Fashion Panjabi',
     address: {
         line1: 'Magura Sadar',
         line2: 'Magura',

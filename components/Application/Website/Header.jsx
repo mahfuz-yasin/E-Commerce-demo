@@ -40,12 +40,12 @@ const Header = () => {
                     href={WEBSITE_HOME} 
                     className="group focus:outline-none transition-all duration-300"
                     onClick={closeMenu}
-                    aria-label="Al-Hilal Panjabi Home"
+                    aria-label="E-Online Fashion Panjabi Home"
                 >
                     <div className="relative">
                         <Image 
                             src={logo} 
-                            alt="Al-Hilal Panjabi" 
+                            alt="E-Online Fashion Panjabi" 
                             width={300} 
                             height={200} 
                             className="w-32 h-auto md:w-40 md:h-auto object-contain transition-transform duration-300 group-hover:scale-105" 

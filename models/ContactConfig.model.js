@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const ContactConfigSchema = new mongoose.Schema({
     companyName: {
         type: String,
-        default: 'Al-Hilal Panjabi'
+        default: 'E-Online Fashion Panjabi'
     },
     address: {
         line1: { type: String, default: 'Magura Sadar' },

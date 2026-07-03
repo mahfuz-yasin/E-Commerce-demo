@@ -26,7 +26,7 @@ const layout = ({ children }) => {
                     </div>
 
                     <div className='border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm'>
-                       2026 Al-Hilal Panjabi. All Rights Reserved.
+                       2026 E-Online Fashion Panjabi. All Rights Reserved.
                     </div>
                     <div className='border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm'>
                         Developed by <a href="https://mahfuz.me" target="_blank" rel="noopener noreferrer" className='text-primary'>Mahfuz Yasin</a>

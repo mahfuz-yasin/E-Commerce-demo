@@ -1,4 +1,4 @@
-# Facebook Pixel Setup - Al-Hilal Panjabi
+# Facebook Pixel Setup - E-Online Fashion Panjabi
 
 ## Configuration
 

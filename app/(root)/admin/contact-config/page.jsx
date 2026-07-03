@@ -134,7 +134,7 @@ const ContactConfig = () => {
                                     id="companyName"
                                     value={config.companyName || ''}
                                     onChange={(e) => handleChange(null, 'companyName', e.target.value)}
-                                    placeholder="Al-Hilal Panjabi"
+                                    placeholder="E-Online Fashion Panjabi"
                                 />
                             </div>
                             <div>

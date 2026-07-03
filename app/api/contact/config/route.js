@@ -10,7 +10,7 @@ export async function GET() {
             console.warn('MONGODB_URI not set, returning default contact config')
             // Return default config
             return response(true, 200, 'Contact config fetched successfully', {
-                companyName: 'Al-Hilal Panjabi',
+                companyName: 'E-Online Fashion Panjabi',
                 address: {
                     line1: 'Magura Sadar',
                     line2: 'Magura',

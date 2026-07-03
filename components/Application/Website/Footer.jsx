@@ -50,7 +50,7 @@ const Footer = () => {
                 <ScrollReveal direction='up' delay={0}>
                     <div className={`${glassCard} mb-6 text-center`}>
                         <Link href={WEBSITE_HOME} className="inline-block group">
-                            <Image src={logo} alt="Al-Hilal Panjabi" width={80} height={80} className="w-20 h-20 mx-auto mb-4" />
+                            <Image src={logo} alt="E-Online Fashion Panjabi" width={80} height={80} className="w-20 h-20 mx-auto mb-4" />
                         </Link>
                         <p className='text-slate-600 text-sm leading-relaxed max-w-md mx-auto mb-6'>
                             আল-হিলাল পাঞ্জাবি মানেই আভিজাত্য। আমরা পাইকারি ও খুচরা বিক্রয়কারী হিসেবে দেশের সেরা প্রিমিয়াম পাঞ্জাবি ও পায়জামা সরবরাহ করছি।
@@ -174,7 +174,7 @@ const Footer = () => {
             <div className="relative z-10 backdrop-blur-md bg-white/50 border-t border-white/60 py-6">
                 <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left">
                     <p className="text-xs text-slate-500">
-                        © {new Date().getFullYear()} <span className="font-bold text-slate-800">Al-Hilal Panjabi</span>. All Rights Reserved.
+                        © {new Date().getFullYear()} <span className="font-bold text-slate-800">E-Online Fashion Panjabi</span>. All Rights Reserved.
                     </p>
                     <div className="flex items-center gap-2">
                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Mastered by</span>

@@ -12,32 +12,32 @@ const GlobalProvider = dynamic(() => import('@/components/Application/GlobalProv
 
 export const metadata = {
   title: {
-    default: "Al-Hilal Panjabi | Premium Ethnic Wear for Men",
-    template: "%s | Al-Hilal Panjabi",
+    default: "E-Online Fashion Panjabi | Premium Ethnic Wear for Men",
+    template: "%s | E-Online Fashion Panjabi",
   },
-  description: "Discover the finest collection of premium Panjabis at Al-Hilal. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
-  keywords: ["Panjabi", "Men's Ethnic Wear", "Al-Hilal Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
-  authors: [{ name: "Al-Hilal Panjabi" }],
-  creator: "Al-Hilal Panjabi",
+  description: "Discover the finest collection of premium Panjabis at E-Online Fashion. From traditional designs to modern ethnic wear, experience quality craftsmanship and elegance.",
+  keywords: ["Panjabi", "Men's Ethnic Wear", "E-Online Fashion Panjabi", "Traditional Wear Bangladesh", "Designer Panjabi"],
+  authors: [{ name: "E-Online Fashion Panjabi" }],
+  creator: "E-Online Fashion Panjabi",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://alhilalpanjabi.com",
-    siteName: "Al-Hilal Panjabi",
-    title: "Al-Hilal Panjabi | Premium Ethnic Wear",
+    siteName: "E-Online Fashion Panjabi",
+    title: "E-Online Fashion Panjabi | Premium Ethnic Wear",
     description: "Shop the latest collection of high-quality, stylish Panjabis. Perfect for Eid, weddings, and special occasions.",
     images: [
       {
         url: "https://alhilalpanjabi.com/logo.webp",
         width: 1200,
         height: 630,
-        alt: "Al-Hilal Panjabi Collection",
+        alt: "E-Online Fashion Panjabi Collection",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Al-Hilal Panjabi",
+    title: "E-Online Fashion Panjabi",
     description: "Premium Panjabis for the modern man.",
     images: ["https://alhilalpanjabi.com/logo.webp"],
   },

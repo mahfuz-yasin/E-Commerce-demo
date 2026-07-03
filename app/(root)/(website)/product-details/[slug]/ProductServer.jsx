@@ -13,8 +13,8 @@ export async function generateMetadata({ params }) {
   
   // Safe static metadata - no DB calls
   return {
-    title: `Product | Al-Hilal Panjabi`,
-    description: 'Shop premium quality ethnic wear for men at Al-Hilal Panjabi.',
+    title: `Product | E-Online Fashion Panjabi`,
+    description: 'Shop premium quality ethnic wear for men at E-Online Fashion Panjabi.',
   }
 }
 

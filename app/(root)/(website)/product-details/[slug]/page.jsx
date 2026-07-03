@@ -9,8 +9,8 @@
 import ProductServer from './ProductServer'
 
 export const metadata = {
-  title: 'Product Details | Al-Hilal Panjabi',
-  description: 'Shop premium quality ethnic wear for men at Al-Hilal Panjabi.',
+  title: 'Product Details | E-Online Fashion Panjabi',
+  description: 'Shop premium quality ethnic wear for men at E-Online Fashion Panjabi.',
 }
 
 const ProductPage = async ({ params, searchParams }) => {
