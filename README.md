@@ -26,3 +26,4 @@ To maintain high performance and visual consistency across the **Al-Hilal Panjab
 * **Hero Slider:** Ensure the focal point of the image is centered to avoid clipping on mobile devices.
 * **Cloudinary:** All dynamic images should be uploaded via the Admin Panel to leverage auto-optimization.
 * Premium Panjabi & Pyjama Store - Wholesale & Retail *
+# E-Commerce-demo
