@@ -1,6 +1,7 @@
 import { zSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useState } from 'react'
+import { DEMO_OTP } from '@/lib/demoConfig'
 import { useForm } from 'react-hook-form'
 import ButtonLoading from './ButtonLoading'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
@@ -19,7 +20,7 @@ const OTPVerification = ({ email, onSubmit, loading }) => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            otp: "",
+            otp: DEMO_OTP,
             email: email
         }
     })

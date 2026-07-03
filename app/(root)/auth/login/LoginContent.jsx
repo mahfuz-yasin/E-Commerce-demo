@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux'
 import { login } from '@/store/reducer/authReducer'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
+import { DEMO_EMAIL, DEMO_PASSWORD } from '@/lib/demoConfig'
 
 const LoginContent = () => {
     const dispatch = useDispatch()
@@ -47,8 +48,8 @@ const LoginContent = () => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: "",
-            password: "",
+            email: DEMO_EMAIL,
+            password: DEMO_PASSWORD,
         },
     })
 

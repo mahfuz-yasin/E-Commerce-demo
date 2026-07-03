@@ -5,6 +5,7 @@ import { sendMail } from "@/lib/sendMail";
 import { zSchema } from "@/lib/zodSchema";
 import OTPModel from "@/models/Otp.model";
 import UserModel from "@/models/User.model";
+import { DEMO_EMAIL, DEMO_OTP } from "@/lib/demoConfig";
 
 export async function POST(request) {
     try {
@@ -18,6 +19,13 @@ export async function POST(request) {
         }
 
         const { email } = validatedData.data
+
+        // demo resend bypass
+        if (email === DEMO_EMAIL) {
+            await OTPModel.deleteMany({ email })
+            await new OTPModel({ email, otp: DEMO_OTP }).save()
+            return response(true, 200, 'OTP sent successfully.')
+        }
 
         const getUser = await UserModel.findOne({ email })
         if (!getUser) {

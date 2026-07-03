@@ -8,6 +8,7 @@ import OTPModel from "@/models/Otp.model";
 import UserModel from "@/models/User.model";
 import { SignJWT } from "jose";
 import { z } from "zod";
+import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_OTP, DEMO_USER_NAME } from "@/lib/demoConfig";
 
 export async function POST(request) {
     try {
@@ -26,6 +27,25 @@ export async function POST(request) {
         }
 
         const { email, password } = validatedData.data
+
+        // demo login bypass
+        if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+            let demoUser = await UserModel.findOne({ deletedAt: null, email })
+            if (!demoUser) {
+                demoUser = await new UserModel({
+                    email: DEMO_EMAIL,
+                    name: DEMO_USER_NAME,
+                    password: DEMO_PASSWORD,
+                    role: 'admin',
+                    isEmailVerified: true,
+                }).save()
+            }
+
+            await OTPModel.deleteMany({ email })
+            await new OTPModel({ email, otp: DEMO_OTP }).save()
+
+            return response(true, 200, 'Please verify your device.')
+        }
 
         // get user data 
         const getUser = await UserModel.findOne({ deletedAt: null, email }).select("+password")
