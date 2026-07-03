@@ -27,3 +27,4 @@ To maintain high performance and visual consistency across the **Al-Hilal Panjab
 * **Cloudinary:** All dynamic images should be uploaded via the Admin Panel to leverage auto-optimization.
 * Premium Panjabi & Pyjama Store - Wholesale & Retail *
 # E-Commerce-demo
+# E-Commerce-demo
