@@ -32,7 +32,7 @@ export async function PUT(request) {
             const base64Image = `data:${file.type};base64,${Buffer.from(fileBuffer).toString("base64")}`
 
             const uploadFile = await cloudinary.uploader.upload(base64Image, {
-                upload_preset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                folder: 'avatars'
             })
 
             // REMOVE OLD AVATAR  
