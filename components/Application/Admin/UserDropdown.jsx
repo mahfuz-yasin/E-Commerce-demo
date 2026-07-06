@@ -27,17 +27,26 @@ const UserDropdown = () => {
             return null
         }
     })
+    const initials = (auth?.name || 'Admin').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Avatar>
-                    <AvatarImage src={adminLogo.src} />
-                </Avatar>
-
+                <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-accent transition-colors cursor-pointer outline-none">
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage src={adminLogo.src} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="hidden sm:block text-left">
+                        <p className="text-xs font-semibold leading-tight text-foreground">{auth?.name || 'Admin'}</p>
+                        <p className="text-[10px] text-muted-foreground leading-tight">Administrator</p>
+                    </div>
+                </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="me-5 w-44">
-                <DropdownMenuLabel>
-                    <p className="font-semibold">{auth?.name || 'Admin'}</p>
+            <DropdownMenuContent className="me-4 w-48" align="end">
+                <DropdownMenuLabel className="pb-1">
+                    <p className="font-semibold text-sm">{auth?.name || 'Admin'}</p>
+                    <p className="text-xs text-muted-foreground font-normal">Administrator</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

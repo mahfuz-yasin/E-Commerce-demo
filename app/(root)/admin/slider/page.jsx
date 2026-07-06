@@ -154,7 +154,7 @@ const SliderManagement = () => {
             <BreadCrumb breadcrumbData={breadcrumbData} />
             
             <Card className="py-0 rounded shadow-sm">
-                <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
+                <CardHeader className="px-5 py-4 border-b bg-muted/30">
                     <div className='flex justify-between items-center'>
                         <h4 className='font-semibold text-xl uppercase'>Slider Management</h4>
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

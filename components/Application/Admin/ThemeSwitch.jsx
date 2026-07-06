@@ -17,15 +17,15 @@ const ThemeSwitch = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost" className="cursor-pointer">
-                    <IoSunnyOutline className="dark:hidden" />
-                    <IoMoonOutline className="hidden dark:block" />
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
+                    <IoSunnyOutline className="w-4 h-4 dark:hidden" />
+                    <IoMoonOutline className="w-4 h-4 hidden dark:block" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('system')}>System</DropdownMenuItem>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme('light')}>☀️ Light</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>🌙 Dark</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')}>💻 System</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

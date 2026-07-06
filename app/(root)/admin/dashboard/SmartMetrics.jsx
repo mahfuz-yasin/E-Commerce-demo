@@ -1,10 +1,34 @@
 'use client'
 import useFetch from '@/hooks/useFetch'
-import { TrendingUp, TrendingDown, ShoppingBag, Shield, Zap, Package } from 'lucide-react'
+import { TrendingUp, TrendingDown, ShoppingBag, Shield, Package, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
-import { ADMIN_REPORTS_PROFIT_LOSS, ADMIN_REPORTS_ADS_SOURCE, ADMIN_FRAUD_GUARD, ADMIN_FLASH_SALE, ADMIN_REPORTS_STOCK } from '@/routes/AdminPanelRoute'
+import { ADMIN_REPORTS_PROFIT_LOSS, ADMIN_REPORTS_ADS_SOURCE, ADMIN_FRAUD_GUARD, ADMIN_REPORTS_STOCK } from '@/routes/AdminPanelRoute'
 
-const platformEmoji = { facebook: '📘', tiktok: '🎵', google: '🔍', organic: '🌿', instagram: '📸', direct: '🔗', other: '📌' }
+const platformIcon = { facebook: '📘', tiktok: '🎵', google: '🔍', organic: '🌿', instagram: '📸', direct: '🔗', other: '📌' }
+
+const MetricCard = ({ href, icon, label, value, sub, accent }) => {
+    const accentMap = {
+        green:  { bar: 'bg-emerald-500', val: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+        red:    { bar: 'bg-red-500',     val: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-950/30' },
+        blue:   { bar: 'bg-primary',     val: 'text-primary',                            bg: 'bg-primary/5 dark:bg-primary/10' },
+        orange: { bar: 'bg-amber-500',   val: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-950/30' },
+        purple: { bar: 'bg-purple-500',  val: 'text-purple-600 dark:text-purple-400',   bg: 'bg-purple-50 dark:bg-purple-950/30' },
+    }
+    const c = accentMap[accent] || accentMap.blue
+    return (
+        <Link href={href}>
+            <div className={`relative overflow-hidden rounded-xl border border-border/60 shadow-sm cursor-pointer hover:shadow-md transition-all duration-150 p-4 ${c.bg}`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${c.bar} rounded-l-xl`} />
+                <div className='flex items-center gap-2 mb-2 ml-1'>
+                    <div className={`${c.val}`}>{icon}</div>
+                    <span className='text-xs font-medium text-muted-foreground uppercase tracking-wide'>{label}</span>
+                </div>
+                <p className={`text-2xl font-bold ml-1 ${c.val}`}>{value}</p>
+                {sub && <p className='text-xs text-muted-foreground mt-1 ml-1'>{sub}</p>}
+            </div>
+        </Link>
+    )
+}
 
 const SmartMetrics = () => {
     const now = new Date()
@@ -22,73 +46,63 @@ const SmartMetrics = () => {
         .sort(([, a], [, b]) => b.revenue - a.revenue)
         .slice(0, 4)
 
+    const isProfit = (pl?.netProfit ?? 0) >= 0
+
     return (
-        <div className='mt-6'>
-            <h4 className='font-semibold text-sm text-gray-500 uppercase tracking-wider mb-3'>এই মাসের স্মার্ট সারসংক্ষেপ</h4>
-
-            <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4'>
-                {/* Profit/Loss */}
-                <Link href={ADMIN_REPORTS_PROFIT_LOSS}>
-                    <div className={`p-4 rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow border-l-4 ${pl?.netProfit >= 0 ? 'border-l-green-500 bg-green-50 dark:bg-card' : 'border-l-red-500 bg-red-50 dark:bg-card'}`}>
-                        <div className='flex items-center gap-2 mb-1'>
-                            {pl?.netProfit >= 0 ? <TrendingUp className='w-4 h-4 text-green-600' /> : <TrendingDown className='w-4 h-4 text-red-500' />}
-                            <span className='text-xs text-gray-500'>নেট প্রফিট</span>
-                        </div>
-                        <p className={`text-xl font-bold ${pl?.netProfit >= 0 ? 'text-green-700' : 'text-red-600'}`}>
-                            ৳{pl?.netProfit?.toLocaleString() || '—'}
-                        </p>
-                        <p className='text-xs text-gray-400 mt-1'>আয়: ৳{pl?.totalRevenue?.toLocaleString() || 0}</p>
-                    </div>
-                </Link>
-
-                {/* Delivered orders */}
-                <Link href={ADMIN_REPORTS_PROFIT_LOSS}>
-                    <div className='p-4 rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow border-l-4 border-l-blue-500 bg-blue-50 dark:bg-card'>
-                        <div className='flex items-center gap-2 mb-1'>
-                            <ShoppingBag className='w-4 h-4 text-blue-600' />
-                            <span className='text-xs text-gray-500'>মোট অর্ডার</span>
-                        </div>
-                        <p className='text-xl font-bold text-blue-700'>{pl?.totalOrders || '—'}</p>
-                        <p className='text-xs text-gray-400 mt-1'>ক্যান্সেল রেট: {pl?.cancelRate || '—'}</p>
-                    </div>
-                </Link>
-
-                {/* Low stock alert */}
-                <Link href={ADMIN_REPORTS_STOCK}>
-                    <div className={`p-4 rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow border-l-4 ${stockData?.data?.summary?.outOfStock > 0 ? 'border-l-red-500 bg-red-50 dark:bg-card' : 'border-l-orange-500 bg-orange-50 dark:bg-card'}`}>
-                        <div className='flex items-center gap-2 mb-1'>
-                            <Package className='w-4 h-4 text-orange-600' />
-                            <span className='text-xs text-gray-500'>স্টক অ্যালার্ট</span>
-                        </div>
-                        <p className='text-xl font-bold text-orange-700'>{stockData?.data?.summary?.lowStock || 0}</p>
-                        <p className='text-xs text-gray-400 mt-1'>স্টক শেষ: {stockData?.data?.summary?.outOfStock || 0}</p>
-                    </div>
-                </Link>
-
-                {/* Fraud guard */}
-                <Link href={ADMIN_FRAUD_GUARD}>
-                    <div className='p-4 rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow border-l-4 border-l-purple-500 bg-purple-50 dark:bg-card'>
-                        <div className='flex items-center gap-2 mb-1'>
-                            <Shield className='w-4 h-4 text-purple-600' />
-                            <span className='text-xs text-gray-500'>Fraud Guard</span>
-                        </div>
-                        <p className='text-xl font-bold text-purple-700'>সক্রিয়</p>
-                        <p className='text-xs text-gray-400 mt-1'>Phone + IP Block</p>
-                    </div>
-                </Link>
+        <div className='space-y-3'>
+            <div className='flex items-center justify-between'>
+                <h4 className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>This Month — Smart Summary</h4>
+                <Link href={ADMIN_REPORTS_PROFIT_LOSS} className='text-xs text-primary hover:underline'>View full report →</Link>
             </div>
 
-            {/* Ads Platform Breakdown */}
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
+                <MetricCard
+                    href={ADMIN_REPORTS_PROFIT_LOSS}
+                    icon={isProfit ? <TrendingUp className='w-4 h-4' /> : <TrendingDown className='w-4 h-4' />}
+                    label="Net Profit"
+                    value={`৳${pl?.netProfit?.toLocaleString() ?? '—'}`}
+                    sub={`Revenue: ৳${pl?.totalRevenue?.toLocaleString() ?? 0}`}
+                    accent={isProfit ? 'green' : 'red'}
+                />
+                <MetricCard
+                    href={ADMIN_REPORTS_PROFIT_LOSS}
+                    icon={<ShoppingBag className='w-4 h-4' />}
+                    label="Total Orders"
+                    value={pl?.totalOrders ?? '—'}
+                    sub={`Cancel rate: ${pl?.cancelRate ?? '—'}`}
+                    accent="blue"
+                />
+                <MetricCard
+                    href={ADMIN_REPORTS_STOCK}
+                    icon={<Package className='w-4 h-4' />}
+                    label="Stock Alerts"
+                    value={stockData?.data?.summary?.lowStock ?? 0}
+                    sub={`Out of stock: ${stockData?.data?.summary?.outOfStock ?? 0}`}
+                    accent={stockData?.data?.summary?.outOfStock > 0 ? 'red' : 'orange'}
+                />
+                <MetricCard
+                    href={ADMIN_FRAUD_GUARD}
+                    icon={<Shield className='w-4 h-4' />}
+                    label="Fraud Guard"
+                    value="Active"
+                    sub="Phone + IP blocking"
+                    accent="purple"
+                />
+            </div>
+
             {topPlatforms.length > 0 && (
                 <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
                     {topPlatforms.map(([plt, v]) => (
                         <Link key={plt} href={ADMIN_REPORTS_ADS_SOURCE}>
-                            <div className='p-3 rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-card'>
-                                <p className='text-sm font-semibold mb-1'>{platformEmoji[plt]} {plt.charAt(0).toUpperCase() + plt.slice(1)}</p>
-                                <p className='text-lg font-bold'>৳{v.revenue?.toLocaleString()}</p>
-                                <div className='flex gap-3 text-xs mt-1'>
-                                    <span className='text-gray-500'>{v.totalOrders} অর্ডার</span>
-                                    <span className='text-green-600'>{v.successRate}</span>
+                            <div className='p-3.5 rounded-xl border border-border/60 shadow-sm cursor-pointer hover:shadow-md hover:border-primary/30 transition-all bg-card'>
+                                <div className='flex items-center gap-1.5 mb-2'>
+                                    <span className='text-base'>{platformIcon[plt]}</span>
+                                    <span className='text-xs font-semibold text-foreground capitalize'>{plt}</span>
+                                </div>
+                                <p className='text-lg font-bold text-foreground'>৳{v.revenue?.toLocaleString()}</p>
+                                <div className='flex gap-3 text-xs mt-1 text-muted-foreground'>
+                                    <span>{v.totalOrders} orders</span>
+                                    <span className='text-emerald-600 font-medium'>{v.successRate}</span>
                                 </div>
                             </div>
                         </Link>

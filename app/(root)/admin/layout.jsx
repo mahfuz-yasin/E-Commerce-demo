@@ -19,18 +19,17 @@ const layout = ({ children }) => {
         >
             <SidebarProvider>
                 <AppSidebar />
-                <main className="md:w-[calc(100vw-16rem)] w-full overflow-x-hidden" >
-                    <div className='pt-[70px] md:px-8 px-5 min-h-[calc(100vh-40px)] pb-10'>
-                        <Topbar />
-                        {children}
+                <main className="md:w-[calc(100vw-16rem)] w-full overflow-x-hidden min-h-screen flex flex-col bg-background">
+                    <Topbar />
+                    <div className='flex-1 pt-14'>
+                        <div className='md:px-8 px-5 py-7 min-h-[calc(100vh-96px)]'>
+                            {children}
+                        </div>
                     </div>
-
-                    <div className='border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm'>
-                       2026 E-Online Fashion Panjabi. All Rights Reserved.
-                    </div>
-                    <div className='border-t h-[40px] flex justify-center items-center bg-gray-50 dark:bg-background text-sm'>
-                        Developed by <a href="https://mahfuz.me" target="_blank" rel="noopener noreferrer" className='text-primary'>Mahfuz Yasin</a>
-                    </div>
+                    <footer className='border-t bg-muted/40 px-8 py-3 flex items-center justify-between text-xs text-muted-foreground'>
+                        <span>© 2026 E-Online Fashion Panjabi. All Rights Reserved.</span>
+                        <span>Developed by <a href="https://mahfuz.me" target="_blank" rel="noopener noreferrer" className='text-primary hover:underline font-medium'>Mahfuz Yasin</a></span>
+                    </footer>
                 </main>
             </SidebarProvider>
         </ThemeProvider>

@@ -34,14 +34,17 @@ const ShowOrder = () => {
     }, [])
 
     return (
-        <div>
+        <div className="space-y-4">
+            <div>
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">Orders</h1>
+                <p className="text-sm text-muted-foreground mt-0.5">Manage and track all customer orders.</p>
+            </div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
-            <Card className="py-0 rounded shadow-sm gap-0">
-                <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
+            <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                <CardHeader className="px-5 py-4 border-b bg-muted/30">
                     <div className="flex justify-between items-center">
-                        <h4 className='text-xl font-semibold'>Orders</h4>
-
+                        <h4 className='text-sm font-semibold text-foreground'>All Orders</h4>
                     </div>
                 </CardHeader>
                 <CardContent className="px-0 pt-0">

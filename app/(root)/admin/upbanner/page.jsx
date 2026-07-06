@@ -69,9 +69,9 @@ const UpBannerPage = () => {
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
-            <Card className="py-0 rounded shadow-sm gap-0">
+            <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2 flex justify-between items-center">
-                    <h4 className='text-xl font-semibold'>Up Banner Management</h4>
+                    <h4 className='text-sm font-semibold text-foreground'>Up Banner Management</h4>
                     <Button asChild>
                         <Link href={ADMIN_UPBANNER_ADD}>Add Banner</Link>
                     </Button>

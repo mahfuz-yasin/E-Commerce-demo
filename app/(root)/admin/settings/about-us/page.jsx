@@ -87,9 +87,9 @@ const AboutUsSettings = () => {
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
-            <Card className="py-0 rounded shadow-sm gap-0">
-                <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                    <h4 className='text-xl font-semibold'>About Us Settings</h4>
+            <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                <CardHeader className="px-5 py-4 border-b bg-muted/30">
+                    <h4 className='text-sm font-semibold text-foreground'>About Us Settings</h4>
                 </CardHeader>
                 <CardContent className="p-6">
                     {isFetching ? (

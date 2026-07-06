@@ -78,8 +78,8 @@ const AddCategory = () => {
       <BreadCrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm">
-        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-          <h4 className='text-xl font-semibold'>Add Category</h4>
+        <CardHeader className="px-5 py-4 border-b bg-muted/30">
+          <h4 className='text-sm font-semibold text-foreground'>Add Category</h4>
         </CardHeader>
         <CardContent className="pb-5">
 

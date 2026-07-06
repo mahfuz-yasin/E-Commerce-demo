@@ -222,9 +222,9 @@ const FooterSettings = () => {
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
             <div className="space-y-6">
-                <Card className="py-0 rounded shadow-sm gap-0">
-                    <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                        <h4 className='text-xl font-semibold'>Footer Settings</h4>
+                <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                    <CardHeader className="px-5 py-4 border-b bg-muted/30">
+                        <h4 className='text-sm font-semibold text-foreground'>Footer Settings</h4>
                     </CardHeader>
                     <CardContent className="p-6">
                         {isFetching ? (
@@ -295,9 +295,9 @@ const FooterSettings = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="py-0 rounded shadow-sm gap-0">
-                    <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                        <h4 className='text-xl font-semibold'>Social Media Links</h4>
+                <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                    <CardHeader className="px-5 py-4 border-b bg-muted/30">
+                        <h4 className='text-sm font-semibold text-foreground'>Social Media Links</h4>
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-4">
@@ -370,9 +370,9 @@ const FooterSettings = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="py-0 rounded shadow-sm gap-0">
-                    <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                        <h4 className='text-xl font-semibold'>Page Links</h4>
+                <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                    <CardHeader className="px-5 py-4 border-b bg-muted/30">
+                        <h4 className='text-sm font-semibold text-foreground'>Page Links</h4>
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-4">

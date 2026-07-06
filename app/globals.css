@@ -44,72 +44,75 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  --radius: 0.625rem;
+  /* React.dev inspired — clean white background */
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.15 0.01 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.15 0.01 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.606 0.25 292.717);
-  --primary-foreground: oklch(0.969 0.016 293.756);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.15 0.01 240);
+  /* React blue: #087ea4 */
+  --primary: oklch(0.52 0.13 210);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.005 220);
+  --secondary-foreground: oklch(0.25 0.01 220);
+  --muted: oklch(0.96 0.004 220);
+  --muted-foreground: oklch(0.52 0.01 220);
+  --accent: oklch(0.93 0.03 210);
+  --accent-foreground: oklch(0.25 0.01 220);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.606 0.25 292.717);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.606 0.25 292.717);
-  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.606 0.25 292.717);
+  --border: oklch(0.91 0.006 220);
+  --input: oklch(0.91 0.006 220);
+  --ring: oklch(0.52 0.13 210);
+  --chart-1: oklch(0.52 0.13 210);
+  --chart-2: oklch(0.65 0.18 160);
+  --chart-3: oklch(0.72 0.19 55);
+  --chart-4: oklch(0.62 0.22 300);
+  --chart-5: oklch(0.58 0.22 25);
+  /* Sidebar: dark navy like react.dev docs sidebar */
+  --sidebar: oklch(0.175 0.02 255);
+  --sidebar-foreground: oklch(0.88 0.01 240);
+  --sidebar-primary: oklch(0.65 0.14 210);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.25 0.025 255);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.28 0.02 255);
+  --sidebar-ring: oklch(0.65 0.14 210);
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.541 0.281 293.009);
-  --primary-foreground: oklch(0.969 0.016 293.756);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --background: oklch(0.13 0.01 255);
+  --foreground: oklch(0.94 0.005 220);
+  --card: oklch(0.18 0.015 255);
+  --card-foreground: oklch(0.94 0.005 220);
+  --popover: oklch(0.18 0.015 255);
+  --popover-foreground: oklch(0.94 0.005 220);
+  --primary: oklch(0.65 0.14 210);
+  --primary-foreground: oklch(0.07 0.01 240);
+  --secondary: oklch(0.24 0.015 255);
+  --secondary-foreground: oklch(0.94 0.005 220);
+  --muted: oklch(0.22 0.012 255);
+  --muted-foreground: oklch(0.62 0.01 220);
+  --accent: oklch(0.24 0.02 255);
+  --accent-foreground: oklch(0.94 0.005 220);
+  --destructive: oklch(0.65 0.22 25);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.541 0.281 293.009);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.541 0.281 293.009);
-  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.541 0.281 293.009);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.65 0.14 210);
+  --chart-1: oklch(0.65 0.14 210);
+  --chart-2: oklch(0.65 0.18 160);
+  --chart-3: oklch(0.75 0.19 55);
+  --chart-4: oklch(0.67 0.22 300);
+  --chart-5: oklch(0.65 0.22 25);
+  --sidebar: oklch(0.12 0.015 255);
+  --sidebar-foreground: oklch(0.88 0.01 240);
+  --sidebar-primary: oklch(0.65 0.14 210);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.22 0.02 255);
+  --sidebar-accent-foreground: oklch(0.94 0.005 220);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.65 0.14 210);
 }
 
 @layer base {
@@ -121,6 +124,73 @@
   }
 }
 
+
+/* ── Admin Panel Design System ───────────────────────────── */
+@layer components {
+  /* Page header */
+  .admin-page-header {
+    @apply mb-6;
+  }
+  .admin-page-title {
+    @apply text-2xl font-bold text-foreground tracking-tight;
+  }
+  .admin-page-subtitle {
+    @apply text-sm text-muted-foreground mt-0.5;
+  }
+
+  /* Section card */
+  .admin-card {
+    @apply bg-card border border-border/60 rounded-xl shadow-sm overflow-hidden;
+  }
+  .admin-card-header {
+    @apply px-5 py-4 border-b bg-muted/30 flex items-center justify-between;
+  }
+  .admin-card-title {
+    @apply font-semibold text-sm text-foreground;
+  }
+  .admin-card-body {
+    @apply p-5;
+  }
+
+  /* Stat cards */
+  .stat-card {
+    @apply bg-card border border-border/60 rounded-xl shadow-sm p-5 flex flex-col gap-2;
+  }
+  .stat-card-value {
+    @apply text-3xl font-bold text-foreground tracking-tight;
+  }
+  .stat-card-label {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wide;
+  }
+
+  /* Table */
+  .admin-table {
+    @apply w-full text-sm;
+  }
+  .admin-table thead tr {
+    @apply border-b bg-muted/40;
+  }
+  .admin-table thead th {
+    @apply text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide;
+  }
+  .admin-table tbody tr {
+    @apply border-b hover:bg-muted/30 transition-colors last:border-0;
+  }
+  .admin-table tbody td {
+    @apply px-4 py-3 text-sm;
+  }
+
+  /* Status badges */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-green  { @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400; }
+  .badge-red    { @apply bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400; }
+  .badge-yellow { @apply bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400; }
+  .badge-blue   { @apply bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400; }
+  .badge-purple { @apply bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400; }
+  .badge-gray   { @apply bg-muted text-muted-foreground; }
+}
 
 .slick-dots{
   bottom: 15px !important;

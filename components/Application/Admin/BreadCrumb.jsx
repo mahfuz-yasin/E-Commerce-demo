@@ -6,35 +6,46 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { ChevronRight, Home } from "lucide-react"
+
 const BreadCrumb = ({ breadcrumbData }) => {
     return (
-        <Breadcrumb className="mb-5">
-            <BreadcrumbList>
-                {breadcrumbData.length > 0 && breadcrumbData.map((data, index) => {
-                    return (
-                        index !== breadcrumbData.length - 1
-                            ?
-                            <div key={index} className="flex items-center">
+        <div className="mb-6">
+            <Breadcrumb>
+                <BreadcrumbList className="flex items-center gap-1">
+                    {breadcrumbData.length > 0 && breadcrumbData.map((data, index) => {
+                        const isLast = index === breadcrumbData.length - 1
+                        const isFirst = index === 0
+                        return (
+                            <div key={index} className="flex items-center gap-1">
                                 <BreadcrumbItem>
-                                    {data.href ? (
-                                        <BreadcrumbLink href={data.href}>{data.label}</BreadcrumbLink>
+                                    {isLast ? (
+                                        <BreadcrumbPage className="text-sm font-semibold text-foreground">
+                                            {data.label}
+                                        </BreadcrumbPage>
+                                    ) : data.href ? (
+                                        <BreadcrumbLink
+                                            href={data.href}
+                                            className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                                        >
+                                            {isFirst && <Home className="w-3.5 h-3.5" />}
+                                            {data.label}
+                                        </BreadcrumbLink>
                                     ) : (
-                                        <BreadcrumbPage>{data.label}</BreadcrumbPage>
+                                        <BreadcrumbPage className="text-sm text-muted-foreground">
+                                            {data.label}
+                                        </BreadcrumbPage>
                                     )}
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator className="ms-2 mt-1" />
+                                {!isLast && (
+                                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+                                )}
                             </div>
-                            :
-                            <div key={index} className="flex items-center">
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-semibold">{data.label}</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </div>
-                    )
-                })}
-            </BreadcrumbList>
-        </Breadcrumb >
-
+                        )
+                    })}
+                </BreadcrumbList>
+            </Breadcrumb>
+        </div>
     )
 }
 

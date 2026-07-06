@@ -14,7 +14,7 @@ const Topbar = () => {
     const { toggleSidebar } = useSidebar()
 
     return (
-        <div className='fixed border h-14 w-full top-0 left-0 z-30 md:ps-72 md:pe-8 px-5 flex justify-between items-center bg-white dark:bg-card'>
+        <div className='fixed h-14 w-full top-0 left-0 z-30 md:ps-[calc(16rem+1px)] md:pe-8 px-5 flex justify-between items-center bg-background/95 backdrop-blur-sm border-b border-border shadow-sm'>
 
             <div className='flex items-center md:hidden'>
                 <Image src={logoBlack.src} height={50} width={logoBlack.width} className="block dark:hidden h-[50px] w-auto" alt="logo dark" />

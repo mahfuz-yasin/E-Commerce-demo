@@ -67,10 +67,10 @@ const ShowLandingPages = () => {
         <div>
             <BreadCrumb breadcrumbData={breadcrumbData} />
 
-            <Card className="py-0 rounded shadow-sm gap-0">
-                <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
+            <Card className="rounded-xl shadow-sm border border-border/60 overflow-hidden gap-0 py-0">
+                <CardHeader className="px-5 py-4 border-b bg-muted/30">
                     <div className="flex justify-between items-center">
-                        <h4 className='text-xl font-semibold'>All Landing Pages</h4>
+                        <h4 className='text-sm font-semibold text-foreground'>All Landing Pages</h4>
                         <Button asChild>
                             <Link href="/admin/settings/landing-pages/create/builder">
                                 <FiPlus />
