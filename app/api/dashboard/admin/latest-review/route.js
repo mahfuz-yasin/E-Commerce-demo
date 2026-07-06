@@ -27,7 +27,7 @@ export async function GET() {
 
         return response(true, 200, 'Latest review', latestReview)
 
-    } catch {
+    } catch (error) {
         return catchError(error)
     }
 }

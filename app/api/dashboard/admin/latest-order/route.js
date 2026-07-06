@@ -15,7 +15,7 @@ export async function GET() {
 
         return response(true, 200, 'Data found', latestOrder)
 
-    } catch {
+    } catch (error) {
         return catchError(error)
     }
 }

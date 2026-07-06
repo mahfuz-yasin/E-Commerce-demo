@@ -15,7 +15,7 @@ async function sendSMSViaSSlWireless(phone, message) {
         )
         const data = await res.json()
         return { success: data.status === 'ACCEPTED', code: data.status }
-    } catch {
+    } catch (error) {
         return { success: false, code: 'REQUEST_FAILED' }
     }
 }
