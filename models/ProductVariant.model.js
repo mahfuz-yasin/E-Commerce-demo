@@ -57,6 +57,16 @@ const ProductVariantSchema = new mongoose.Schema({
         }
     ],
 
+    // Inventory stock tracking
+    stock: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    lowStockAlert: {
+        type: Number,
+        default: 5,
+    },
     deletedAt: {
         type: Date,
         default: null,

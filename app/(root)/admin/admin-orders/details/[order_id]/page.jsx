@@ -13,6 +13,8 @@ import ButtonLoading from "@/components/Application/ButtonLoading"
 import { showToast } from "@/lib/showToast"
 import CourierIntegration from "@/components/Application/Admin/CourierIntegration"
 import InvoicePrint from "@/components/Application/Admin/InvoicePrint"
+import { Button } from "@/components/ui/button"
+import { Phone } from "lucide-react"
 import axios from "axios"
 
 const breadcrumbData = [
@@ -35,6 +37,7 @@ const OrderDetails = ({ params }) => {
     const [orderData, setOrderData] = useState()
     const [orderStatus, setOrderStatus] = useState()
     const [updatingStatus, setUpdatingStatus] = useState(false)
+    const [aiCalling, setAiCalling] = useState(false)
     const { data, loading } = useFetch(`/api/orders/get/${order_id}`)
 
     const handleOrderUpdate = (updatedOrder) => {
@@ -49,6 +52,19 @@ const OrderDetails = ({ params }) => {
         }
     }, [data])
 
+
+    const handleAICall = async () => {
+        setAiCalling(true)
+        try {
+            const { data: res } = await axios.post('/api/ai-call', { orderId: orderData?._id })
+            showToast(res.success ? 'success' : 'error', res.message)
+            if (res.success) setOrderData(prev => ({ ...prev, aiCallStatus: 'initiated' }))
+        } catch (err) {
+            showToast('error', err?.response?.data?.message || 'Call failed.')
+        } finally {
+            setAiCalling(false)
+        }
+    }
 
     const handleOrderStatus = async () => {
         setUpdatingStatus(true)
@@ -82,7 +98,19 @@ const OrderDetails = ({ params }) => {
                     <div >
                         <div className="py-2 px-5 border-b mb-3 flex items-center justify-between">
                             <h4 className="text-lg font-bold text-primary">Order Details</h4>
-                            <InvoicePrint order={orderData} />
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleAICall}
+                                    disabled={aiCalling || orderData?.aiCallStatus === 'completed'}
+                                    className="flex items-center gap-1"
+                                >
+                                    <Phone className="w-4 h-4" />
+                                    {aiCalling ? 'কল হচ্ছে...' : orderData?.aiCallStatus === 'completed' ? '✓ কল হয়েছে' : orderData?.aiCallStatus === 'initiated' ? '⏳ কল চলমান' : 'AI কনফার্মেশন কল'}
+                                </Button>
+                                <InvoicePrint order={orderData} />
+                            </div>
                         </div>
 
                         <div className="px-5 mb-5">

@@ -74,11 +74,16 @@ export async function POST(request) {
             return response(false, 400, 'No products in order', {})
         }
 
-        // Get client IP
+        // Get client IP, UA, and FB cookies for Advanced Event Match Quality
         const headersList = await headers()
         const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0]?.trim()
             || headersList.get('x-real-ip')
             || null
+        const userAgent = headersList.get('user-agent') || null
+        const cookieHeader = headersList.get('cookie') || ''
+        const fbc = cookieHeader.match(/_fbc=([^;]+)/)?.[1] || validatedData.adSource?.fbclid
+            ? `fb.1.${Date.now()}.${validatedData.adSource?.fbclid}` : undefined
+        const fbp = cookieHeader.match(/_fbp=([^;]+)/)?.[1] || undefined
 
         // Fraud Guard Check
         const blockQuery = [{ phone: validatedData.phone, isActive: true, deletedAt: null }]
@@ -142,8 +147,13 @@ export async function POST(request) {
             paymentMethod: validatedData.paymentMethod || 'COD',
             paymentDetails: validatedData.paymentDetails || null,
             orderSource: validatedData.orderSource,
-            adSource: validatedData.adSource || {},
+            adSource: {
+                ...(validatedData.adSource || {}),
+                fbc: fbc || undefined,
+                fbp: fbp || undefined,
+            },
             ipAddress,
+            userAgent,
         })
 
         console.log('Direct order created successfully:', newOrder)

@@ -123,6 +123,7 @@ export const ADMIN_DOWNBANNER_EDIT = (id) => id ? `/admin/downbanner/edit/${id}`
 export const ADMIN_COURIER_SETTINGS = '/admin/courier-settings'
 export const ADMIN_COURIER_STEADFAST = '/admin/courier-settings/steadfast'
 export const ADMIN_COURIER_PATHAO = '/admin/courier-settings/pathao'
+export const ADMIN_COURIER_MISSING_PARCELS = '/admin/courier-settings/missing-parcels'
 
 // Instagram Business Settings routes
 export const ADMIN_INSTAGRAM_SETTINGS = '/admin/instagram-settings'

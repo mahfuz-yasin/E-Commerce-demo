@@ -92,6 +92,9 @@ const orderSchema = new mongoose.Schema({
         gclid: { type: String, default: null },
         landingPage: { type: String, default: null },
         referrer: { type: String, default: null },
+        // Advanced Event Match Quality
+        fbc: { type: String, default: null },
+        fbp: { type: String, default: null },
     },
     // Fraud Detection
     fraudScore: {
@@ -102,6 +105,7 @@ const orderSchema = new mongoose.Schema({
         reviewedAt: { type: Date, default: null },
     },
     ipAddress: { type: String, default: null },
+    userAgent: { type: String, default: null },
     // Order Assignment
     assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
@@ -115,6 +119,13 @@ const orderSchema = new mongoose.Schema({
     // Facebook Purchase Event
     fbPurchaseEventSent: { type: Boolean, default: false },
     fbPurchaseEventSentAt: { type: Date, default: null },
+    // AI Order Confirmation Call (Bland.ai)
+    aiCallStatus: { type: String, enum: ['not_initiated', 'initiated', 'completed', 'failed', 'unknown'], default: 'not_initiated' },
+    aiCallId: { type: String, default: null },
+    aiCallOutcome: { type: String, enum: ['confirmed', 'cancelled', 'no_response', null], default: null },
+    aiCallTranscript: { type: String, default: null },
+    aiCallInitiatedAt: { type: Date, default: null },
+    aiCallCompletedAt: { type: Date, default: null },
     // Invoice
     invoiceNumber: { type: String, default: null },
     paymentDetails: {

@@ -53,6 +53,13 @@ export async function PUT(request) {
                         phone: orderData.phone,
                         externalId: orderData._id.toString(),
                         ipAddress: orderData.ipAddress,
+                        userAgent: orderData.userAgent,
+                        fbc: orderData.adSource?.fbc,
+                        fbp: orderData.adSource?.fbp,
+                        city: orderData.city,
+                        state: orderData.state,
+                        zipCode: orderData.pincode,
+                        country: 'BD',
                     },
                     eventId,
                     {

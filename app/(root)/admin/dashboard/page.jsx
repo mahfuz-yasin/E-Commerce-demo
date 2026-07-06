@@ -10,6 +10,7 @@ import { OrderStatus } from './OrderStatus'
 import LatestOrder from './LatestOrder'
 import LatestReview from './LatestReview'
 import { ADMIN_ORDER_SHOW, ADMIN_REVIEW_SHOW } from '@/routes/AdminPanelRoute'
+import SmartMetrics from './SmartMetrics'
 
 const AdminDashboard = () => {
     return (
@@ -20,6 +21,8 @@ const AdminDashboard = () => {
             <Suspense fallback={<div>Loading...</div>}>
                 <QuickAdd />
             </Suspense>
+
+            <SmartMetrics />
 
             <div className='mt-10 flex lg:flex-nowrap flex-wrap gap-10'>
                 <Card className="rounded-lg lg:w-[70%] w-full p-0">
