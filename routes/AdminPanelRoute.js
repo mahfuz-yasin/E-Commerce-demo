@@ -167,6 +167,8 @@ export const ADMIN_REPORTS = '/admin/reports'
 export const ADMIN_REPORTS_PROFIT_LOSS = '/admin/reports/profit-loss'
 export const ADMIN_REPORTS_ADS_SOURCE = '/admin/reports/ads-source'
 export const ADMIN_REPORTS_STOCK = '/admin/reports/stock'
+export const ADMIN_REPORTS_EMPLOYEE = '/admin/reports/employee'
+export const ADMIN_REPORTS_PRODUCTS = '/admin/reports/products'
 
 // Flash Sale routes
 export const ADMIN_FLASH_SALE = '/admin/flash-sale'
