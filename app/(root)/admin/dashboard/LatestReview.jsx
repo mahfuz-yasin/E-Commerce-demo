@@ -1,71 +1,84 @@
 'use client'
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { IoStar } from "react-icons/io5";
-
-import imgPlaceholder from '@/public/assets/images/img-placeholder.webp'
-import useFetch from "@/hooks/useFetch";
-import { useEffect, useState } from "react";
+import useFetch from "@/hooks/useFetch"
+import { useEffect, useState } from "react"
 import Image from "next/image"
-import notFound from '@/public/assets/images/not-found.png'
+import imgPlaceholder from '@/public/assets/images/img-placeholder.webp'
+import { Star, MessageSquare } from "lucide-react"
+
+const StarRating = ({ rating, max = 5 }) => (
+    <div className="flex items-center gap-0.5">
+        {Array.from({ length: max }).map((_, i) => (
+            <Star
+                key={i}
+                className={`w-3 h-3 ${i < rating ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted'}`}
+            />
+        ))}
+    </div>
+)
+
 const LatestReview = () => {
-    const [latestReview, setLatestReview] = useState()
+    const [latestReview, setLatestReview] = useState([])
     const { data: getLatestReview, loading } = useFetch('/api/dashboard/admin/latest-review')
 
     useEffect(() => {
-        if (getLatestReview && getLatestReview.success) {
-            setLatestReview(getLatestReview.data)
-        }
+        if (getLatestReview?.success) setLatestReview(getLatestReview.data)
     }, [getLatestReview])
 
-    if (loading) return <div className="h-full w-full flex justify-center items-center">Loading...</div>
+    if (loading) return (
+        <div className="divide-y">
+            {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="px-4 py-3 flex items-center gap-3 animate-pulse">
+                    <div className="w-9 h-9 rounded-lg bg-muted shrink-0" />
+                    <div className="flex-1 space-y-1.5">
+                        <div className="h-3 bg-muted rounded w-3/4" />
+                        <div className="h-2.5 bg-muted rounded w-16" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
 
-    if (!latestReview || latestReview.length === 0) return <div className="h-full w-full flex justify-center items-center">
-        <Image src={notFound.src} width={notFound.width} height={notFound.height} alt="not found" className="w-20" />
-    </div>
+    if (!latestReview.length) return (
+        <div className="flex flex-col items-center justify-center h-48 gap-3 text-muted-foreground">
+            <MessageSquare className="w-10 h-10 opacity-30" />
+            <p className="text-sm">No reviews yet</p>
+        </div>
+    )
 
     return (
-        <Table>
-
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Rating</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-
-
-                {latestReview?.map((review) => (
-                    <TableRow key={review._id}>
-                        <TableCell className="flex items-center gap-3">
-                            <Avatar>
-                                <AvatarImage src={review?.product?.media[0]?.secure_url || imgPlaceholder.src} />
-                            </Avatar>
-                            <span className="line-clamp-1">{review?.product?.name || 'Not found'}</span>
-                        </TableCell>
-                        <TableCell>
-                            <div className="flex items-center">
-                                {Array.from({ length: review.rating }).map((_, i) => (
-                                    <span key={i}>
-                                        <IoStar className="text-yellow-500" />
-                                    </span>
-                                ))}
+        <div className="divide-y">
+            {latestReview.map((review) => {
+                const img = review?.product?.media?.[0]?.secure_url || imgPlaceholder.src
+                const name = review?.product?.name || 'Unknown Product'
+                const reviewer = review?.customer?.name || review?.name || 'Anonymous'
+                return (
+                    <div key={review._id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                        <div className="relative w-9 h-9 rounded-lg overflow-hidden border border-border/60 shrink-0 bg-muted">
+                            <Image
+                                src={img}
+                                alt={name}
+                                fill
+                                className="object-cover"
+                                sizes="36px"
+                            />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <StarRating rating={review.rating} />
+                                <span className="text-xs text-muted-foreground">{reviewer}</span>
                             </div>
-                        </TableCell>
-                    </TableRow>
-                ))}
-
-            </TableBody>
-        </Table>
+                        </div>
+                        <span className={`text-xs font-bold tabular-nums ${
+                            review.rating >= 4 ? 'text-emerald-600' :
+                            review.rating >= 3 ? 'text-amber-500' : 'text-red-500'
+                        }`}>
+                            {review.rating}.0
+                        </span>
+                    </div>
+                )
+            })}
+        </div>
     )
 }
 
