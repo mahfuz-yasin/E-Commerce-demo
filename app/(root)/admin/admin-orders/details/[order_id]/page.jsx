@@ -12,6 +12,7 @@ import { orderStatus } from "@/lib/utils"
 import ButtonLoading from "@/components/Application/ButtonLoading"
 import { showToast } from "@/lib/showToast"
 import CourierIntegration from "@/components/Application/Admin/CourierIntegration"
+import InvoicePrint from "@/components/Application/Admin/InvoicePrint"
 import axios from "axios"
 
 const breadcrumbData = [
@@ -79,8 +80,9 @@ const OrderDetails = ({ params }) => {
                     </div>
                     :
                     <div >
-                        <div className="py-2 px-5 border-b mb-3">
+                        <div className="py-2 px-5 border-b mb-3 flex items-center justify-between">
                             <h4 className="text-lg font-bold text-primary">Order Details</h4>
+                            <InvoicePrint order={orderData} />
                         </div>
 
                         <div className="px-5 mb-5">
