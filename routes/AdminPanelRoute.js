@@ -145,3 +145,37 @@ export const ADMIN_INSTAGRAM_COLLABORATIONS = '/admin/instagram-settings/collabo
 export const ADMIN_INSTAGRAM_CONTESTS = '/admin/instagram-settings/contests'
 export const ADMIN_INSTAGRAM_SHOP_SETUP = '/admin/instagram-settings/shop-setup'
 export const ADMIN_INSTAGRAM_PIXEL = '/admin/instagram-settings/pixel'
+
+// Fraud Guard routes
+export const ADMIN_FRAUD_GUARD = '/admin/fraud-guard'
+export const ADMIN_FRAUD_GUARD_BLOCKED = '/admin/fraud-guard/blocked'
+
+// Inventory routes
+export const ADMIN_INVENTORY = '/admin/inventory'
+export const ADMIN_INVENTORY_PURCHASES = '/admin/inventory/purchases'
+export const ADMIN_INVENTORY_PURCHASE_ADD = '/admin/inventory/purchases/add'
+export const ADMIN_SUPPLIERS = '/admin/inventory/suppliers'
+
+// Staff routes
+export const ADMIN_STAFF = '/admin/staff'
+export const ADMIN_STAFF_ADD = '/admin/staff/add'
+export const ADMIN_ORDER_ASSIGN = '/admin/admin-orders/assign'
+
+// Reports routes
+export const ADMIN_REPORTS = '/admin/reports'
+export const ADMIN_REPORTS_PROFIT_LOSS = '/admin/reports/profit-loss'
+export const ADMIN_REPORTS_ADS_SOURCE = '/admin/reports/ads-source'
+export const ADMIN_REPORTS_STOCK = '/admin/reports/stock'
+
+// Flash Sale routes
+export const ADMIN_FLASH_SALE = '/admin/flash-sale'
+export const ADMIN_FLASH_SALE_ADD = '/admin/flash-sale/add'
+export const ADMIN_FLASH_SALE_EDIT = (id) => id ? `/admin/flash-sale/edit/${id}` : null
+
+// Shipping Rules routes
+export const ADMIN_SHIPPING_RULES = '/admin/shipping-rules'
+
+// SMS routes
+export const ADMIN_SMS = '/admin/sms'
+export const ADMIN_SMS_BULK = '/admin/sms/bulk'
+export const ADMIN_SMS_LOGS = '/admin/sms/logs'

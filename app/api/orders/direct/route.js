@@ -1,7 +1,10 @@
 import { connectDB } from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperFunction";
 import OrderModel from "@/models/Order.model";
+import BlockedCustomerModel from "@/models/BlockedCustomer.model";
+import ShippingRuleModel from "@/models/ShippingRule.model";
 import { z } from "zod";
+import { headers } from "next/headers";
 
 export async function POST(request) {
     try {
@@ -28,6 +31,22 @@ export async function POST(request) {
             }).nullable().optional()
         }).optional().nullable()
 
+        const adSourceSchema = z.object({
+            platform: z.enum(['facebook', 'tiktok', 'google', 'instagram', 'organic', 'direct', 'other']).optional(),
+            campaignId: z.string().optional().nullable(),
+            adSetId: z.string().optional().nullable(),
+            adId: z.string().optional().nullable(),
+            utmSource: z.string().optional().nullable(),
+            utmMedium: z.string().optional().nullable(),
+            utmCampaign: z.string().optional().nullable(),
+            utmContent: z.string().optional().nullable(),
+            fbclid: z.string().optional().nullable(),
+            ttclid: z.string().optional().nullable(),
+            gclid: z.string().optional().nullable(),
+            landingPage: z.string().optional().nullable(),
+            referrer: z.string().optional().nullable(),
+        }).optional()
+
         const orderSchema = z.object({
             name: z.string().min(2, 'Name is required'),
             phone: z.string().min(10, 'Phone number is required'),
@@ -37,7 +56,8 @@ export async function POST(request) {
             orderSource: z.enum(['direct', 'whatsapp']).default('direct'),
             paymentMethod: z.string().optional(),
             paymentDetails: paymentDetailsSchema,
-            products: z.array(productSchema).min(1, 'At least one product is required')
+            products: z.array(productSchema).min(1, 'At least one product is required'),
+            adSource: adSourceSchema,
         })
 
         const validate = orderSchema.safeParse(payload)
@@ -54,6 +74,20 @@ export async function POST(request) {
             return response(false, 400, 'No products in order', {})
         }
 
+        // Get client IP
+        const headersList = await headers()
+        const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0]?.trim()
+            || headersList.get('x-real-ip')
+            || null
+
+        // Fraud Guard Check
+        const blockQuery = [{ phone: validatedData.phone, isActive: true, deletedAt: null }]
+        if (ipAddress) blockQuery.push({ ipAddress, isActive: true, deletedAt: null })
+        const isBlocked = await BlockedCustomerModel.findOne({ $or: blockQuery })
+        if (isBlocked) {
+            return response(false, 403, 'আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। বিস্তারিত জানতে যোগাযোগ করুন।')
+        }
+
         // Calculate totals from single product
         const product = validatedData.products[0]
         if (!product) {
@@ -62,12 +96,30 @@ export async function POST(request) {
 
         const subtotal = (product.mrp || 0) * (product.qty || 1)
         const discount = ((product.mrp || 0) - (product.sellingPrice || 0)) * (product.qty || 1)
-        const totalAmount = (product.sellingPrice || 0) * (product.qty || 1)
+        const productTotal = (product.sellingPrice || 0) * (product.qty || 1)
 
-        // Generate a unique order ID
+        // Check shipping rules
+        let shippingCharge = 60
+        let freeShipping = false
+        const activeRule = await ShippingRuleModel.findOne({ isActive: true, deletedAt: null }).sort({ priority: -1 })
+        if (activeRule) {
+            if (activeRule.type === 'free') {
+                freeShipping = true
+                shippingCharge = 0
+            } else if (activeRule.type === 'conditional_free' && productTotal >= activeRule.freeShippingMinAmount) {
+                freeShipping = true
+                shippingCharge = 0
+            } else {
+                shippingCharge = activeRule.flatCharge || 60
+            }
+        }
+        const totalAmount = productTotal + shippingCharge
+
+        // Generate a unique order ID and invoice number
         const order_id = 'DIRECT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase()
+        const invoiceNumber = 'INV-' + Date.now().toString().slice(-8)
 
-        const hasOnlinePayment = validatedData.paymentDetails && 
+        const hasOnlinePayment = validatedData.paymentDetails &&
             (validatedData.paymentDetails.bkash || validatedData.paymentDetails.nagad)
 
         const newOrder = await OrderModel.create({
@@ -79,14 +131,19 @@ export async function POST(request) {
             products: validatedData.products,
             discount: discount,
             couponDiscountAmount: 0,
-            totalAmount: totalAmount,
             subtotal: subtotal,
+            shippingCharge,
+            freeShipping,
+            totalAmount: totalAmount,
             payment_id: hasOnlinePayment ? `PAY-${Date.now()}` : null,
             order_id: order_id,
+            invoiceNumber,
             status: hasOnlinePayment ? 'paid' : 'pending',
             paymentMethod: validatedData.paymentMethod || 'COD',
             paymentDetails: validatedData.paymentDetails || null,
-            orderSource: validatedData.orderSource
+            orderSource: validatedData.orderSource,
+            adSource: validatedData.adSource || {},
+            ipAddress,
         })
 
         console.log('Direct order created successfully:', newOrder)

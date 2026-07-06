@@ -73,6 +73,50 @@ const orderSchema = new mongoose.Schema({
         enum: ['cart', 'direct', 'whatsapp'],
         default: 'cart'
     },
+    // Ads Source Tracking
+    adSource: {
+        platform: {
+            type: String,
+            enum: ['facebook', 'tiktok', 'google', 'instagram', 'organic', 'direct', 'other'],
+            default: 'organic'
+        },
+        campaignId: { type: String, default: null },
+        adSetId: { type: String, default: null },
+        adId: { type: String, default: null },
+        utmSource: { type: String, default: null },
+        utmMedium: { type: String, default: null },
+        utmCampaign: { type: String, default: null },
+        utmContent: { type: String, default: null },
+        fbclid: { type: String, default: null },
+        ttclid: { type: String, default: null },
+        gclid: { type: String, default: null },
+        landingPage: { type: String, default: null },
+        referrer: { type: String, default: null },
+    },
+    // Fraud Detection
+    fraudScore: {
+        score: { type: Number, default: 0 }, // 0-100, higher = more suspicious
+        flags: [{ type: String }],           // ['duplicate_phone', 'multiple_failed', 'ip_blocked', 'suspicious_pattern']
+        isBlocked: { type: Boolean, default: false },
+        reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+        reviewedAt: { type: Date, default: null },
+    },
+    ipAddress: { type: String, default: null },
+    // Order Assignment
+    assignedTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    assignedAt: { type: Date, default: null },
+    // Shipping
+    shippingCharge: { type: Number, default: 60 },
+    freeShipping: { type: Boolean, default: false },
+    // Facebook Purchase Event
+    fbPurchaseEventSent: { type: Boolean, default: false },
+    fbPurchaseEventSentAt: { type: Date, default: null },
+    // Invoice
+    invoiceNumber: { type: String, default: null },
     paymentDetails: {
         type: {
             bkash: {
