@@ -3,7 +3,9 @@ import { useState } from 'react'
 import axios from 'axios'
 import { showToast } from '@/lib/showToast'
 import ButtonLoading from '../ButtonLoading'
-import { Truck, Package, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react'
+import { Truck, Package, CheckCircle, RefreshCw, ExternalLink, AlertCircle, Settings } from 'lucide-react'
+import Link from 'next/link'
+import { ADMIN_COURIER_STEADFAST } from '@/routes/AdminPanelRoute'
 
 const courierOptions = [
     { value: 'steadfast', label: 'Steadfast Courier', color: 'bg-blue-500' },
@@ -16,6 +18,7 @@ export default function CourierIntegration({ order, onUpdate }) {
     const [creating, setCreating] = useState(false)
     const [tracking, setTracking] = useState(false)
     const [courierInfo, setCourierInfo] = useState(order?.courierInfo || null)
+    const [credentialError, setCredentialError] = useState(false)
 
     const handleCreateConsignment = async () => {
         if (selectedCourier !== 'steadfast') {
@@ -43,7 +46,11 @@ export default function CourierIntegration({ order, onUpdate }) {
 
         } catch (error) {
             console.error('Create consignment error:', error)
-            showToast('error', error.message || 'Failed to create consignment')
+            const msg = error.message || 'Failed to create consignment'
+            if (msg.includes('credentials not configured') || msg.includes('not configured')) {
+                setCredentialError(true)
+            }
+            showToast('error', msg)
         } finally {
             setCreating(false)
         }
@@ -108,6 +115,18 @@ export default function CourierIntegration({ order, onUpdate }) {
                 {/* No Courier Assigned */}
                 {!courierInfo?.courierName ? (
                     <div className="space-y-4">
+                        {credentialError && (
+                            <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-800 rounded-lg px-3 py-2.5 text-sm">
+                                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="font-semibold">Steadfast credentials not configured</p>
+                                    <p className="mt-0.5 text-red-700">Go to Courier Settings to add your API Key and Secret Key.</p>
+                                    <Link href={ADMIN_COURIER_STEADFAST} className="inline-flex items-center gap-1 mt-1.5 text-red-700 font-medium hover:underline">
+                                        <Settings className="w-3.5 h-3.5" /> Configure Steadfast →
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                         <div className="text-sm text-gray-600">
                             <p className="mb-2">Assign this order to a courier:</p>
                             <div className="bg-blue-50 p-3 rounded-md text-sm">
