@@ -81,8 +81,9 @@ export async function POST(request) {
             || null
         const userAgent = headersList.get('user-agent') || null
         const cookieHeader = headersList.get('cookie') || ''
-        const fbc = cookieHeader.match(/_fbc=([^;]+)/)?.[1] || validatedData.adSource?.fbclid
-            ? `fb.1.${Date.now()}.${validatedData.adSource?.fbclid}` : undefined
+        const fbcFromCookie = cookieHeader.match(/_fbc=([^;]+)/)?.[1]
+        const fbclid = validatedData.adSource?.fbclid
+        const fbc = fbcFromCookie || (fbclid ? `fb.1.${Date.now()}.${fbclid}` : undefined)
         const fbp = cookieHeader.match(/_fbp=([^;]+)/)?.[1] || undefined
 
         // Fraud Guard Check
@@ -91,6 +92,18 @@ export async function POST(request) {
         const isBlocked = await BlockedCustomerModel.findOne({ $or: blockQuery })
         if (isBlocked) {
             return response(false, 403, 'আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। বিস্তারিত জানতে যোগাযোগ করুন।')
+        }
+
+        // Order Trap System — block duplicate pending orders from same phone within 10 min
+        const trapWindow = new Date(Date.now() - 10 * 60 * 1000)
+        const recentPending = await OrderModel.findOne({
+            phone: validatedData.phone,
+            status: 'pending',
+            deletedAt: null,
+            createdAt: { $gte: trapWindow },
+        })
+        if (recentPending) {
+            return response(false, 429, 'আপনার একটি অর্ডার ইতিমধ্যে প্রক্রিয়াধীন আছে। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।')
         }
 
         // Calculate totals from single product

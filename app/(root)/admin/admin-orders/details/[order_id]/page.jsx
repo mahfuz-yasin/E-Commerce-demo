@@ -14,8 +14,9 @@ import { showToast } from "@/lib/showToast"
 import CourierIntegration from "@/components/Application/Admin/CourierIntegration"
 import InvoicePrint from "@/components/Application/Admin/InvoicePrint"
 import { Button } from "@/components/ui/button"
-import { Phone } from "lucide-react"
+import { Phone, MessageSquare } from "lucide-react"
 import axios from "axios"
+
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -38,6 +39,9 @@ const OrderDetails = ({ params }) => {
     const [orderStatus, setOrderStatus] = useState()
     const [updatingStatus, setUpdatingStatus] = useState(false)
     const [aiCalling, setAiCalling] = useState(false)
+    const [smsText, setSmsText] = useState('')
+    const [showSmsBox, setShowSmsBox] = useState(false)
+    const [sendingSMS, setSendingSMS] = useState(false)
     const { data, loading } = useFetch(`/api/orders/get/${order_id}`)
 
     const handleOrderUpdate = (updatedOrder) => {
@@ -52,6 +56,25 @@ const OrderDetails = ({ params }) => {
         }
     }, [data])
 
+
+    const handleSendSMS = async () => {
+        if (!smsText.trim()) { showToast('error', 'মেসেজ লিখুন।'); return }
+        setSendingSMS(true)
+        try {
+            const { data: res } = await axios.post('/api/sms/send', {
+                phone: orderData?.phone,
+                name: orderData?.name,
+                message: smsText,
+                orderId: orderData?._id,
+            })
+            showToast(res.success ? 'success' : 'error', res.message)
+            if (res.success) { setSmsText(''); setShowSmsBox(false) }
+        } catch (err) {
+            showToast('error', err?.response?.data?.message || 'SMS পাঠানো যায়নি।')
+        } finally {
+            setSendingSMS(false)
+        }
+    }
 
     const handleAICall = async () => {
         setAiCalling(true)
@@ -96,9 +119,49 @@ const OrderDetails = ({ params }) => {
                     </div>
                     :
                     <div >
+                        {showSmsBox && (
+                            <div className="px-5 py-3 border-b bg-blue-50 dark:bg-card">
+                                <p className="text-sm font-semibold mb-2">📩 {orderData?.name} ({orderData?.phone})-কে SMS পাঠান</p>
+                                <div className="flex gap-2">
+                                    <textarea
+                                        className="flex-1 border rounded p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                                        rows={3}
+                                        placeholder="মেসেজ লিখুন..."
+                                        value={smsText}
+                                        onChange={e => setSmsText(e.target.value)}
+                                    />
+                                    <div className="flex flex-col gap-2">
+                                        <Button size="sm" onClick={handleSendSMS} disabled={sendingSMS}>
+                                            {sendingSMS ? 'পাঠানো...' : 'পাঠান'}
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => setShowSmsBox(false)}>বাতিল</Button>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2 mt-2 flex-wrap">
+                                    {[
+                                        `আপনার অর্ডার ${orderData?.order_id} কনফার্ম হয়েছে। ধন্যবাদ!`,
+                                        `আপনার অর্ডার ${orderData?.order_id} ডেলিভারিতে দেওয়া হয়েছে।`,
+                                        `আপনার অর্ডার ${orderData?.order_id} ডেলিভার হয়েছে। আমাদের সেবা কেমন লাগলো জানান।`,
+                                    ].map((t, i) => (
+                                        <button key={i} onClick={() => setSmsText(t)} className="text-xs bg-white border rounded px-2 py-1 hover:bg-primary hover:text-white transition-colors">
+                                            টেমপ্লেট {i + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <div className="py-2 px-5 border-b mb-3 flex items-center justify-between">
                             <h4 className="text-lg font-bold text-primary">Order Details</h4>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setShowSmsBox(v => !v)}
+                                    className="flex items-center gap-1"
+                                >
+                                    <MessageSquare className="w-4 h-4" />
+                                    SMS পাঠান
+                                </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
