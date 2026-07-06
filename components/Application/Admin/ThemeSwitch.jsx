@@ -1,33 +1,39 @@
 'use client'
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useTheme } from "./ThemeProvider";
-
-import { IoSunnyOutline } from "react-icons/io5";
-import { IoMoonOutline } from "react-icons/io5";
-
+import { useTheme } from "./ThemeProvider"
+import { useEffect, useState } from "react"
+import { Sun, Moon } from "lucide-react"
 
 const ThemeSwitch = () => {
-    const { setTheme } = useTheme()
+    const { resolvedTheme, setTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => setMounted(true), [])
+    if (!mounted) return <div className="h-8 w-8" />
+
+    const isDark = resolvedTheme === 'dark'
+
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
-                    <IoSunnyOutline className="w-4 h-4 dark:hidden" />
-                    <IoMoonOutline className="w-4 h-4 hidden dark:block" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme('light')}>☀️ Light</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('dark')}>🌙 Dark</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('system')}>💻 System</DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <button
+            type="button"
+            aria-label="Toggle theme"
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            className="relative h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 cursor-pointer overflow-hidden"
+        >
+            <Sun
+                className={`absolute w-4 h-4 transition-all duration-300 ${
+                    isDark
+                        ? 'opacity-0 rotate-90 scale-50'
+                        : 'opacity-100 rotate-0 scale-100'
+                }`}
+            />
+            <Moon
+                className={`absolute w-4 h-4 transition-all duration-300 ${
+                    isDark
+                        ? 'opacity-100 rotate-0 scale-100'
+                        : 'opacity-0 -rotate-90 scale-50'
+                }`}
+            />
+        </button>
     )
 }
 
