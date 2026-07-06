@@ -7,6 +7,7 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { LuUserRound } from "react-icons/lu";
 import useFetch from '@/hooks/useFetch';
 import { ADMIN_CATEGORY_SHOW, ADMIN_CUSTOMERS_SHOW, ADMIN_PRODUCT_SHOW } from '@/routes/AdminPanelRoute';
+import { motion } from 'framer-motion';
 const CountOverview = () => {
 
     const { data: countData } = useFetch('/api/dashboard/admin/count')
@@ -22,16 +23,34 @@ const CountOverview = () => {
         <div className='grid lg:grid-cols-4 sm:grid-cols-2 gap-4'>
             {stats.map((s, i) => {
                 const card = (
-                    <div key={i} className='relative overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm hover:shadow-md transition-all duration-150 p-5 flex items-center justify-between'>
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: i * 0.08, duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        whileHover={{ y: -3, scale: 1.01 }}
+                        className='relative overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm hover:shadow-lg transition-shadow duration-200 p-5 flex items-center justify-between cursor-pointer'
+                    >
                         <div className={`absolute top-0 left-0 right-0 h-0.5 ${s.bar}`} />
                         <div>
                             <p className='text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1'>{s.label}</p>
-                            <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+                            <motion.p
+                                className={`text-3xl font-bold ${s.color}`}
+                                initial={{ opacity: 0, scale: 0.7 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.08 + 0.15, duration: 0.4, type: 'spring', stiffness: 200 }}
+                            >
+                                {s.value}
+                            </motion.p>
                         </div>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.iconBg} ${s.color}`}>
+                        <motion.div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.iconBg} ${s.color}`}
+                            whileHover={{ rotate: 12, scale: 1.1 }}
+                            transition={{ type: 'spring', stiffness: 350, damping: 15 }}
+                        >
                             {s.icon}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 )
                 return s.href ? <Link key={i} href={s.href}>{card}</Link> : <div key={i}>{card}</div>
             })}

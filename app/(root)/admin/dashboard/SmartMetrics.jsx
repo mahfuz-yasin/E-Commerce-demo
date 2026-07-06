@@ -3,6 +3,7 @@ import useFetch from '@/hooks/useFetch'
 import { TrendingUp, TrendingDown, ShoppingBag, Shield, Package, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { ADMIN_REPORTS_PROFIT_LOSS, ADMIN_REPORTS_ADS_SOURCE, ADMIN_FRAUD_GUARD, ADMIN_REPORTS_STOCK } from '@/routes/AdminPanelRoute'
+import { motion } from 'framer-motion'
 
 const platformIcon = { facebook: '📘', tiktok: '🎵', google: '🔍', organic: '🌿', instagram: '📸', direct: '🔗', other: '📌' }
 
@@ -17,15 +18,25 @@ const MetricCard = ({ href, icon, label, value, sub, accent }) => {
     const c = accentMap[accent] || accentMap.blue
     return (
         <Link href={href}>
-            <div className={`relative overflow-hidden rounded-xl border border-border/60 shadow-sm cursor-pointer hover:shadow-md transition-all duration-150 p-4 ${c.bg}`}>
+            <motion.div
+                className={`relative overflow-hidden rounded-xl border border-border/60 shadow-sm cursor-pointer p-4 ${c.bg}`}
+                whileHover={{ y: -3, scale: 1.01, boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
+                transition={{ type: 'spring', stiffness: 340, damping: 18 }}
+            >
                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${c.bar} rounded-l-xl`} />
                 <div className='flex items-center gap-2 mb-2 ml-1'>
-                    <div className={`${c.val}`}>{icon}</div>
+                    <motion.div
+                        className={`${c.val}`}
+                        whileHover={{ scale: 1.2, rotate: 8 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    >
+                        {icon}
+                    </motion.div>
                     <span className='text-xs font-medium text-muted-foreground uppercase tracking-wide'>{label}</span>
                 </div>
                 <p className={`text-2xl font-bold ml-1 ${c.val}`}>{value}</p>
                 {sub && <p className='text-xs text-muted-foreground mt-1 ml-1'>{sub}</p>}
-            </div>
+            </motion.div>
         </Link>
     )
 }
@@ -55,7 +66,13 @@ const SmartMetrics = () => {
                 <Link href={ADMIN_REPORTS_PROFIT_LOSS} className='text-xs text-primary hover:underline'>View full report →</Link>
             </div>
 
-            <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
+            <motion.div
+                className='grid grid-cols-2 lg:grid-cols-4 gap-3'
+                initial='hidden'
+                animate='visible'
+                variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+            >
+                <motion.div variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}>
                 <MetricCard
                     href={ADMIN_REPORTS_PROFIT_LOSS}
                     icon={isProfit ? <TrendingUp className='w-4 h-4' /> : <TrendingDown className='w-4 h-4' />}
@@ -64,6 +81,8 @@ const SmartMetrics = () => {
                     sub={`Revenue: ৳${pl?.totalRevenue?.toLocaleString() ?? 0}`}
                     accent={isProfit ? 'green' : 'red'}
                 />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}>
                 <MetricCard
                     href={ADMIN_REPORTS_PROFIT_LOSS}
                     icon={<ShoppingBag className='w-4 h-4' />}
@@ -72,6 +91,8 @@ const SmartMetrics = () => {
                     sub={`Cancel rate: ${pl?.cancelRate ?? '—'}`}
                     accent="blue"
                 />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}>
                 <MetricCard
                     href={ADMIN_REPORTS_STOCK}
                     icon={<Package className='w-4 h-4' />}
@@ -80,6 +101,8 @@ const SmartMetrics = () => {
                     sub={`Out of stock: ${stockData?.data?.summary?.outOfStock ?? 0}`}
                     accent={stockData?.data?.summary?.outOfStock > 0 ? 'red' : 'orange'}
                 />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}>
                 <MetricCard
                     href={ADMIN_FRAUD_GUARD}
                     icon={<Shield className='w-4 h-4' />}
@@ -88,7 +111,8 @@ const SmartMetrics = () => {
                     sub="Phone + IP blocking"
                     accent="purple"
                 />
-            </div>
+                </motion.div>
+            </motion.div>
 
             {topPlatforms.length > 0 && (
                 <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
