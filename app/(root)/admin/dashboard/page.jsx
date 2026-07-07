@@ -11,6 +11,7 @@ import LatestOrder from './LatestOrder'
 import LatestReview from './LatestReview'
 import { ADMIN_ORDER_SHOW, ADMIN_REVIEW_SHOW } from '@/routes/AdminPanelRoute'
 import SmartMetrics from './SmartMetrics'
+import LiveOrderStats from './LiveOrderStats'
 
 const DashboardCard = ({ title, href, children, className = '' }) => (
     <Card className={`shadow-sm border border-border/60 rounded-xl overflow-hidden ${className}`}>
@@ -46,6 +47,8 @@ const AdminDashboard = () => {
             <Suspense fallback={<LoadingFallback />}>
                 <CountOverview />
             </Suspense>
+
+            <LiveOrderStats />
 
             <SmartMetrics />
 

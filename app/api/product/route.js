@@ -23,6 +23,10 @@ export async function GET(request) {
         const sorting = JSON.parse(searchParams.get('sorting') || "[]")
         const deleteType = searchParams.get('deleteType')
 
+        // Extra filter params
+        const categoryFilter = searchParams.get('category') || ''
+        const stockFilter    = searchParams.get('stock')    || ''
+
         // Build match query  
         let matchQuery = {}
 
@@ -30,6 +34,11 @@ export async function GET(request) {
             matchQuery = { deletedAt: null }
         } else if (deleteType === 'PD') {
             matchQuery = { deletedAt: { $ne: null } }
+        }
+
+        // Category filter — applied after lookup
+        if (categoryFilter) {
+            matchQuery['categoryData._id'] = categoryFilter
         }
 
         // Global search 

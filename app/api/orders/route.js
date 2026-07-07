@@ -24,6 +24,13 @@ export async function GET(request) {
         const sorting = JSON.parse(searchParams.get('sorting') || "[]")
         const deleteType = searchParams.get('deleteType')
 
+        // Extra filter params
+        const statusFilter   = searchParams.get('status')   || ''
+        const paymentFilter  = searchParams.get('payment')  || ''
+        const sourceFilter   = searchParams.get('source')   || ''
+        const dateFrom       = searchParams.get('dateFrom') || ''
+        const dateTo         = searchParams.get('dateTo')   || ''
+
         // Build match query  
         let matchQuery = {}
 
@@ -31,6 +38,39 @@ export async function GET(request) {
             matchQuery = { deletedAt: null }
         } else if (deleteType === 'PD') {
             matchQuery = { deletedAt: { $ne: null } }
+        }
+
+        // Status filter
+        if (statusFilter && statusFilter !== 'all') {
+            if (statusFilter === 'incomplete') {
+                matchQuery.status = { $in: ['pending', 'processing', 'unverified'] }
+            } else {
+                matchQuery.status = statusFilter
+            }
+        }
+
+        // Payment filter
+        if (paymentFilter && paymentFilter !== 'all') {
+            if (paymentFilter === 'paid') {
+                matchQuery.paymentMethod = { $ne: 'COD' }
+            } else if (paymentFilter === 'unpaid') {
+                matchQuery.paymentMethod = 'COD'
+            }
+        }
+
+        // Source filter (ad platform)
+        if (sourceFilter && sourceFilter !== 'all') {
+            matchQuery['adSource.platform'] = sourceFilter
+        }
+
+        // Date range filter
+        if (dateFrom || dateTo) {
+            matchQuery.createdAt = {}
+            if (dateFrom) matchQuery.createdAt.$gte = new Date(dateFrom)
+            if (dateTo) {
+                const end = new Date(dateTo); end.setHours(23, 59, 59, 999)
+                matchQuery.createdAt.$lte = end
+            }
         }
 
         // Global search 
