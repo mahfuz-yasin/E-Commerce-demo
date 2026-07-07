@@ -42,12 +42,15 @@ export function OrderOverview() {
 
     useEffect(() => {
         if (monthlySales?.success) {
+            const monthly = Array.isArray(monthlySales.data?.monthly) ? monthlySales.data.monthly : []
+            // monthly items: { month: "Jan 2025", revenue, adsCost, orders }
+            const currentYear = new Date().getFullYear()
             const data = MONTHS.map((month, i) => {
-                const found = monthlySales.data.find(d => d._id.month === i + 1)
+                const found = monthly.find(d => d.month === `${month} ${currentYear}` || d.month?.startsWith(month))
                 return {
                     month,
-                    amount: found?.totalSales ?? 0,
-                    orders: found?.totalOrders ?? 0,
+                    amount: found?.revenue ?? 0,
+                    orders: found?.orders  ?? 0,
                 }
             })
             setChartData(data)
