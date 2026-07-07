@@ -5,6 +5,9 @@ import Link from "next/link"
 import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute"
 import { connectDB } from "@/lib/databaseConnection"
 import OrderModel from "@/models/Order.model"
+import ProductModel from "@/models/Product.model"
+import ProductVariantModel from "@/models/ProductVariant.model"
+import MediaModel from "@/models/Media.model"
 import { notFound } from "next/navigation"
 
 const fmt = (amount) =>
@@ -31,11 +34,24 @@ const breadcrumb = {
 const OrderDetails = async ({ params }) => {
     const { orderid } = await params
 
-    await connectDB()
-    const order = await OrderModel.findOne({ order_id: orderid })
-        .populate('products.productId', 'name slug')
-        .populate({ path: 'products.variantId', populate: { path: 'media' } })
-        .lean()
+    let order
+    try {
+        await connectDB()
+        try {
+            order = await OrderModel.findOne({ order_id: orderid })
+                .populate('products.productId', 'name slug')
+                .populate({ path: 'products.variantId', populate: { path: 'media' } })
+                .lean()
+        } catch {
+            // Fallback: populate without nested media if that fails
+            order = await OrderModel.findOne({ order_id: orderid })
+                .populate('products.productId', 'name slug')
+                .lean()
+        }
+    } catch (err) {
+        console.error('[OrderDetails] DB error:', err?.message)
+        notFound()
+    }
 
     if (!order) notFound()
 
