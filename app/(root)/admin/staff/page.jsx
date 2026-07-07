@@ -9,7 +9,8 @@ import { ADMIN_DASHBOARD, ADMIN_STAFF } from '@/routes/AdminPanelRoute'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { UserCog, Plus, Pencil, Shield } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 const breadcrumbData = [
     { href: ADMIN_DASHBOARD, label: 'Home' },
@@ -39,9 +40,14 @@ const defaultForm = { name: '', email: '', phone: '', role: 'operator', permissi
 
 export default function StaffPage() {
     const queryClient = useQueryClient()
+    const searchParams = useSearchParams()
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState(defaultForm)
     const [editId, setEditId] = useState(null)
+
+    useEffect(() => {
+        if (searchParams.get('add') === '1') setShowForm(true)
+    }, [searchParams])
 
     const { data, isLoading } = useQuery({
         queryKey: ['staff'],
