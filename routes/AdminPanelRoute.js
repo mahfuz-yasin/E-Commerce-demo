@@ -178,6 +178,9 @@ export const ADMIN_FLASH_SALE_EDIT = (id) => id ? `/admin/flash-sale/edit/${id}`
 // Shipping Rules routes
 export const ADMIN_SHIPPING_RULES = '/admin/shipping-rules'
 
+// Payment Settings route
+export const ADMIN_PAYMENT_SETTINGS = '/admin/payment-settings'
+
 // SMS routes
 export const ADMIN_SMS = '/admin/sms'
 export const ADMIN_SMS_BULK = '/admin/sms/bulk'

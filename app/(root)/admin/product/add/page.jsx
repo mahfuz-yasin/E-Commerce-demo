@@ -1,13 +1,9 @@
 'use client'
 import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW } from '@/routes/AdminPanelRoute'
+import { ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW } from '@/routes/AdminPanelRoute'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import ButtonLoading from '@/components/Application/ButtonLoading'
-import { zSchema } from '@/lib/zodSchema'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import slugify from 'slugify'
 import { showToast } from '@/lib/showToast'
@@ -18,369 +14,548 @@ import MediaModal from '@/components/Application/Admin/MediaModal'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
+import { Package, Tag, Search, Settings, CreditCard, BarChart2, Plus, X } from 'lucide-react'
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: 'Home' },
   { href: ADMIN_PRODUCT_SHOW, label: 'Products' },
   { href: '', label: 'Add Product' },
 ]
 
+const TABS = [
+  { key: 'basic',    label: 'Basic Info',    icon: Package },
+  { key: 'pricing',  label: 'Pricing & Stock', icon: BarChart2 },
+  { key: 'details',  label: 'Description',   icon: Tag },
+  { key: 'advanced', label: 'Advanced',      icon: Settings },
+  { key: 'seo',      label: 'SEO',           icon: Search },
+  { key: 'payment',  label: 'Payment',       icon: CreditCard },
+]
+
+const BADGE_OPTIONS = [
+  { value: 'none',         label: 'None' },
+  { value: 'new',          label: 'New' },
+  { value: 'sale',         label: 'Sale' },
+  { value: 'hot',          label: 'Hot' },
+  { value: 'featured',     label: 'Featured' },
+  { value: 'out_of_stock', label: 'Out of Stock' },
+]
+
 const AddProduct = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]           = useState(false)
+  const [activeTab, setActiveTab]       = useState('basic')
   const [categoryOption, setCategoryOption] = useState([])
   const { data: getCategory } = useFetch('/api/category?deleteType=SD&&size=10000')
 
-  // media modal states  
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]                 = useState(false)
   const [selectedMedia, setSelectedMedia] = useState([])
 
+  // form state
+  const [name, setName]                 = useState('')
+  const [slug, setSlug]                 = useState('')
+  const [category, setCategory]         = useState('')
+  const [mrp, setMrp]                   = useState('')
+  const [sellingPrice, setSellingPrice] = useState('')
+  const [costPrice, setCostPrice]       = useState('')
+  const [stock, setStock]               = useState('0')
+  const [sku, setSku]                   = useState('')
+  const [lowStockThreshold, setLowStockThreshold] = useState('5')
+  const [isActive, setIsActive]         = useState(true)
+  const [badge, setBadge]               = useState('none')
+  const [tags, setTags]                 = useState([])
+  const [tagInput, setTagInput]         = useState('')
+  const [shortDescription, setShortDescription] = useState('')
+  const [longDescription, setLongDescription]   = useState([{ header: '', paragraph: '' }])
+  const [weight, setWeight]             = useState('')
+  const [dimL, setDimL]                 = useState('')
+  const [dimW, setDimW]                 = useState('')
+  const [dimH, setDimH]                 = useState('')
+  const [comboEnabled, setComboEnabled] = useState(false)
+  const [comboMinQty, setComboMinQty]   = useState('2')
+  const [comboPrice, setComboPrice]     = useState('')
+  const [comboDiscount, setComboDiscount] = useState('')
+  const [seoTitle, setSeoTitle]         = useState('')
+  const [seoDesc, setSeoDesc]           = useState('')
+  const [seoKeywords, setSeoKeywords]   = useState([])
+  const [seoKwInput, setSeoKwInput]     = useState('')
+  const [payments, setPayments]         = useState({ cod: true, bkash: true, nagad: true, card: true, bankTransfer: true })
+
+  // Advanced toggles
+  const [showOnWebsite, setShowOnWebsite]               = useState(true)
+  const [freeDelivery, setFreeDelivery]                 = useState(false)
+  const [allowBackorder, setAllowBackorder]             = useState(false)
+  const [hideQuantitySelector, setHideQuantitySelector] = useState(false)
+  const [isDigital, setIsDigital]                       = useState(false)
+
+  // Extra fields
+  const [additionalCost, setAdditionalCost] = useState('')
+  const [youtubeUrl, setYoutubeUrl]         = useState('')
+  const [internalNote, setInternalNote]     = useState('')
+
+  // Badge extras
+  const [showSaveAmountBadge, setShowSaveAmountBadge] = useState(false)
+  const [specialPromoEnabled, setSpecialPromoEnabled] = useState(false)
+  const [specialPromoTexts, setSpecialPromoTexts]     = useState('')
+
   useEffect(() => {
-    if (getCategory && getCategory.success) {
-      const data = getCategory.data
-      const options = data.map((cat) => ({ label: cat.name, value: cat._id }))
-      setCategoryOption(options)
+    if (getCategory?.success) {
+      setCategoryOption(getCategory.data.map(c => ({ label: c.name, value: c._id })))
     }
   }, [getCategory])
 
-  const formSchema = zSchema.pick({
-    name: true,
-    slug: true,
-    category: true,
-    mrp: true,
-    sellingPrice: true,
-    discountPercentage: true,
-    shortDescription: true,
-    longDescription: true,
-  })
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      slug: "",
-      category: "",
-      mrp: 0,
-      sellingPrice: 0,
-      discountPercentage: 0,
-      shortDescription: "",
-      longDescription: [{ header: "", paragraph: "" }],
-    },
-  })
-
   useEffect(() => {
-    const name = form.getValues('name')
-    if (name) {
-      form.setValue('slug', slugify(name).toLowerCase())
-    }
-  }, [form.watch('name')])
+    if (name) setSlug(slugify(name, { lower: true, strict: true }))
+  }, [name])
 
-  // discount percentage calculation 
-  useEffect(() => {
-    const mrp = form.getValues('mrp') || 0
-    const sellingPrice = form.getValues('sellingPrice') || 0
+  const discountPct = mrp > 0 && sellingPrice > 0 ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0
+  const profitPerUnit = sellingPrice && costPrice ? (Number(sellingPrice) - Number(costPrice) - Number(additionalCost || 0)).toFixed(2) : null
 
-    if (mrp > 0 && sellingPrice > 0) {
-      const discountPercentage = ((mrp - sellingPrice) / mrp) * 100
-      form.setValue('discountPercentage', Math.round(discountPercentage))
-    }
+  const addLongDesc = () => setLongDescription(p => [...p, { header: '', paragraph: '' }])
+  const removeLongDesc = (i) => setLongDescription(p => p.filter((_, idx) => idx !== i))
+  const updateLongDesc = (i, field, val) => setLongDescription(p => p.map((s, idx) => idx === i ? { ...s, [field]: val } : s))
 
-  }, [form.watch('mrp'), form.watch('sellingPrice')])
+  const addTag = () => { if (tagInput.trim() && !tags.includes(tagInput.trim())) { setTags(p => [...p, tagInput.trim()]); setTagInput('') } }
+  const addSeoKw = () => { if (seoKwInput.trim() && !seoKeywords.includes(seoKwInput.trim())) { setSeoKeywords(p => [...p, seoKwInput.trim()]); setSeoKwInput('') } }
 
-  // Dynamic longDescription handlers
-  const addLongDescriptionSection = () => {
-    const currentLongDescription = form.getValues('longDescription') || []
-    form.setValue('longDescription', [...currentLongDescription, { header: "", paragraph: "" }])
-  }
-
-  const removeLongDescriptionSection = (index) => {
-    const currentLongDescription = form.getValues('longDescription') || []
-    if (currentLongDescription.length > 1) {
-      const updated = currentLongDescription.filter((_, i) => i !== index)
-      form.setValue('longDescription', updated)
-    }
-  }
-
-  const updateLongDescription = (index, field, value) => {
-    const currentLongDescription = form.getValues('longDescription') || []
-    const updated = [...currentLongDescription]
-    updated[index][field] = value
-    form.setValue('longDescription', updated)
-  }
-
-  const onSubmit = async (values) => {
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    if (!name || !category || !mrp || !sellingPrice) return showToast('error', 'Name, Category, MRP, Selling Price required.')
+    if (selectedMedia.length === 0) return showToast('error', 'Please select at least one image.')
+    if (longDescription.some(s => !s.header || !s.paragraph)) return showToast('error', 'All long description sections must be filled.')
     setLoading(true)
     try {
-      if (selectedMedia.length <= 0) {
-        return showToast('error', 'Please select media.')
+      const payload = {
+        name, slug, category,
+        mrp: Number(mrp), sellingPrice: Number(sellingPrice), discountPercentage: discountPct,
+        costPrice: Number(costPrice) || 0,
+        additionalCost: Number(additionalCost) || 0,
+        stock: Number(stock) || 0,
+        sku: sku || null,
+        lowStockThreshold: Number(lowStockThreshold) || 5,
+        isActive,
+        badge,
+        tags,
+        showOnWebsite, freeDelivery, allowBackorder, hideQuantitySelector, isDigital,
+        youtubeUrl: youtubeUrl || null,
+        internalNote: internalNote || null,
+        showSaveAmountBadge,
+        specialPromoBadge: {
+          enabled: specialPromoEnabled,
+          texts: specialPromoTexts.split('\n').map(t => t.trim()).filter(Boolean),
+        },
+        shortDescription,
+        longDescription,
+        weight: weight ? Number(weight) : null,
+        dimensions: { length: dimL ? Number(dimL) : null, width: dimW ? Number(dimW) : null, height: dimH ? Number(dimH) : null },
+        comboOffer: { enabled: comboEnabled, minQty: Number(comboMinQty), comboPrice: Number(comboPrice) || 0, comboDiscount: Number(comboDiscount) || 0 },
+        seoTitle: seoTitle || null,
+        seoDescription: seoDesc || null,
+        seoKeywords,
+        allowedPayments: payments,
+        media: selectedMedia.map(m => m._id),
       }
-
-      const mediaIds = selectedMedia.map(media => media._id)
-      values.media = mediaIds
-
-      const { data: response } = await axios.post('/api/product/create', values)
-      if (!response.success) {
-        throw new Error(response.message)
-      }
-
-      form.reset()
-      showToast('success', response.message)
-    } catch (error) {
-      showToast('error', error.message)
+      const { data } = await axios.post('/api/product/create', payload)
+      if (!data.success) throw new Error(data.message)
+      showToast('success', data.message)
+      setName(''); setSlug(''); setCategory(''); setMrp(''); setSellingPrice(''); setSelectedMedia([])
+    } catch (err) {
+      showToast('error', err.message)
     } finally {
       setLoading(false)
     }
   }
 
+  const FL = ({ label, required, children }) => (
+    <div className="space-y-1.5">
+      <label className="text-xs font-semibold text-foreground">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>
+      {children}
+    </div>
+  )
+
   return (
-    <div>
+    <div className="space-y-4">
       <BreadCrumb breadcrumbData={breadcrumbData} />
 
-      <Card className="py-0 rounded shadow-sm">
-        <CardHeader className="px-5 py-4 border-b bg-muted/30">
-          <h4 className='text-sm font-semibold text-foreground'>Add Product</h4>
-        </CardHeader>
-        <CardContent className="pb-5">
+      <form onSubmit={onSubmit} className="space-y-4">
+        {/* Tab nav */}
+        <div className="flex gap-1 flex-wrap border-b border-border/60">
+          {TABS.map(t => {
+            const Icon = t.icon
+            return (
+              <button key={t.key} type="button"
+                onClick={() => setActiveTab(t.key)}
+                className={cn('flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg border-b-2 -mb-px transition-all',
+                  activeTab === t.key ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                )}>
+                <Icon className="w-3.5 h-3.5" />{t.label}
+              </button>
+            )
+          })}
+        </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} >
-
-              <div className='grid md:grid-cols-2 grid-cols-1 gap-5'>
-
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name<span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter category name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Slug <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter slug" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Select
-                            options={categoryOption}
-                            selected={field.value}
-                            setSelected={field.onChange}
-                            isMulti={false}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="mrp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>MRP <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Enter MRP" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="sellingPrice"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Selling Price <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Enter Selling Price" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className=''>
-                  <FormField
-                    control={form.control}
-                    name="discountPercentage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Discount Percentage <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Input type="number" readOnly placeholder="Enter Discount Percentage" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className='md:col-span-2'>
-                  <FormField
-                    control={form.control}
-                    name="shortDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Short Description <span className='text-red-500'>*</span></FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Enter a brief description (10+ characters)" 
-                            className="min-h-[80px]"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Dynamic Long Description */}
-                <div className='md:col-span-2'>
-                  <div className='flex justify-between items-center mb-3'>
-                    <FormLabel>Long Description <span className='text-red-500'>*</span></FormLabel>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addLongDescriptionSection}
-                      className="cursor-pointer"
-                    >
-                      <IoMdAdd className="mr-1" /> Add Section
-                    </Button>
+        {/* BASIC INFO */}
+        {activeTab === 'basic' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">Basic Information</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <FL label="Product Name" required>
+                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="Enter product name" />
+                </FL>
+                <FL label="Slug" required>
+                  <Input value={slug} onChange={e => setSlug(e.target.value)} placeholder="auto-generated" />
+                </FL>
+                <FL label="Category" required>
+                  <Select options={categoryOption} selected={category} setSelected={setCategory} isMulti={false} />
+                </FL>
+                <FL label="SKU">
+                  <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="e.g. PROD-001" />
+                </FL>
+                <FL label="Badge">
+                  <select value={badge} onChange={e => setBadge(e.target.value)}
+                    className="w-full h-9 px-3 text-sm rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40">
+                    {BADGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </FL>
+                <FL label="Status">
+                  <div className="flex items-center gap-3 h-9">
+                    <button type="button" onClick={() => setIsActive(p => !p)}
+                      className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors', isActive ? 'bg-emerald-500' : 'bg-muted-foreground/30')}>
+                      <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', isActive ? 'translate-x-4' : 'translate-x-0.5')} />
+                    </button>
+                    <span className={cn('text-sm font-medium', isActive ? 'text-emerald-600' : 'text-muted-foreground')}>
+                      {isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
-                  
-                  <div className='space-y-4'>
-                    {form.watch('longDescription')?.map((section, index) => (
-                      <div key={index} className='border rounded-lg p-4 bg-gray-50 dark:bg-card'>
-                        <div className='flex justify-between items-center mb-3'>
-                          <span className='text-sm font-medium text-gray-600 dark:text-gray-400'>
-                            Section {index + 1}
-                          </span>
-                          {form.watch('longDescription').length > 1 && (
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeLongDescriptionSection(index)}
-                              className="cursor-pointer"
-                            >
-                              <IoMdRemove className="mr-1" /> Remove
-                            </Button>
-                          )}
-                        </div>
-                        
-                        <div className='space-y-3'>
-                          <FormField
-                            control={form.control}
-                            name={`longDescription.${index}.header`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">Header <span className='text-red-500'>*</span></FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter section header"
-                                    {...field}
-                                    className="mt-1"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`longDescription.${index}.paragraph`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">Paragraph <span className='text-red-500'>*</span></FormLabel>
-                                <FormControl>
-                                  <Textarea
-                                    placeholder="Enter section description (10+ characters)"
-                                    className="min-h-[100px] mt-1"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
+                </FL>
+              </div>
+
+              {/* Tags */}
+              <FL label="Tags">
+                <div className="flex gap-2">
+                  <Input value={tagInput} onChange={e => setTagInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    placeholder="Type tag and press Enter" className="flex-1" />
+                  <Button type="button" size="sm" variant="outline" onClick={addTag}><Plus className="w-3 h-3" /></Button>
+                </div>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {tags.map(t => (
+                      <span key={t} className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        {t}
+                        <button type="button" onClick={() => setTags(p => p.filter(x => x !== t))}><X className="w-2.5 h-2.5" /></button>
+                      </span>
                     ))}
                   </div>
-                </div>
+                )}
+              </FL>
 
+              {/* Media */}
+              <FL label="Product Images" required>
+                <div className="border border-dashed rounded-xl p-4 space-y-3">
+                  <MediaModal open={open} setOpen={setOpen} selectedMedia={selectedMedia} setSelectedMedia={setSelectedMedia} isMultiple={true} />
+                  {selectedMedia.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedMedia.map(m => (
+                        <div key={m._id} className="relative h-20 w-20 border rounded-lg overflow-hidden">
+                          <Image src={m.url} fill alt="" className="object-cover" />
+                          <button type="button" onClick={() => setSelectedMedia(p => p.filter(x => x._id !== m._id))}
+                            className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)} className="text-xs gap-1">
+                    <Plus className="w-3 h-3" /> Select Images
+                  </Button>
+                </div>
+              </FL>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* PRICING & STOCK */}
+        {activeTab === 'pricing' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">Pricing & Stock</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-5">
+              <div className="grid md:grid-cols-2 gap-4">
+                <FL label="MRP / Original Price (৳)" required>
+                  <Input type="number" min="0" value={mrp} onChange={e => setMrp(e.target.value)} placeholder="0" />
+                  <p className="text-[10px] text-muted-foreground mt-1">আগের দাম — কেটে ডিসকাউন্ট দেখাবে</p>
+                </FL>
+                <FL label="Selling Price (৳)" required>
+                  <Input type="number" min="0" value={sellingPrice} onChange={e => setSellingPrice(e.target.value)} placeholder="0" />
+                </FL>
+                <FL label="Purchase / Cost Price (৳)">
+                  <Input type="number" min="0" value={costPrice} onChange={e => setCostPrice(e.target.value)} placeholder="0" />
+                </FL>
+                <FL label="Additional Cost (৳)">
+                  <Input type="number" min="0" value={additionalCost} onChange={e => setAdditionalCost(e.target.value)} placeholder="0" />
+                  <p className="text-[10px] text-muted-foreground mt-1">প্যাকেজিং, শিপিং ইত্যাদি বাড়তি খরচ</p>
+                </FL>
+              </div>
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 text-sm flex flex-wrap gap-x-5 gap-y-1">
+                <span>Discount: <span className="font-bold text-emerald-600">{discountPct}%</span></span>
+                {profitPerUnit !== null && <span>PROFIT PER UNIT: <span className={cn('font-bold', Number(profitPerUnit) >= 0 ? 'text-emerald-600' : 'text-red-600')}>৳{profitPerUnit}</span></span>}
               </div>
 
-              <div className='md:col-span-2 border border-dashed rounded p-5 text-center'>
-                <MediaModal
-                  open={open}
-                  setOpen={setOpen}
-                  selectedMedia={selectedMedia}
-                  setSelectedMedia={setSelectedMedia}
-                  isMultiple={true}
-                />
+              <div className="grid md:grid-cols-3 gap-4">
+                <FL label="Stock Quantity">
+                  <Input type="number" min="0" value={stock} onChange={e => setStock(e.target.value)} placeholder="0" />
+                </FL>
+                <FL label="Low Stock Alert Threshold">
+                  <Input type="number" min="0" value={lowStockThreshold} onChange={e => setLowStockThreshold(e.target.value)} placeholder="5" />
+                </FL>
+                <FL label="Weight (grams)">
+                  <Input type="number" min="0" value={weight} onChange={e => setWeight(e.target.value)} placeholder="e.g. 500" />
+                </FL>
+              </div>
 
-                {selectedMedia.length > 0
-                  && <div className='flex justify-center items-center flex-wrap mb-3 gap-2'>
-                    {selectedMedia.map(media => (
-                      <div key={media._id} className='h-24 w-24 border'>
-                        <Image
-                          src={media.url}
-                          height={100}
-                          width={100}
-                          alt=''
-                          className='size-full object-cover'
-                        />
+              <div className="grid md:grid-cols-3 gap-4">
+                <FL label="Length (cm)"><Input type="number" min="0" value={dimL} onChange={e => setDimL(e.target.value)} placeholder="0" /></FL>
+                <FL label="Width (cm)"><Input type="number" min="0" value={dimW} onChange={e => setDimW(e.target.value)} placeholder="0" /></FL>
+                <FL label="Height (cm)"><Input type="number" min="0" value={dimH} onChange={e => setDimH(e.target.value)} placeholder="0" /></FL>
+              </div>
+
+              {/* Combo Offer */}
+              <div className="rounded-xl border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold">Combo Offer</p>
+                  <button type="button" onClick={() => setComboEnabled(p => !p)}
+                    className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors', comboEnabled ? 'bg-primary' : 'bg-muted-foreground/30')}>
+                    <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', comboEnabled ? 'translate-x-4' : 'translate-x-0.5')} />
+                  </button>
+                </div>
+                {comboEnabled && (
+                  <div className="grid md:grid-cols-3 gap-3 pt-1">
+                    <FL label="Min Qty"><Input type="number" min="2" value={comboMinQty} onChange={e => setComboMinQty(e.target.value)} /></FL>
+                    <FL label="Combo Price"><Input type="number" min="0" value={comboPrice} onChange={e => setComboPrice(e.target.value)} placeholder="0" /></FL>
+                    <FL label="Combo Discount %"><Input type="number" min="0" max="100" value={comboDiscount} onChange={e => setComboDiscount(e.target.value)} placeholder="0" /></FL>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* DESCRIPTION */}
+        {activeTab === 'details' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">Product Description</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              <FL label="Short Description" required>
+                <Textarea value={shortDescription} onChange={e => setShortDescription(e.target.value)}
+                  placeholder="Brief product description (10+ characters)" className="min-h-[80px]" />
+              </FL>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground">Long Description Sections<span className="text-red-500 ml-0.5">*</span></label>
+                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={addLongDesc}>
+                    <IoMdAdd /> Add Section
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {longDescription.map((s, i) => (
+                    <div key={i} className="border rounded-xl p-4 bg-muted/10 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">Section {i + 1}</span>
+                        {longDescription.length > 1 && (
+                          <Button type="button" variant="destructive" size="sm" className="h-6 text-xs" onClick={() => removeLongDesc(i)}>
+                            <IoMdRemove /> Remove
+                          </Button>
+                        )}
                       </div>
+                      <Input placeholder="Section header" value={s.header} onChange={e => updateLongDesc(i, 'header', e.target.value)} />
+                      <Textarea placeholder="Section paragraph (10+ chars)" className="min-h-[80px]"
+                        value={s.paragraph} onChange={e => updateLongDesc(i, 'paragraph', e.target.value)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ADVANCED */}
+        {activeTab === 'advanced' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">Advanced Settings</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-5">
+              {/* Behaviour Toggles */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Product Behaviour</p>
+                {[
+                  { state: showOnWebsite,        set: setShowOnWebsite,        label: 'ওয়েবসাইটে দেখাবে না',           desc: 'বন্ধ থাকলে শুধু Landing Page-এ দেখাবে', onColor: 'bg-emerald-500', invert: true },
+                  { state: freeDelivery,          set: setFreeDelivery,          label: 'ফ্রি ডেলিভারি',                  desc: 'এই পণ্যে কোনো ডেলিভারি চার্জ নেই', onColor: 'bg-emerald-500', invert: false },
+                  { state: allowBackorder,        set: setAllowBackorder,        label: 'স্টক শেষেও অর্ডার নিন',         desc: 'স্টক ০ হলেও Back-order গ্রহণ করবে', onColor: 'bg-blue-500', invert: false },
+                  { state: hideQuantitySelector,  set: setHideQuantitySelector,  label: 'Quantity Selector লুকান',        desc: 'কাস্টমার পরিমাণ পরিবর্তন করতে পারবে না', onColor: 'bg-amber-500', invert: false },
+                  { state: isDigital,             set: setIsDigital,             label: 'ডিজিটাল প্রোডাক্ট',             desc: 'Checkout-এ Address এর বদলে Email চাইবে', onColor: 'bg-violet-500', invert: false },
+                ].map(({ state, set, label, desc, onColor, invert }) => {
+                  const active = invert ? !state : state
+                  return (
+                    <div key={label} className={cn('flex items-center justify-between p-3.5 rounded-xl border transition-all', active ? `border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20` : 'border-border bg-muted/10')}>
+                      <div>
+                        <p className="text-sm font-medium">{label}</p>
+                        <p className="text-[10px] text-muted-foreground">{desc}</p>
+                      </div>
+                      <button type="button" onClick={() => set(p => !p)}
+                        className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors flex-shrink-0', active ? onColor : 'bg-muted-foreground/30')}>
+                        <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', active ? 'translate-x-4' : 'translate-x-0.5')} />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Badge Extras */}
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Badge Settings</p>
+                <div className={cn('flex items-center justify-between p-3.5 rounded-xl border transition-all', showSaveAmountBadge ? 'border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-border bg-muted/10')}>
+                  <div>
+                    <p className="text-sm font-medium">Show Save Amount Badge</p>
+                    <p className="text-[10px] text-muted-foreground">"Save ৳XXX" badge দেখাবে প্রোডাক্ট কার্ডে</p>
+                  </div>
+                  <button type="button" onClick={() => setShowSaveAmountBadge(p => !p)}
+                    className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors flex-shrink-0', showSaveAmountBadge ? 'bg-emerald-500' : 'bg-muted-foreground/30')}>
+                    <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', showSaveAmountBadge ? 'translate-x-4' : 'translate-x-0.5')} />
+                  </button>
+                </div>
+                <div className="rounded-xl border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Special Promo Badge</p>
+                      <p className="text-[10px] text-muted-foreground">Animated badge — একাধিক text দিলে rotate করবে</p>
+                    </div>
+                    <button type="button" onClick={() => setSpecialPromoEnabled(p => !p)}
+                      className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors flex-shrink-0', specialPromoEnabled ? 'bg-primary' : 'bg-muted-foreground/30')}>
+                      <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', specialPromoEnabled ? 'translate-x-4' : 'translate-x-0.5')} />
+                    </button>
+                  </div>
+                  {specialPromoEnabled && (
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-foreground">Badge Texts (একটি প্রতি লাইন)</label>
+                      <Textarea value={specialPromoTexts} onChange={e => setSpecialPromoTexts(e.target.value)}
+                        placeholder={"Limited Offer!\n🔥 Trending\nশেষ সুযোগ!"} className="min-h-[80px] font-mono text-xs" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* YouTube + Internal Note */}
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Extra Info</p>
+                <FL label="YouTube Video URL">
+                  <Input value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+                  <p className="text-[10px] text-muted-foreground mt-1">প্রোডাক্ট পেজে ভিডিও embed হবে</p>
+                </FL>
+                <FL label="Internal Note (Admin only)">
+                  <Textarea value={internalNote} onChange={e => setInternalNote(e.target.value)}
+                    className="min-h-[70px]" placeholder="কাস্টমার দেখবে না — শুধু admin নোট" />
+                </FL>
+              </div>
+
+              <p className="text-xs text-muted-foreground">Variations (size, color) পণ্য তৈরির পরে Product Variants page থেকে manage করুন।</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* SEO */}
+        {activeTab === 'seo' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">SEO Settings</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              <FL label="SEO Title">
+                <Input value={seoTitle} onChange={e => setSeoTitle(e.target.value)} placeholder={name || 'Product title for search engines'} />
+                <p className="text-[10px] text-muted-foreground mt-1">{seoTitle.length}/60 characters</p>
+              </FL>
+              <FL label="SEO Description">
+                <Textarea value={seoDesc} onChange={e => setSeoDesc(e.target.value)}
+                  placeholder="Brief description for search engine results" className="min-h-[80px]" />
+                <p className="text-[10px] text-muted-foreground mt-1">{seoDesc.length}/160 characters</p>
+              </FL>
+              <FL label="SEO Keywords">
+                <div className="flex gap-2">
+                  <Input value={seoKwInput} onChange={e => setSeoKwInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSeoKw())}
+                    placeholder="Add keyword and press Enter" className="flex-1" />
+                  <Button type="button" size="sm" variant="outline" onClick={addSeoKw}><Plus className="w-3 h-3" /></Button>
+                </div>
+                {seoKeywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {seoKeywords.map(k => (
+                      <span key={k} className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                        {k}
+                        <button type="button" onClick={() => setSeoKeywords(p => p.filter(x => x !== k))}><X className="w-2.5 h-2.5" /></button>
+                      </span>
                     ))}
                   </div>
-                }
-
-                <div onClick={() => setOpen(true)} className='bg-gray-50 dark:bg-card border w-[200px] mx-auto p-5 cursor-pointer'>
-                  <span className='font-semibold'>Select Media</span>
+                )}
+              </FL>
+              {/* Preview */}
+              {(seoTitle || name) && (
+                <div className="rounded-xl border border-border p-4 bg-muted/10 space-y-1">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">Search Preview</p>
+                  <p className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">{seoTitle || name}</p>
+                  <p className="text-[10px] text-emerald-700">yoursite.com/products/{slug}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{seoDesc || shortDescription || 'No description set.'}</p>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
+        {/* PAYMENT */}
+        {activeTab === 'payment' && (
+          <Card className="py-0 rounded-xl shadow-sm">
+            <CardHeader className="px-5 py-3.5 border-b bg-muted/30">
+              <h4 className="text-sm font-semibold">Payment Method Settings</h4>
+            </CardHeader>
+            <CardContent className="p-5 space-y-3">
+              <p className="text-xs text-muted-foreground">এই পণ্যের জন্য কোন payment methods allowed থাকবে তা নির্বাচন করুন।</p>
+              <div className="space-y-2">
+                {[
+                  { key: 'cod',         label: 'Cash on Delivery (COD)',   cls: 'text-emerald-600' },
+                  { key: 'bkash',       label: 'bKash',                    cls: 'text-pink-600' },
+                  { key: 'nagad',       label: 'Nagad',                    cls: 'text-orange-600' },
+                  { key: 'card',        label: 'Credit / Debit Card',      cls: 'text-blue-600' },
+                  { key: 'bankTransfer',label: 'Bank Transfer',            cls: 'text-violet-600' },
+                ].map(p => (
+                  <div key={p.key} className={cn(
+                    'flex items-center justify-between p-3.5 rounded-xl border transition-all',
+                    payments[p.key] ? 'border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20' : 'border-border bg-muted/10'
+                  )}>
+                    <span className={cn('text-sm font-medium', payments[p.key] ? p.cls : 'text-muted-foreground')}>{p.label}</span>
+                    <button type="button" onClick={() => setPayments(prev => ({ ...prev, [p.key]: !prev[p.key] }))}
+                      className={cn('relative inline-flex h-5 w-9 rounded-full transition-colors', payments[p.key] ? 'bg-emerald-500' : 'bg-muted-foreground/30')}>
+                      <span className={cn('inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5', payments[p.key] ? 'translate-x-4' : 'translate-x-0.5')} />
+                    </button>
+                  </div>
+                ))}
               </div>
+            </CardContent>
+          </Card>
+        )}
 
-              <div className='mb-3 mt-5'>
-                <ButtonLoading loading={loading} type="submit" text="Add Product" className="cursor-pointer" />
-              </div>
-
-            </form>
-          </Form>
-
-        </CardContent>
-      </Card>
-
+        {/* Submit */}
+        <div className="flex gap-3">
+          <ButtonLoading loading={loading} type="submit" text="Add Product" className="cursor-pointer" />
+          <Button type="button" variant="outline" onClick={() => window.history.back()}>Cancel</Button>
+        </div>
+      </form>
     </div>
   )
 }

@@ -11,9 +11,10 @@ export async function GET() {
 
         await connectDB()
 
-        const [totalProducts, variants] = await Promise.all([
+        const [totalProducts, activeProducts, variants] = await Promise.all([
             ProductModel.countDocuments({ deletedAt: null }),
-            ProductVariantModel.find({ deletedAt: null }).select('stock mrp sellingPrice').lean(),
+            ProductModel.countDocuments({ deletedAt: null, isActive: true }),
+            ProductVariantModel.find({ deletedAt: null }).select('stock mrp sellingPrice costPrice').lean(),
         ])
 
         let totalStock = 0, outOfStock = 0, lowStock = 0
@@ -24,11 +25,10 @@ export async function GET() {
             totalStock += s
             if (s === 0) outOfStock++
             else if (s <= 5) lowStock++
-            totalCostValue += (v.mrp || 0) * s
+            totalCostValue += (v.costPrice || v.mrp || 0) * s
             totalSellValue += (v.sellingPrice || v.mrp || 0) * s
         }
 
-        const activeProducts = totalProducts // all non-deleted = active
         const potentialProfit = totalSellValue - totalCostValue
 
         return response(true, 200, 'Product summary.', {

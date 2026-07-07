@@ -82,22 +82,34 @@ export async function GET(request) {
 
         const get = (key) => statusMap[key] || { count: 0, amount: 0 }
 
-        // "incomplete" = pending + processing + unverified
-        const incompleteCount = (get('pending').count + get('processing').count + get('unverified').count)
-        const incompleteAmount = (get('pending').amount + get('processing').amount + get('unverified').amount)
+        // "incomplete" = pending + processing + unverified + hold + ship_later
+        const incompleteCount = (
+            get('pending').count + get('processing').count + get('unverified').count +
+            get('hold').count + get('ship_later').count
+        )
+        const incompleteAmount = (
+            get('pending').amount + get('processing').amount + get('unverified').amount +
+            get('hold').amount + get('ship_later').amount
+        )
 
         const pct = (n) => totalOrders > 0 ? ((n / totalOrders) * 100).toFixed(1) : '0.0'
 
         return response(true, 200, 'Live stats.', {
             filter,
-            total:       { count: totalOrders, amount: totalAmount },
-            processing:  { ...get('processing'),  pct: pct(get('processing').count) },
-            pending:     { ...get('pending'),      pct: pct(get('pending').count) },
-            confirmed:   { ...get('shipped'),      pct: pct(get('shipped').count) },
-            cancelled:   { ...get('cancelled'),    pct: pct(get('cancelled').count) },
-            delivered:   { ...get('delivered'),    pct: pct(get('delivered').count) },
-            unverified:  { ...get('unverified'),   pct: pct(get('unverified').count) },
-            incomplete:  { count: incompleteCount, amount: incompleteAmount, pct: pct(incompleteCount) },
+            total:           { count: totalOrders,                    amount: totalAmount },
+            processing:      { ...get('processing'),                  pct: pct(get('processing').count) },
+            pending:         { ...get('pending'),                     pct: pct(get('pending').count) },
+            confirmed:       { ...get('confirmed'),                   pct: pct(get('confirmed').count), amount: get('confirmed').amount },
+            shipped:         { ...get('shipped'),                     pct: pct(get('shipped').count) },
+            cancelled:       { ...get('cancelled'),                   pct: pct(get('cancelled').count) },
+            delivered:       { ...get('delivered'),                   pct: pct(get('delivered').count), amount: get('delivered').amount },
+            unverified:      { ...get('unverified'),                  pct: pct(get('unverified').count) },
+            hold:            { ...get('hold'),                        pct: pct(get('hold').count) },
+            ship_later:      { ...get('ship_later'),                  pct: pct(get('ship_later').count) },
+            partial_delivery:{ ...get('partial_delivery'),            pct: pct(get('partial_delivery').count) },
+            returned:        { ...get('returned'),                    pct: pct(get('returned').count) },
+            lost:            { ...get('lost'),                        pct: pct(get('lost').count) },
+            incomplete:      { count: incompleteCount, amount: incompleteAmount, pct: pct(incompleteCount) },
         })
     } catch (error) {
         return catchError(error)

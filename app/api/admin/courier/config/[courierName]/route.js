@@ -29,6 +29,37 @@ export async function GET(request, { params }) {
 }
 
 /**
+ * PATCH /api/admin/courier/config/[courierName]
+ * Toggle or partial update courier configuration (e.g. isActive)
+ */
+export async function PATCH(request, { params }) {
+    try {
+        await connectDB()
+        const { courierName } = await params
+        const body = await request.json()
+
+        const updateFields = {}
+        if (body.isActive !== undefined) updateFields.isActive = body.isActive
+
+        const result = await CourierConfigModel.findOneAndUpdate(
+            { courierName, deletedAt: null },
+            { $set: updateFields },
+            { new: true }
+        )
+
+        if (!result) {
+            return response(false, 404, 'Courier configuration not found.')
+        }
+
+        return response(true, 200, 'Courier configuration updated.', result)
+
+    } catch (error) {
+        console.error('[API Courier Config PATCH] Error:', error)
+        return catchError(error, 'Failed to update courier configuration')
+    }
+}
+
+/**
  * DELETE /api/admin/courier/config/[courierName]
  * Soft delete courier configuration
  */

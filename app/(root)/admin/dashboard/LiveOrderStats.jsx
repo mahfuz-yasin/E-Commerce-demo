@@ -54,18 +54,20 @@ const StatCard = ({ label, count, amount, pct, color, bar, subBadges, index }) =
     </motion.div>
 )
 
-export default function LiveOrderStats() {
-    const [activeFilter, setActiveFilter] = useState('today')
+export default function LiveOrderStats({ filter: externalFilter }) {
+    const [activeFilter, setActiveFilter] = useState(externalFilter || 'today')
     const [customStart, setCustomStart] = useState('')
     const [customEnd, setCustomEnd] = useState('')
     const [showCustom, setShowCustom] = useState(false)
 
+    const resolvedFilter = externalFilter || activeFilter
+
     const fetchUrl = useMemo(() => {
-        if (activeFilter === 'custom' && customStart && customEnd) {
+        if (resolvedFilter === 'custom' && customStart && customEnd) {
             return `/api/dashboard/admin/live-stats?filter=custom&startDate=${customStart}&endDate=${customEnd}`
         }
-        return `/api/dashboard/admin/live-stats?filter=${activeFilter}`
-    }, [activeFilter, customStart, customEnd])
+        return `/api/dashboard/admin/live-stats?filter=${resolvedFilter}`
+    }, [resolvedFilter, customStart, customEnd])
 
     const { data, loading, refetch } = useFetch(fetchUrl)
     const s = data?.data || {}
@@ -103,11 +105,25 @@ export default function LiveOrderStats() {
             bar: 'bg-red-500',
         },
         {
-            label: 'Pending / Hold',
-            count: s.pending?.count,
-            pct: s.pending?.pct,
+            label: 'On Hold',
+            count: s.hold?.count,
+            pct: s.hold?.pct,
             color: 'text-blue-600',
             bar: 'bg-blue-500',
+        },
+        {
+            label: 'Ship Later',
+            count: s.ship_later?.count,
+            pct: s.ship_later?.pct,
+            color: 'text-sky-600',
+            bar: 'bg-sky-500',
+        },
+        {
+            label: 'In Courier',
+            count: s.shipped?.count,
+            pct: s.shipped?.pct,
+            color: 'text-indigo-600',
+            bar: 'bg-indigo-500',
         },
         {
             label: 'Delivered',
@@ -118,11 +134,25 @@ export default function LiveOrderStats() {
             bar: 'bg-teal-500',
         },
         {
-            label: 'Unverified',
-            count: s.unverified?.count,
-            pct: s.unverified?.pct,
+            label: 'Partial Delivery',
+            count: s.partial_delivery?.count,
+            pct: s.partial_delivery?.pct,
+            color: 'text-lime-600',
+            bar: 'bg-lime-500',
+        },
+        {
+            label: 'Returned',
+            count: s.returned?.count,
+            pct: s.returned?.pct,
             color: 'text-orange-600',
             bar: 'bg-orange-500',
+        },
+        {
+            label: 'Lost',
+            count: s.lost?.count,
+            pct: s.lost?.pct,
+            color: 'text-rose-600',
+            bar: 'bg-rose-500',
         },
         {
             label: 'Incomplete',
@@ -131,8 +161,9 @@ export default function LiveOrderStats() {
             color: 'text-slate-600',
             bar: 'bg-slate-400',
             subBadges: [
-                { label: 'Pending',    value: s.pending?.count    ?? 0, cls: 'bg-blue-100 text-blue-700' },
                 { label: 'Processing', value: s.processing?.count ?? 0, cls: 'bg-amber-100 text-amber-700' },
+                { label: 'Hold',       value: s.hold?.count       ?? 0, cls: 'bg-blue-100 text-blue-700' },
+                { label: 'Ship Later', value: s.ship_later?.count ?? 0, cls: 'bg-sky-100 text-sky-700' },
                 { label: 'Unverified', value: s.unverified?.count ?? 0, cls: 'bg-orange-100 text-orange-700' },
             ]
         },
@@ -230,8 +261,8 @@ export default function LiveOrderStats() {
 
             {/* Skeleton loading */}
             {loading && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {Array(8).fill(0).map((_, i) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {Array(12).fill(0).map((_, i) => (
                         <div key={i} className="h-24 rounded-xl border border-border/60 bg-muted/30 animate-pulse" />
                     ))}
                 </div>
@@ -239,7 +270,7 @@ export default function LiveOrderStats() {
 
             {/* Cards */}
             {!loading && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {cards.map((c, i) => (
                         <StatCard key={c.label} {...c} index={i} />
                     ))}
