@@ -71,7 +71,7 @@ const ShowProduct = () => {
 
     const fetchUrl = useMemo(() => {
         const params = new URLSearchParams()
-        if (stockFilter === 'outofstock') params.set('globalFilter', '0')
+        if (stockFilter !== 'all') params.set('stock', stockFilter)
         return '/api/product' + (params.toString() ? `?${params}` : '')
     }, [stockFilter])
 

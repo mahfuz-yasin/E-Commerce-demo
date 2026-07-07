@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import useFetch from '@/hooks/useFetch'
 import { motion } from 'framer-motion'
 import { Calendar, ChevronDown, ShoppingBag, RefreshCw } from 'lucide-react'
@@ -60,14 +60,14 @@ export default function LiveOrderStats() {
     const [customEnd, setCustomEnd] = useState('')
     const [showCustom, setShowCustom] = useState(false)
 
-    const buildUrl = useCallback(() => {
+    const fetchUrl = useMemo(() => {
         if (activeFilter === 'custom' && customStart && customEnd) {
             return `/api/dashboard/admin/live-stats?filter=custom&startDate=${customStart}&endDate=${customEnd}`
         }
         return `/api/dashboard/admin/live-stats?filter=${activeFilter}`
     }, [activeFilter, customStart, customEnd])
 
-    const { data, loading, refetch } = useFetch(buildUrl())
+    const { data, loading, refetch } = useFetch(fetchUrl)
     const s = data?.data || {}
 
     const filterLabel = FILTERS.find(f => f.key === activeFilter)?.label || 'Today'
