@@ -51,41 +51,8 @@ export async function GET(request) {
             ]
         }
 
-        // Global search (datatable built-in) — only if no custom search
-        if (globalFilter && !searchFilter) {
-            matchQuery["$or"] = [
-                { name: { $regex: globalFilter, $options: 'i' } },
-                { slug: { $regex: globalFilter, $options: 'i' } },
-                { "categoryData.name": { $regex: globalFilter, $options: 'i' } },
-                {
-                    $expr: {
-                        $regexMatch: {
-                            input: { $toString: "$mrp" },
-                            regex: globalFilter,
-                            options: 'i'
-                        }
-                    }
-                },
-                {
-                    $expr: {
-                        $regexMatch: {
-                            input: { $toString: "$sellingPrice" },
-                            regex: globalFilter,
-                            options: 'i'
-                        }
-                    }
-                },
-                {
-                    $expr: {
-                        $regexMatch: {
-                            input: { $toString: "$discountPercentage" },
-                            regex: globalFilter,
-                            options: 'i'
-                        }
-                    }
-                },
-            ]
-        }
+        // Global search handled post-lookup (to allow categoryData.name filtering)
+        const hasGlobalFilter = !!(globalFilter && !searchFilter)
 
         //  Column filteration  
 
@@ -131,6 +98,21 @@ export async function GET(request) {
 
         if (Object.keys(postLookupMatch).length > 0) {
             aggregatePipeline.push({ $match: postLookupMatch })
+        }
+
+        // Global filter — applied post-lookup so categoryData.name is available
+        if (hasGlobalFilter) {
+            aggregatePipeline.push({
+                $match: {
+                    $or: [
+                        { name: { $regex: globalFilter, $options: 'i' } },
+                        { slug: { $regex: globalFilter, $options: 'i' } },
+                        { 'categoryData.name': { $regex: globalFilter, $options: 'i' } },
+                        { $expr: { $regexMatch: { input: { $toString: '$mrp' }, regex: globalFilter, options: 'i' } } },
+                        { $expr: { $regexMatch: { input: { $toString: '$sellingPrice' }, regex: globalFilter, options: 'i' } } },
+                    ]
+                }
+            })
         }
 
         // Stock filter: join variants to compute total stock per product
