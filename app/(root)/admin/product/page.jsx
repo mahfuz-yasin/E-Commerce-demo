@@ -11,7 +11,7 @@ import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_
 import Link from "next/link"
 import { useCallback, useMemo, useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
-import { Plus, ChevronDown, AlertTriangle, Package, TrendingUp, Archive, Upload, RefreshCw, Copy, ChevronLeft, ChevronRight, Filter, Eye, EyeOff, ToggleLeft, ToggleRight, Layers } from "lucide-react"
+import { Plus, ChevronDown, AlertTriangle, Package, TrendingUp, Archive, Upload, RefreshCw, Copy, ChevronLeft, ChevronRight, Filter, Eye, EyeOff, ToggleLeft, ToggleRight, Layers, X } from "lucide-react"
 import useFetch from "@/hooks/useFetch"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"

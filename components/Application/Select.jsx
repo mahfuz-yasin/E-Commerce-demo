@@ -20,12 +20,13 @@ import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 
 function Select({
-   options,
+   options: optionsProp,
    selected,
    setSelected,
    placeholder = "Select options",
    isMulti = false, // Added prop to determine if multi-select is enabled
 }) {
+   const options = Array.isArray(optionsProp) ? optionsProp : []
    const [open, setOpen] = useState(false);
 
    const handleSelect = (option) => {

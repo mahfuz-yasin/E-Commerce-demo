@@ -102,7 +102,7 @@ const Datatable = ({
     // Data fetching logics 
 
     const {
-        data: { data = [], meta } = {},
+        data: queryResult,
         isError,
         isRefetching,
         isLoading
@@ -127,6 +127,9 @@ const Datatable = ({
 
         placeholderData: keepPreviousData,
     })
+
+    const data = Array.isArray(queryResult?.data) ? queryResult.data : []
+    const meta = queryResult?.meta
 
 
 
