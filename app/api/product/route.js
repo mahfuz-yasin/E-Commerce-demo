@@ -27,6 +27,8 @@ export async function GET(request) {
         // Extra filter params
         const categoryFilter = searchParams.get('category') || ''
         const stockFilter    = searchParams.get('stock')    || ''
+        const statusFilter   = searchParams.get('status')   || ''
+        const searchFilter   = searchParams.get('search')   || ''
 
         // Build match query  
         let matchQuery = {}
@@ -37,13 +39,20 @@ export async function GET(request) {
             matchQuery = { deletedAt: { $ne: null } }
         }
 
-        // Category filter — applied after lookup (requires ObjectId)
-        if (categoryFilter && mongoose.Types.ObjectId.isValid(categoryFilter)) {
-            matchQuery['categoryData._id'] = new mongoose.Types.ObjectId(categoryFilter)
+        // Status filter
+        if (statusFilter === 'active')   matchQuery.isActive = true
+        if (statusFilter === 'inactive') matchQuery.isActive = false
+
+        // Search filter (name or sku)
+        if (searchFilter) {
+            matchQuery['$or'] = [
+                { name: { $regex: searchFilter, $options: 'i' } },
+                { sku:  { $regex: searchFilter, $options: 'i' } },
+            ]
         }
 
-        // Global search 
-        if (globalFilter) {
+        // Global search (datatable built-in) — only if no custom search
+        if (globalFilter && !searchFilter) {
             matchQuery["$or"] = [
                 { name: { $regex: globalFilter, $options: 'i' } },
                 { slug: { $regex: globalFilter, $options: 'i' } },
@@ -95,9 +104,16 @@ export async function GET(request) {
         });
 
 
-        // Aggregate pipeline  
+        // Aggregate pipeline — matchQuery (without category) runs first
+        const preLookupMatch = { ...matchQuery }
+        // Category filter needs post-lookup match
+        const postLookupMatch = {}
+        if (categoryFilter && mongoose.Types.ObjectId.isValid(categoryFilter)) {
+            postLookupMatch['categoryData._id'] = new mongoose.Types.ObjectId(categoryFilter)
+        }
 
         const aggregatePipeline = [
+            { $match: preLookupMatch },
             {
                 $lookup: {
                     from: 'categories',
@@ -112,6 +128,10 @@ export async function GET(request) {
                 }
             },
         ]
+
+        if (Object.keys(postLookupMatch).length > 0) {
+            aggregatePipeline.push({ $match: postLookupMatch })
+        }
 
         // Stock filter: join variants to compute total stock per product
         if (stockFilter && stockFilter !== 'all') {
@@ -130,17 +150,16 @@ export async function GET(request) {
                     }
                 }
             )
-            if (stockFilter === 'outofstock') {
-                matchQuery.totalStock = 0
-            } else if (stockFilter === 'low') {
-                matchQuery.totalStock = { $gt: 0, $lte: 5 }
-            } else if (stockFilter === 'instock') {
-                matchQuery.totalStock = { $gt: 5 }
+            let stockMatchVal
+            if (stockFilter === 'outofstock') stockMatchVal = 0
+            else if (stockFilter === 'low')   stockMatchVal = { $gt: 0, $lte: 5 }
+            else if (stockFilter === 'instock') stockMatchVal = { $gt: 5 }
+            if (stockMatchVal !== undefined) {
+                aggregatePipeline.push({ $match: { totalStock: stockMatchVal } })
             }
         }
 
         aggregatePipeline.push(
-            { $match: matchQuery },
             { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
             { $skip: start },
             { $limit: size },
@@ -152,6 +171,8 @@ export async function GET(request) {
                     mrp: 1,
                     sellingPrice: 1,
                     discountPercentage: 1,
+                    isActive: 1,
+                    sku: 1,
                     category: "$categoryData.name",
                     totalStock: 1,
                     createdAt: 1,
@@ -165,10 +186,12 @@ export async function GET(request) {
 
         const getProduct = await ProductModel.aggregate(aggregatePipeline)
 
-        // Count: if stock filter active, must use aggregate count too
+        // Count
         let totalRowCount
-        if (stockFilter && stockFilter !== 'all') {
+        const needsAggrCount = (stockFilter && stockFilter !== 'all') || Object.keys(postLookupMatch).length > 0
+        if (needsAggrCount) {
             const countPipeline = [
+                { $match: preLookupMatch },
                 {
                     $lookup: {
                         from: 'categories',
@@ -178,22 +201,22 @@ export async function GET(request) {
                     }
                 },
                 { $unwind: { path: "$categoryData", preserveNullAndEmptyArrays: true } },
-                {
-                    $lookup: {
-                        from: 'productvariants',
-                        localField: '_id',
-                        foreignField: 'product',
-                        as: 'variants'
-                    }
-                },
-                { $addFields: { totalStock: { $sum: '$variants.stock' } } },
-                { $match: matchQuery },
-                { $count: 'total' }
             ]
+            if (Object.keys(postLookupMatch).length > 0) {
+                countPipeline.push({ $match: postLookupMatch })
+            }
+            if (stockFilter && stockFilter !== 'all') {
+                countPipeline.push(
+                    { $lookup: { from: 'productvariants', localField: '_id', foreignField: 'product', as: 'variants' } },
+                    { $addFields: { totalStock: { $sum: '$variants.stock' } } },
+                    { $match: { totalStock: stockFilter === 'outofstock' ? 0 : stockFilter === 'low' ? { $gt: 0, $lte: 5 } : { $gt: 5 } } }
+                )
+            }
+            countPipeline.push({ $count: 'total' })
             const countResult = await ProductModel.aggregate(countPipeline)
             totalRowCount = countResult[0]?.total ?? 0
         } else {
-            totalRowCount = await ProductModel.countDocuments(matchQuery)
+            totalRowCount = await ProductModel.countDocuments(preLookupMatch)
         }
 
         return NextResponse.json({
