@@ -173,6 +173,52 @@ const orderSchema = new mongoose.Schema({
             type: Date,
             default: null
         }
+    },
+    // Fraud Detection Enhanced Fields
+    thankYouPageAccessed: {
+        type: Boolean,
+        default: false
+    },
+    thankYouPageAccessedAt: {
+        type: Date,
+        default: null
+    },
+    otpHash: {
+        type: String,
+        default: null
+    },
+    otpExpiresAt: {
+        type: Date,
+        default: null
+    },
+    otpSentAt: {
+        type: Date,
+        default: null
+    },
+    otpVerified: {
+        type: Boolean,
+        default: false
+    },
+    otpVerifiedAt: {
+        type: Date,
+        default: null
+    },
+    // Fraud Session Tracking
+    fraudSessionId: {
+        type: String,
+        default: null
+    },
+    checkoutStartTime: {
+        type: Date,
+        default: null
+    },
+    orderSubmissionTime: {
+        type: Date,
+        default: null
+    },
+    checkoutDuration: {
+        type: Number,
+        default: null
     }
 }, { timestamps: true })
 
